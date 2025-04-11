@@ -12,3 +12,15 @@ body {
   display: flex;
   flex-direction: column;
 }
+html,
+body {
+  --bs-dark: var(--nat-navbar-bg);
+  --bs-light-rgb: 236, 236, 236;
+  --bs-dark-rgb: var(--nat-navbar-bg-rgb);
+  box-sizing: border-box;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  background: fixed center url("/images.jpg");
+  background-size: cover;
+}
