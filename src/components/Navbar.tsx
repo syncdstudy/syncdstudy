@@ -14,9 +14,9 @@ const NavBar: React.FC = () => {
   const role = userWithRole?.randomKey;
   const pathName = usePathname();
   return (
-    <Navbar bg="light" expand="lg">
+    <Navbar className="navbar-custom" expand="lg">
       <Container>
-        <Navbar.Brand href="/">TESTINGGGGGG</Navbar.Brand>
+        <Navbar.Brand href="/">Sync&apos;d Study</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto justify-content-start">

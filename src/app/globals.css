@@ -12,4 +12,27 @@ body {
   display: flex;
   flex-direction: column;
 }
+:root {
+  --main-bg: hsl(262, 57%, 86%);
+  --main-text: #ffffff;
+}
+.footer {
+  background-color: var(--main-bg);
+  color: var(--main-text);
+  text-align: center;
+  padding: 1rem 0;
+}
+.navbar-custom {
+  background-color: var(--main-bg);
+  color: var(--main-text);
+}
 
+.navbar-custom .navbar-brand,
+.navbar-custom .nav-link,
+.navbar-custom .nav-item {
+  color: var(--main-text) !important;
+}
+
+.navbar-custom .nav-link:hover {
+  text-decoration: underline;
+}
