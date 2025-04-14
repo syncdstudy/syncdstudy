@@ -4,7 +4,7 @@
 
 import { useSession } from 'next-auth/react';
 import { usePathname } from 'next/navigation';
-import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
+import { Container, Nav, Navbar, NavDropdown, Button } from 'react-bootstrap';
 import { BoxArrowRight, Lock, PersonFill, PersonPlusFill } from 'react-bootstrap-icons';
 
 const NavBar: React.FC = () => {
@@ -23,10 +23,13 @@ const NavBar: React.FC = () => {
             {currentUser
               ? [
                   <Nav.Link id="add-stuff-nav" href="/add" key="add" active={pathName === '/add'}>
-                    Add Stuff
+                    How it Works
                   </Nav.Link>,
                   <Nav.Link id="list-stuff-nav" href="/list" key="list" active={pathName === '/list'}>
-                    List Stuff
+                    Locations on Campus
+                  </Nav.Link>,
+                  <Nav.Link id="list-stuff-nav" href="/list" key="list" active={pathName === '/list'}>
+                    About
                   </Nav.Link>,
                 ]
               : ''}
@@ -38,30 +41,44 @@ const NavBar: React.FC = () => {
               ''
             )}
           </Nav>
-          <Nav>
-            {session ? (
-              <NavDropdown id="login-dropdown" title={currentUser}>
-                <NavDropdown.Item id="login-dropdown-sign-out" href="/api/auth/signout">
-                  <BoxArrowRight />
-                  Sign Out
-                </NavDropdown.Item>
-                <NavDropdown.Item id="login-dropdown-change-password" href="/auth/change-password">
-                  <Lock />
-                  Change Password
-                </NavDropdown.Item>
-              </NavDropdown>
-            ) : (
-              <NavDropdown id="login-dropdown" title="Login">
-                <NavDropdown.Item id="login-dropdown-sign-in" href="/auth/signin">
-                  <PersonFill />
-                  Sign in
-                </NavDropdown.Item>
-                <NavDropdown.Item id="login-dropdown-sign-up" href="/auth/signup">
-                  <PersonPlusFill />
-                  Sign up
-                </NavDropdown.Item>
-              </NavDropdown>
-            )}
+          <Nav className="gap-5 text-center">
+            <Nav.Link id="home-nav" href="/" key="home" active={pathName === '/'}>
+              <ins><em>How it Works</em></ins>
+            </Nav.Link>
+            <Nav.Link id="home-nav" href="/" key="home" active={pathName === '/'}>
+              <ins><em>Locations on Campus</em></ins>
+            </Nav.Link>
+            <Nav.Link id="home-nav" href="/" key="home" active={pathName === '/'}>
+              <ins><em>About</em></ins>
+            </Nav.Link>
+            <Nav.Link id="home-nav" href="/" key="home" active={pathName === '/'}>
+              <ins><em>Sign-up</em></ins>
+            </Nav.Link>
+            <Button size="sm" className="custom-button px-3 mx-1">
+              {session ? (
+                <NavDropdown id="login-dropdown" title={currentUser}>
+                  <NavDropdown.Item id="login-dropdown-sign-out" href="/api/auth/signout">
+                    <BoxArrowRight />
+                    Sign Out
+                  </NavDropdown.Item>
+                  <NavDropdown.Item id="login-dropdown-change-password" href="/auth/change-password">
+                    <Lock />
+                    Change Password
+                  </NavDropdown.Item>
+                </NavDropdown>
+              ) : (
+                <NavDropdown id="login-dropdown" title="Login">
+                  <NavDropdown.Item id="login-dropdown-sign-in" href="/auth/signin">
+                    <PersonFill />
+                    Sign in
+                  </NavDropdown.Item>
+                  <NavDropdown.Item id="login-dropdown-sign-up" href="/auth/signup">
+                    <PersonPlusFill />
+                    Sign up
+                  </NavDropdown.Item>
+                </NavDropdown>
+              )}
+            </Button>
           </Nav>
         </Navbar.Collapse>
       </Container>

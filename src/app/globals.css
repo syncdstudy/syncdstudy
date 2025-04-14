@@ -5,6 +5,39 @@ body {
   height: 100%;
   padding: 0;
   margin: 0;
+  background-image: url('/background.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+.info-box {
+  background-color: rgba(228, 215, 247, 0.8); 
+  border: 3px solid black;
+  border-radius: 20px;
+  padding: 30px;
+  width: 600px;        
+  margin: 0 auto;       
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+}
+.custom-link{
+  color: white;
+  text-decoration: none;
+}
+.custom-link:hover {
+  color: hsl(182, 80%, 40%);
+}
+.custom-button {
+  background-color: rgba(142,124,195,255);
+  border: 3px solid black;
+  border-radius: 5px;
+}
+.custom-button:hover {
+  background-color: white;
+  border: 3px solid black;
+  border-radius: 5px;
+  color: white;
 }
 .wrapper {
   box-sizing: border-box;
@@ -14,12 +47,11 @@ body {
 }
 :root {
   --main-bg: hsl(262, 57%, 86%);
-  --main-text: #ffffff;
+  --main-text: black;
 }
 .footer {
   background-color: var(--main-bg);
   color: var(--main-text);
-  text-align: center;
   padding: 1rem 0;
 }
 .navbar-custom {
