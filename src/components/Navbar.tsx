@@ -51,7 +51,7 @@ const NavBar: React.FC = () => {
             <Nav.Link id="home-nav" href="/" key="home" active={pathName === '/'}>
               <ins><em>About</em></ins>
             </Nav.Link>
-            <Nav.Link id="home-nav" href="/" key="home" active={pathName === '/'}>
+            <Nav.Link id="signup-nav" href="/signup" key="signup" active={pathName === '/signup'}>
               <ins><em>Sign-up</em></ins>
             </Nav.Link>
             <Button size="sm" className="custom-button px-3 mx-1">
