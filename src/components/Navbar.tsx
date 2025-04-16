@@ -22,13 +22,14 @@ const NavBar: React.FC = () => {
           <Nav className="me-auto justify-content-start">
             {currentUser
               ? [
-                  <Nav.Link id="add-stuff-nav" href="/add" key="add" active={pathName === '/add'}>
+                  // eslint-disable-next-line max-len
+                  <Nav.Link id="how-it-works-nav" href="/howitworks" key="howitworks" active={pathName === '/howitworks'}>
                     How it Works
                   </Nav.Link>,
-                  <Nav.Link id="list-stuff-nav" href="/list" key="list" active={pathName === '/list'}>
+                  <Nav.Link id="locations-nav" href="/locations" key="locations" active={pathName === '/locations'}>
                     Locations on Campus
                   </Nav.Link>,
-                  <Nav.Link id="list-stuff-nav" href="/list" key="list" active={pathName === '/list'}>
+                  <Nav.Link id="about-nav" href="/about" key="about" active={pathName === '/about'}>
                     About
                   </Nav.Link>,
                 ]
@@ -42,17 +43,19 @@ const NavBar: React.FC = () => {
             )}
           </Nav>
           <Nav className="gap-5 text-center">
-            <Nav.Link id="home-nav" href="/" key="home" active={pathName === '/'}>
+            <Nav.Link
+              id="how-it-works-home-nav"
+              href="/howitworks"
+              key="howitworks-home"
+              active={pathName === '/howitworks'}
+            >
               <ins><em>How it Works</em></ins>
             </Nav.Link>
-            <Nav.Link id="home-nav" href="/" key="home" active={pathName === '/'}>
+            <Nav.Link id="locations-home-nav" href="/locations" key="locations-home" active={pathName === '/locations'}>
               <ins><em>Locations on Campus</em></ins>
             </Nav.Link>
-            <Nav.Link id="home-nav" href="/" key="home" active={pathName === '/'}>
+            <Nav.Link id="about-home-nav" href="/about" key="about-home" active={pathName === '/about'}>
               <ins><em>About</em></ins>
-            </Nav.Link>
-            <Nav.Link id="home-nav" href="/" key="home" active={pathName === '/'}>
-              <ins><em>Sign-up</em></ins>
             </Nav.Link>
             <Button size="sm" className="custom-button px-3 mx-1">
               {session ? (
