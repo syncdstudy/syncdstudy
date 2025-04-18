@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import React from 'react';
 import '@/app/globals.css';
 
@@ -10,15 +9,18 @@ const LocationsPage = () => (
     <div className="d-flex flex-column flex-lg-row align-items-center justify-content-between gap-4">
 
       {/* Map Image */}
-      <div style={{ flex: '1', maxWidth: '500px' }}>
-        <Image
-          src="/map.png"
-          alt="Campus Map"
-          width={500}
-          height={500}
-          className="img-fluid rounded shadow"
-          style={{ width: '100%', height: 'auto' }}
-        />
+      <div style={{ flex: '1', maxWidth: '600px' }}>
+        <div className="rounded shadow" style={{ overflow: 'hidden', width: '100%', aspectRatio: '6 / 8' }}>
+          {/* eslint-disable-next-line jsx-a11y/iframe-has-title */}
+          <iframe
+            src="https://www.google.com/maps/d/u/0/embed?mid=1yx6vfinnLHnW8_wahtJ1bT6yVs2VReE&ehbc=2E312F&noprof=1"
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
+          />
+        </div>
       </div>
 
       {/* Location Descriptions */}
