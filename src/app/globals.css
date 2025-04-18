@@ -76,3 +76,13 @@ body {
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
+
+.oklch-link {
+  color: oklch(40.1% 0.17 325.612);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.oklch-link:hover {
+  color: oklch(29.1% 0.149 302.717);
+}
