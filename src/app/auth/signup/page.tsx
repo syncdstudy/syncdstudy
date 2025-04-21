@@ -45,14 +45,14 @@ const SignUp = () => {
 
   return (
     <main>
-      <Container>
-        <Row className="justify-content-center">
-          <Col xs={5}>
+      <Container fluid className="d-flex justify-content-center align-items-center vh-100">
+        <Row className="info-box justify-content-center">
+          <Col lg={12}>
             <h1 className="text-center">Sign Up</h1>
             <Card>
-              <Card.Body>
+              <Card.Body className="py-5">
                 <Form onSubmit={handleSubmit(onSubmit)}>
-                  <Form.Group className="form-group">
+                  <Form.Group className="form-group text-start">
                     <Form.Label>Email</Form.Label>
                     <input
                       type="text"
@@ -62,7 +62,7 @@ const SignUp = () => {
                     <div className="invalid-feedback">{errors.email?.message}</div>
                   </Form.Group>
 
-                  <Form.Group className="form-group">
+                  <Form.Group className="form-group text-start">
                     <Form.Label>Password</Form.Label>
                     <input
                       type="password"
@@ -71,7 +71,7 @@ const SignUp = () => {
                     />
                     <div className="invalid-feedback">{errors.password?.message}</div>
                   </Form.Group>
-                  <Form.Group className="form-group">
+                  <Form.Group className="form-group text-start">
                     <Form.Label>Confirm Password</Form.Label>
                     <input
                       type="password"
@@ -83,12 +83,12 @@ const SignUp = () => {
                   <Form.Group className="form-group py-3">
                     <Row>
                       <Col>
-                        <Button type="submit" className="btn btn-primary">
+                        <Button type="submit" className="custom-button">
                           Register
                         </Button>
                       </Col>
                       <Col>
-                        <Button type="button" onClick={() => reset()} className="btn btn-warning float-right">
+                        <Button type="button" onClick={() => reset()} className="custom-button float-right">
                           Reset
                         </Button>
                       </Col>
@@ -98,7 +98,8 @@ const SignUp = () => {
               </Card.Body>
               <Card.Footer>
                 Already have an account?
-                <a href="/auth/signin">Sign in</a>
+                {'\u00A0'}
+                <a href="/auth/signin" className="custom-link">Sign in</a>
               </Card.Footer>
             </Card>
           </Col>
