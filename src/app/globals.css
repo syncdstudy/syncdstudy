@@ -1,6 +1,6 @@
 html,
 body {
-  --bs-light-rgb: 236, 236, 236;
+  --bs-light-rgb: 94, 22, 117;
   box-sizing: border-box;
   height: 100%;
   padding: 0;
@@ -11,8 +11,10 @@ body {
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
+
+/* for content in a box. */
 .info-box {
-  background-color: rgba(228, 215, 247, 0.8); 
+  background-color: rgb(228, 215, 247, 0.8); 
   border: 3px solid black;
   border-radius: 20px;
   padding: 30px;
@@ -21,24 +23,36 @@ body {
   text-align: center;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
 }
+
+/* for links. */
 .custom-link{
-  color: white;
+  color: rgb(115,18,119);
   text-decoration: none;
 }
 .custom-link:hover {
-  color: hsl(182, 80%, 40%);
+  color: rgb(60,3,103);
 }
+
+/* for buttons. */
 .custom-button {
-  background-color: rgba(142,124,195,255);
+  background-color: rgb(193, 174, 252);
   border: 3px solid black;
   border-radius: 5px;
+  color: black;
 }
 .custom-button:hover {
-  background-color: white;
+  background-color: rgb(60,3,103);
   border: 3px solid black;
   border-radius: 5px;
   color: white;
 }
+
+.dropdown-toggle,
+.dropdown-toggle.btn {
+  color: white !important;
+}
+
+
 .wrapper {
   box-sizing: border-box;
   min-height: 100%;
@@ -46,7 +60,7 @@ body {
   flex-direction: column;
 }
 :root {
-  --main-bg: hsl(262, 57%, 86%);
+  --main-bg: rgb(228, 215, 247);
   --main-text: black;
 }
 .footer {
