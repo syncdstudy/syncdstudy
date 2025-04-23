@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { Card, Col, Container, Button, Form, Row, InputGroup } from 'react-bootstrap';
 import { createUser } from '@/lib/dbActions';
 import { motion } from 'framer-motion';
+import { Eye, EyeSlash } from 'react-bootstrap-icons';
 
 type SignUpForm = {
   email: string;
@@ -112,7 +113,7 @@ const SignUp = () => {
                           onClick={() => setShowPassword(!showPassword)}
                           tabIndex={-1}
                         >
-                          {showPassword ? '🙈' : '👁️'}
+                          {showPassword ? <EyeSlash /> : <Eye />}
                         </Button>
                       </InputGroup>
                       <div className="invalid-feedback">{errors.password?.message}</div>
@@ -132,7 +133,7 @@ const SignUp = () => {
                           onClick={() => setShowConfirm(!showConfirm)}
                           tabIndex={-1}
                         >
-                          {showConfirm ? '🙈' : '👁️'}
+                          {showConfirm ? <EyeSlash /> : <Eye />}
                         </Button>
                       </InputGroup>
                       <div className="invalid-feedback">{errors.confirmPassword?.message}</div>
