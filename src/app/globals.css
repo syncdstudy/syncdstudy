@@ -32,6 +32,14 @@ body {
 .custom-link:hover {
   color: rgb(60,3,103);
 }
+.custom-link-1{
+  color: black;
+  font-style: italic;
+  text-decoration: underline;
+}
+.custom-link-1:hover {
+  color: rgb(115,18,119);
+}
 
 /* for buttons. */
 .custom-button { /* general. */

@@ -27,13 +27,13 @@ const NavBar: React.FC = () => {
             {!session && (
               <>
                 <Nav.Link href="/howitworks" active={pathName === '/howitworks'}>
-                  <ins><em>How it Works</em></ins>
+                  <ins className="custom-link-1"><em>How it Works</em></ins>
                 </Nav.Link>
                 <Nav.Link href="/locations" active={pathName === '/locations'}>
-                  <ins><em>Locations on Campus</em></ins>
+                  <ins className="custom-link-1"><em>Locations on Campus</em></ins>
                 </Nav.Link>
-                <Nav.Link href="/about" active={pathName === '/about'}>
-                  <ins><em>About</em></ins>
+                <Nav.Link href="/about"  active={pathName === '/about'}>
+                  <ins className="custom-link-1"><em>About</em></ins>
                 </Nav.Link>
               </>
             )}
@@ -41,30 +41,30 @@ const NavBar: React.FC = () => {
             {session && role === 'USER' && (
               <>
                 <Nav.Link href="/calendar" active={pathName === '/calendar'}>
-                  <ins><em>Calendar</em></ins>
+                  <ins className="custom-link-1"><em>Calendar</em></ins>
                 </Nav.Link>
                 <Nav.Link href="/courses" active={pathName === '/courses'}>
-                  <ins><em>Study Session</em></ins>
+                  <ins className="custom-link-1"><em>Study Session</em></ins>
                 </Nav.Link>
                 <Nav.Link href="/courses" active={pathName === '/courses'}>
-                  <ins><em>My Courses</em></ins>
+                  <ins className="custom-link-1"><em>My Courses</em></ins>
                 </Nav.Link>
                 <Nav.Link href="/profile" active={pathName === '/profile'}>
-                  <ins><em>My Profile</em></ins>
+                  <ins className="custom-link-1"><em>My Profile</em></ins>
                 </Nav.Link>
               </>
             )}
 
             {session && role === 'ADMIN' && (
               <>
-                <Nav.Link href="/admin/dashboard" active={pathName === '/admin/dashboard'}>
-                  <ins><em>Leaderboard</em></ins>
+                <Nav.Link href="/admin/dashboard" className="custom-link-1" active={pathName === '/admin/dashboard'}>
+                  <ins className="custom-link-1"><em>Leaderboard</em></ins>
                 </Nav.Link>
                 <Nav.Link href="/admin/manage-users" active={pathName === '/admin/manage-users'}>
-                  <ins><em>Manage Users</em></ins>
+                  <ins className="custom-link-1"><em>Manage Users</em></ins>
                 </Nav.Link>
                 <Nav.Link href="/admin/reports" active={pathName === '/admin/reports'}>
-                  <ins><em>Student Reports</em></ins>
+                  <ins className="custom-link-1"><em>Student Reports</em></ins>
                 </Nav.Link>
               </>
             )}
