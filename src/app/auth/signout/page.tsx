@@ -12,10 +12,10 @@ const SignOut = () => (
         <Row>
           <Col xs={4} />
           <div className="d-flex justify-content-center gap-3 mt-3">
-            <Button variant="danger" onClick={() => signOut({ callbackUrl: '/', redirect: true })}>
+            <Button className="custom-button-1" onClick={() => signOut({ callbackUrl: '/', redirect: true })}>
               Sign Out
             </Button>
-            <Button variant="secondary" href="/">
+            <Button className="custom-button-3" href="/">
               Cancel
             </Button>
           </div>

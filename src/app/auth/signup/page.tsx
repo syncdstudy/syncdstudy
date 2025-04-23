@@ -42,7 +42,6 @@ const SignUp = () => {
     // After creating, signIn with redirect to the add page
     await signIn('credentials', { callbackUrl: '/add', ...data });
   };
-
   return (
     <main>
       <Container fluid className="d-flex justify-content-center align-items-center vh-100">
@@ -83,12 +82,12 @@ const SignUp = () => {
                   <Form.Group className="form-group py-3">
                     <Row>
                       <Col>
-                        <Button type="submit" className="custom-button">
+                        <Button type="submit" className="custom-button-1">
                           Register
                         </Button>
                       </Col>
                       <Col>
-                        <Button type="button" onClick={() => reset()} className="custom-button float-right">
+                        <Button type="button" onClick={() => reset()} className="custom-button-2 float-right">
                           Reset
                         </Button>
                       </Col>

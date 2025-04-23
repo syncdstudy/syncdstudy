@@ -34,7 +34,7 @@ body {
 }
 
 /* for buttons. */
-.custom-button {
+.custom-button { /* general. */
   background-color: rgb(193, 174, 252);
   border: 3px solid black;
   border-radius: 5px;
@@ -46,12 +46,47 @@ body {
   border-radius: 5px;
   color: white;
 }
+.custom-button-1 { /* other colors. */
+  background-color: #FF8383;
+  border: 3px solid black;
+  border-radius: 5px;
+  color: black;
+}
+.custom-button-1:hover {
+  background-color: #7D0A0A;
+  border: 3px solid black;
+  border-radius: 5px;
+  color: white;
+}
+.custom-button-2 { 
+  background-color: #FFF2AF;
+  border: 3px solid black;
+  border-radius: 5px;
+  color: black;
+}
+.custom-button-2:hover {
+  background-color: #FFB200;
+  border: 3px solid black;
+  border-radius: 5px;
+  color: white;
+}
+.custom-button-3 { 
+  background-color: #DBDBDB;
+  border: 3px solid black;
+  border-radius: 5px;
+  color: black;
+}
+.custom-button-3:hover {
+  background-color: #373A40;
+  border: 3px solid black;
+  border-radius: 5px;
+  color: white;
+}
 
 .dropdown-toggle,
 .dropdown-toggle.btn {
   color: white !important;
 }
-
 
 .wrapper {
   box-sizing: border-box;
