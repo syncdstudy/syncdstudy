@@ -32,12 +32,11 @@ const NavBar: React.FC = () => {
                 <Nav.Link href="/locations" active={pathName === '/locations'}>
                   <ins className="custom-link-1"><em>Locations on Campus</em></ins>
                 </Nav.Link>
-                <Nav.Link href="/about"  active={pathName === '/about'}>
+                <Nav.Link href="/about" active={pathName === '/about'}>
                   <ins className="custom-link-1"><em>About</em></ins>
                 </Nav.Link>
               </>
             )}
-
             {session && role === 'USER' && (
               <>
                 <Nav.Link href="/calendar" active={pathName === '/calendar'}>
