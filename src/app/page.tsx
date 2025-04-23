@@ -10,7 +10,7 @@ const Home = () => (
         <p>Instant access to study groups for over 10 subjects</p>
         <p>Connect with students around campus</p>
         <p>Entirely personalized experience</p>
-        <Button variant="dark">Sign Up Now</Button>
+        <Button href="/auth/signup" variant="dark">Sign Up Now</Button>
       </div>
     </Container>
   </main>
