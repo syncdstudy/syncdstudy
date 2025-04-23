@@ -1,4 +1,7 @@
+'use client';
+
 import { Container, Button } from 'react-bootstrap';
+import Link from 'next/link';
 
 /** The Landing Page. */
 const Home = () => (
@@ -10,7 +13,9 @@ const Home = () => (
         <p>Instant access to study groups for over 10 subjects</p>
         <p>Connect with students around campus</p>
         <p>Entirely personalized experience</p>
-        <Button variant="dark">Sign Up Now</Button>
+        <Link href="/auth/signup" passHref>
+          <Button variant="dark">Sign Up Now</Button>
+        </Link>
       </div>
     </Container>
   </main>
