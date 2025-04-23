@@ -68,11 +68,3 @@ body {
 .navbar-custom .nav-link:hover {
   text-decoration: underline;
 }
-
-.bg-hero {
-  background-image: url('/uhmanoatree.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-}
