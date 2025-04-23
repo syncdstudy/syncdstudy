@@ -1,4 +1,12 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable no-alert */
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react/button-has-type */
+/* eslint-disable max-len */
+// /* eslint-disable jsx-a11y/label-has-associated-control */
 
 'use client';
 

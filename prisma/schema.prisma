@@ -23,10 +23,27 @@ enum Role {
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  password String
-  role     Role   @default(USER)
+  id          Int          @id @default(autoincrement())
+  email       String       @unique
+  password    String
+  role        Role         @default(USER)
+  profile     UserProfile? // <-- One-to-one relation
+}
+
+model UserProfile {
+  id           Int      @id @default(autoincrement())
+  user         User     @relation(fields: [userId], references: [id])
+  userId       Int      @unique
+  firstName    String
+  lastName     String
+  year         String
+  email        String   @unique
+  phone        String?
+  headshotUrl  String?
+  preferences  String[] // array of preferences
+  courses      String[] // array of course names or IDs
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 enum Condition {
