@@ -8,74 +8,88 @@ import { Container, Nav, Navbar, NavDropdown, Button } from 'react-bootstrap';
 import { BoxArrowRight, Lock, PersonFill, PersonPlusFill } from 'react-bootstrap-icons';
 
 const NavBar: React.FC = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const currentUser = session?.user?.email;
   const userWithRole = session?.user as { email: string; randomKey: string };
   const role = userWithRole?.randomKey;
   const pathName = usePathname();
+
+  if (status === 'loading') {
+    return null;
+  }
   return (
     <Navbar className="navbar-custom" expand="lg">
       <Container>
         <Navbar.Brand href="/">Sync&apos;d Study</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto justify-content-start">
-            {currentUser
-              ? [
-                  // eslint-disable-next-line max-len
-                  <Nav.Link id="how-it-works-nav" href="/howitworks" key="howitworks" active={pathName === '/howitworks'}>
-                    How it Works
-                  </Nav.Link>,
-                  <Nav.Link id="locations-nav" href="/locations" key="locations" active={pathName === '/locations'}>
-                    Locations on Campus
-                  </Nav.Link>,
-                  <Nav.Link id="about-nav" href="/about" key="about" active={pathName === '/about'}>
-                    About
-                  </Nav.Link>,
-                ]
-              : ''}
-            {currentUser && role === 'ADMIN' ? (
-              <Nav.Link id="admin-stuff-nav" href="/admin" key="admin" active={pathName === '/admin'}>
-                Admin
-              </Nav.Link>
-            ) : (
-              ''
+          <Nav className="ms-auto px-5 gap-5 justify-content-start">
+            {!session && (
+              <>
+                <Nav.Link href="/howitworks" active={pathName === '/howitworks'}>
+                  <ins><em>How it Works</em></ins>
+                </Nav.Link>
+                <Nav.Link href="/locations" active={pathName === '/locations'}>
+                  <ins><em>Locations on Campus</em></ins>
+                </Nav.Link>
+                <Nav.Link href="/about" active={pathName === '/about'}>
+                  <ins><em>About</em></ins>
+                </Nav.Link>
+              </>
+            )}
+
+            {session && role === 'USER' && (
+              <>
+                <Nav.Link href="/calendar" active={pathName === '/calendar'}>
+                  <ins><em>Calendar</em></ins>
+                </Nav.Link>
+                <Nav.Link href="/courses" active={pathName === '/courses'}>
+                  <ins><em>Study Session</em></ins>
+                </Nav.Link>
+                <Nav.Link href="/courses" active={pathName === '/courses'}>
+                  <ins><em>My Courses</em></ins>
+                </Nav.Link>
+                <Nav.Link href="/profile" active={pathName === '/profile'}>
+                  <ins><em>My Profile</em></ins>
+                </Nav.Link>
+              </>
+            )}
+
+            {session && role === 'ADMIN' && (
+              <>
+                <Nav.Link href="/admin/dashboard" active={pathName === '/admin/dashboard'}>
+                  <ins><em>Leaderboard</em></ins>
+                </Nav.Link>
+                <Nav.Link href="/admin/manage-users" active={pathName === '/admin/manage-users'}>
+                  <ins><em>Manage Users</em></ins>
+                </Nav.Link>
+                <Nav.Link href="/admin/reports" active={pathName === '/admin/reports'}>
+                  <ins><em>Student Reports</em></ins>
+                </Nav.Link>
+              </>
             )}
           </Nav>
+
           <Nav className="gap-5 text-center">
-            <Nav.Link
-              id="how-it-works-home-nav"
-              href="/howitworks"
-              key="howitworks-home"
-              active={pathName === '/howitworks'}
-            >
-              <ins><em>How it Works</em></ins>
-            </Nav.Link>
-            <Nav.Link id="locations-home-nav" href="/locations" key="locations-home" active={pathName === '/locations'}>
-              <ins><em>Locations on Campus</em></ins>
-            </Nav.Link>
-            <Nav.Link id="about-home-nav" href="/about" key="about-home" active={pathName === '/about'}>
-              <ins><em>About</em></ins>
-            </Nav.Link>
             <Button size="sm" className="custom-button px-3 mx-1">
               {session ? (
                 <NavDropdown id="login-dropdown" title={currentUser}>
-                  <NavDropdown.Item id="login-dropdown-sign-out" href="/api/auth/signout">
+                  <NavDropdown.Item href="/api/auth/signout">
                     <BoxArrowRight />
-                    Sign Out
+                      Sign Out
                   </NavDropdown.Item>
-                  <NavDropdown.Item id="login-dropdown-change-password" href="/auth/change-password">
+                  <NavDropdown.Item href="/auth/change-password">
                     <Lock />
                     Change Password
                   </NavDropdown.Item>
                 </NavDropdown>
               ) : (
                 <NavDropdown id="login-dropdown" title="Login">
-                  <NavDropdown.Item id="login-dropdown-sign-in" href="/auth/signin">
+                  <NavDropdown.Item href="/auth/signin">
                     <PersonFill />
                     Sign in
                   </NavDropdown.Item>
-                  <NavDropdown.Item id="login-dropdown-sign-up" href="/auth/signup">
+                  <NavDropdown.Item href="/auth/signup">
                     <PersonPlusFill />
                     Sign up
                   </NavDropdown.Item>
