@@ -27,6 +27,8 @@ model User {
   email    String @unique
   password String
   role     Role   @default(USER)
+  courses  Course[]
+  preferences CourseNotificationPreference[]
 }
 
 enum Condition {
@@ -42,4 +44,25 @@ model Stuff {
   quantity  Int
   condition Condition @default(good)
   owner     String
+}
+
+model Course {
+  id         Int     @id @default(autoincrement())
+  name       String  @unique
+  users      User[]
+  preferences CourseNotificationPreference[]
+}
+
+model CourseNotificationPreference {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  courseId  Int
+  notify    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id])
+  course Course @relation(fields: [courseId], references: [id])
+
+  @@unique([userId, courseId])
 }
