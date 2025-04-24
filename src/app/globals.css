@@ -215,3 +215,37 @@ body {
   color: #333;
 }
 
+/* Center the grid and ensure it's evenly spaced */
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr); /* One column on mobile */
+  gap: 16px;
+  justify-items: center; /* Center items horizontally */
+}
+
+@media (min-width: 640px) {
+  .team-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns for medium screens */
+  }
+}
+
+@media (min-width: 768px) {
+  .team-grid {
+    grid-template-columns: repeat(4, 1fr); /* 4 columns for larger screens */
+  }
+}
+
+/* Section wrapper for transparent background */
+.section-wrapper {
+  background-color: rgba(218, 193, 219, 0.8); /* Light purple with transparency */
+  padding: 20px;
+  border-radius: 12px; /* Rounded corners */
+  margin-bottom: 20px;
+}
+
+@media (min-width: 768px) {
+  .section-wrapper {
+    padding: 30px;
+  }
+}
+
