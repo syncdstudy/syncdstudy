@@ -143,3 +143,75 @@ body {
 .oklch-link:hover {
   color: oklch(29.1% 0.149 302.717);
 }
+
+/* For courses list */
+.courses-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  max-width: 800px; /* Set a max-width */
+  margin-left: auto; /* Center horizontally */
+  margin-right: auto; /* Center horizontally */
+}
+
+.course-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f3e7ff; /* Light purple background */
+  padding: 16px;
+  border-radius: 12px; /* Rounded corners */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Soft shadow */
+  margin-bottom: 16px;
+}
+
+.course-name h2 {
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.switch {
+  width: 40px;
+  height: 20px;
+  background-color: #ccc;
+  border-radius: 9999px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.switch-circle {
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.switch.on {
+  background-color: #48bb78; /* Green when on */
+}
+
+.switch-circle.on {
+  transform: translateY(-50%) translateX(20px);
+}
+
+.switch-circle.off {
+  transform: translateY(-50%) translateX(0);
+}
+
+.toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Adds space between the text and the switch */
+}
+
+.toggle-container span {
+  font-size: 1rem;
+  color: #333;
+}
+
