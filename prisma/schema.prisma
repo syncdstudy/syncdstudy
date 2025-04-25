@@ -29,6 +29,7 @@ model User {
   role     Role   @default(USER)
   courses  Course[]
   preferences CourseNotificationPreference[]
+  studySessions StudySession[]
 }
 
 enum Condition {
@@ -65,4 +66,13 @@ model CourseNotificationPreference {
   course Course @relation(fields: [courseId], references: [id])
 
   @@unique([userId, courseId])
+}
+
+model StudySession {
+  id        Int      @id @default(autoincrement())
+  name      String
+  date      DateTime
+  time      String
+  creatorId Int
+  user      User     @relation(fields: [creatorId], references: [id])
 }

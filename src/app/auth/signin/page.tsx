@@ -13,10 +13,12 @@ const SignIn = () => {
     };
     const email = target.email.value;
     const password = target.password.value;
+
+    // Call signIn with dynamic callbackUrl
     const result = await signIn('credentials', {
-      callbackUrl: '/list',
       email,
       password,
+      callbackUrl: email === 'admin@foo.com' ? '/admin' : '/list', // Redirect based on email
     });
 
     if (result?.error) {
