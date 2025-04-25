@@ -249,3 +249,28 @@ body {
   }
 }
 
+/* globals.css or any global stylesheet */
+
+.react-calendar__tile {
+  width: 100px; /* Larger squares */
+  height: 100px; /* Same height as width */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem; /* Larger text */
+  border-radius: 10px; /* Rounded corners */
+  padding: 10px; /* Padding for extra space */
+  box-sizing: border-box; /* Prevent padding from affecting size */
+}
+
+.react-calendar__tile--active {
+  background-color: #4caf50; /* Color for the active date */
+  color: white;
+  border-radius: 10px;
+}
+
+.react-calendar {
+  width: 100%; /* Full width for the calendar */
+  height: auto; /* Adjust height */
+}
+
