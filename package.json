@@ -25,6 +25,7 @@
     "multiselect-react-dropdown": "^2.0.25",
     "next": "^14.2.24",
     "next-auth": "^4.24.7",
+    "playwright": "^1.52.0",
     "prisma": "^6.5.0",
     "react": "^18",
     "react-bootstrap": "^2.10.4",
@@ -35,7 +36,7 @@
     "yup": "^1.4.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.48.2",
+    "@playwright/test": "^1.52.0",
     "@types/bcrypt": "^5.0.2",
     "@types/node": "^22.14.1",
     "@types/react": "^18",

@@ -33,19 +33,44 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+    // Original browser projects
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
     },
-
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },
+    },
+
+    // Auth-specific projects
+    {
+      name: 'john-tests',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'john-auth.json',
+      },
+      testMatch: '**/john-*.spec.ts',
+    },
+    {
+      name: 'admin-tests',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'admin-auth.json',
+      },
+      testMatch: '**/admin-*.spec.ts',
+    },
+    {
+      name: 'list-stuff-tests',
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: 'john-auth.json',
+      },
+      testMatch: '**/list-stuff-*.spec.ts',
     },
 
     /* Test against mobile viewports. */
