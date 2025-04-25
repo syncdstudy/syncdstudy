@@ -10,9 +10,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useState } from 'react';
 import { Card, Col, Container, Button, Form, Row, InputGroup } from 'react-bootstrap';
-import { createUser } from '@/lib/dbActions';
 import { motion } from 'framer-motion';
 import { Eye, EyeSlash } from 'react-bootstrap-icons';
+import { supabase } from '@/lib/supabaseClient';
+import { useRouter } from 'next/navigation';
 
 type SignUpForm = {
   email: string;
@@ -23,6 +24,7 @@ type SignUpForm = {
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const router = useRouter();
 
   const validationSchema = Yup.object().shape({
     email: Yup.string()
@@ -54,12 +56,20 @@ const SignUp = () => {
   const username = watch('email');
   const fullEmail = username ? `${username}@hawaii.edu` : '';
 
-  const onSubmit = async (data: SignUpForm) => {
-    const fullEmail = `${data.email}@hawaii.edu`;
-    await createUser({ ...data, email: fullEmail });
-
-    // Redirect to confirmation page
-    window.location.href = '/auth/confirmation';
+  const onSubmit = async (formData: SignUpForm) => {
+    const fullEmail = `${formData.email}@hawaii.edu`;
+  
+    const { error } = await supabase.auth.signUp({
+      email: fullEmail,
+      password: formData.password,
+    });
+  
+    if (error) {
+      alert('Error: ' + error.message);
+    } else {
+      // Smooth redirect to confirmation page
+      router.push('/auth/confirmation');
+    }
   };
 
   return (
@@ -106,7 +116,7 @@ const SignUp = () => {
                         <Form.Control
                           type={showPassword ? 'text' : 'password'}
                           {...register('password')}
-                          className={`form-control ${errors.password ? 'is-invalid' : ''}`}
+                          className={`Form-control ${errors.password ? 'is-invalid' : ''}`}
                         />
                         <Button
                           variant="outline-secondary"
@@ -126,7 +136,7 @@ const SignUp = () => {
                         <Form.Control
                           type={showConfirm ? 'text' : 'password'}
                           {...register('confirmPassword')}
-                          className={`form-control ${errors.confirmPassword ? 'is-invalid' : ''}`}
+                          className={`Form-control ${errors.confirmPassword ? 'is-invalid' : ''}`}
                         />
                         <Button
                           variant="outline-secondary"

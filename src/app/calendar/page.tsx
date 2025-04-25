@@ -23,7 +23,6 @@ import { enUS } from 'date-fns/locale';
 import { Container, Row, Col, Card, Modal, Button, Form, Badge, ButtonGroup } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 
-// Define custom event interface
 interface CustomEvent extends Event {
   id: string;
   title: string;
@@ -33,9 +32,7 @@ interface CustomEvent extends Event {
   description: string;
 }
 
-const locales = {
-  'en-US': enUS,
-};
+const locales = { 'en-US': enUS };
 
 const localizer = dateFnsLocalizer({
   format,
@@ -45,7 +42,6 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-// initial events
 const initialEvents: CustomEvent[] = [
   {
     id: '1',
@@ -76,11 +72,9 @@ const initialEvents: CustomEvent[] = [
 const STORAGE_KEY = 'study-calendar-events';
 
 const CalendarPage = () => {
-  // controlled calendar date & view
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [currentView, setCurrentView] = useState<string>(Views.MONTH);
 
-  // load & store events
   const loadSavedEvents = (): CustomEvent[] => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem(STORAGE_KEY);
@@ -98,14 +92,27 @@ const CalendarPage = () => {
     }
     return initialEvents;
   };
-  const [events, setEvents] = useState<CustomEvent[]>(loadSavedEvents);
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
-    }
-  }, [events]);
 
-  // modal & add-event state
+  const [events, setEvents] = useState<CustomEvent[]>(initialEvents);
+  useEffect(() => {
+    // only in browser
+    if (typeof window === 'undefined') return;
+  
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return;
+  
+    try {
+      const parsed: CustomEvent[] = JSON.parse(saved).map((e: any) => ({
+        ...e,
+        start: new Date(e.start),
+        end:   new Date(e.end),
+      }));
+      setEvents(parsed);
+    } catch(err) {
+      console.error('could not parse events', err);
+    }
+  }, []);
+
   const [showModal, setShowModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CustomEvent | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -117,35 +124,32 @@ const CalendarPage = () => {
     color: string;
   }>({ title: '', description: '', start: null, end: null, color: '#d0e8ff' });
 
-  // clock
   const [clock, setClock] = useState(new Date());
+  const [hydrated, setHydrated] = useState(false);
+  const [now, setNow] = useState<Date | null>(null);
+
   useEffect(() => {
+    setHydrated(true);
+    setNow(new Date());
     const iv = setInterval(() => setClock(new Date()), 1000);
     return () => clearInterval(iv);
   }, []);
 
-  // todos
-  const [todos, setTodos] = useState(
-    [
-      { id: '1', text: 'Review notes', completed: false },
-      { id: '2', text: 'Watch lecture', completed: false },
-      { id: '3', text: 'Email TA', completed: false },
-    ],
-  );
+  const [todos, setTodos] = useState([
+    { id: '1', text: 'Review notes', completed: false },
+    { id: '2', text: 'Watch lecture', completed: false },
+    { id: '3', text: 'Email TA', completed: false },
+  ]);
   const [newTodo, setNewTodo] = useState('');
   const addTodo = () => {
     if (newTodo.trim()) {
-      setTodos([
-        ...todos,
-        { id: Date.now().toString(), text: newTodo.trim(), completed: false },
-      ]);
+      setTodos([...todos, { id: Date.now().toString(), text: newTodo.trim(), completed: false }]);
       setNewTodo('');
     }
   };
   const toggleTodoComplete = (id: string) => setTodos(todos.map(t => (t.id === id ? { ...t, completed: !t.completed } : t)));
   const removeTodo = (id: string) => setTodos(todos.filter(t => t.id !== id));
 
-  // event handlers
   const handleEventClick = (e: CustomEvent) => {
     setSelectedEvent(e);
     setShowModal(true);
@@ -162,17 +166,14 @@ const CalendarPage = () => {
   };
   const handleAddEvent = () => {
     if (newEventData.title && newEventData.start && newEventData.end) {
-      setEvents([
-        ...events,
-        {
-          id: Date.now().toString(),
-          title: newEventData.title,
-          description: newEventData.description,
-          start: newEventData.start,
-          end: newEventData.end,
-          color: newEventData.color,
-        },
-      ]);
+      setEvents([...events, {
+        id: Date.now().toString(),
+        title: newEventData.title,
+        description: newEventData.description,
+        start: newEventData.start,
+        end: newEventData.end,
+        color: newEventData.color,
+      }]);
       setShowAddModal(false);
     }
   };
@@ -191,7 +192,6 @@ const CalendarPage = () => {
     setNewEventData({ ...newEventData, color });
   };
 
-  // navigate calendar
   const moveDate = (dir: 'NEXT' | 'PREV') => {
     const amt = dir === 'NEXT' ? 1 : -1;
     let next: Date;
@@ -213,9 +213,9 @@ const CalendarPage = () => {
   };
 
   function parseISO(value: string): Date | null {
-    throw new Error('Function not implemented.');
+    return new Date(value);
   }
-
+  
   return (
     <main className="p-4">
       <Container fluid>
@@ -284,11 +284,13 @@ const CalendarPage = () => {
 
           <Col lg={4}>
             {/* Clock */}
-            <Card className="mb-3 p-3 text-center" style={{ backgroundColor: '#f4f1ff', borderRadius: '1rem' }}>
-              <h5>🕒 Today</h5>
-              <h2 className="fw-bold mt-2">{clock.toLocaleTimeString()}</h2>
-              <h6>{clock.toDateString()}</h6>
-            </Card>
+            {hydrated && (
+  <Card className="mb-3 p-3 text-center" style={{ backgroundColor: '#f4f1ff', borderRadius: '1rem' }}>
+    <h5>🕒 Today</h5>
+    <h2 className="fw-bold mt-2">{clock.toLocaleTimeString()}</h2>
+    <h6>{clock.toDateString()}</h6>
+  </Card>
+)}
 
             {/* Legend */}
             <Card className="mb-3 p-3" style={{ backgroundColor: '#e0d7f3', borderRadius: '1rem' }}>
@@ -477,3 +479,4 @@ const CalendarPage = () => {
 };
 
 export default CalendarPage;
+
