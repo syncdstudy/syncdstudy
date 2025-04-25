@@ -123,6 +123,4 @@ const AboutPage = () => (
   </main>
 );
 
-// for testing the eslint.
-
 export default AboutPage;
