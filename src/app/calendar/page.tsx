@@ -20,7 +20,7 @@ import {
   subDays,
 } from 'date-fns';
 import { enUS } from 'date-fns/locale';
-import { Container, Row, Col, Card, Modal, Button, Form, Badge, ButtonGroup } from 'react-bootstrap';
+import { Container, Row, Col, Card, Modal, Button, Form, ButtonGroup } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
 
 interface CustomEvent extends Event {
@@ -75,40 +75,38 @@ const CalendarPage = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [currentView, setCurrentView] = useState<string>(Views.MONTH);
 
-  const loadSavedEvents = (): CustomEvent[] => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
-        try {
-          return JSON.parse(saved).map((e: any) => ({
-            ...e,
-            start: new Date(e.start),
-            end: new Date(e.end),
-          }));
-        } catch {
-          console.error('could not parse events');
-        }
-      }
-    }
-    return initialEvents;
-  };
+  // const loadSavedEvents = (): CustomEvent[] => {
+  //   if (typeof window !== 'undefined') {
+  //     const saved = localStorage.getItem(STORAGE_KEY);
+  //     if (saved) {
+  //       try {
+  //         return JSON.parse(saved).map((e: any) => ({
+  //           ...e,
+  //           start: new Date(e.start),
+  //           end: new Date(e.end),
+  //         }));
+  //       } catch {
+  //         console.error('could not parse events');
+  //       }
+  //     }
+  //   }
+  //   return initialEvents;
+  // };
 
   const [events, setEvents] = useState<CustomEvent[]>(initialEvents);
   useEffect(() => {
     // only in browser
     if (typeof window === 'undefined') return;
-  
     const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) return;
-  
     try {
       const parsed: CustomEvent[] = JSON.parse(saved).map((e: any) => ({
         ...e,
         start: new Date(e.start),
-        end:   new Date(e.end),
+        end: new Date(e.end),
       }));
       setEvents(parsed);
-    } catch(err) {
+    } catch (err) {
       console.error('could not parse events', err);
     }
   }, []);
@@ -126,11 +124,11 @@ const CalendarPage = () => {
 
   const [clock, setClock] = useState(new Date());
   const [hydrated, setHydrated] = useState(false);
-  const [now, setNow] = useState<Date | null>(null);
+  // const [now, setNow] = useState<Date | null>(null);
 
   useEffect(() => {
     setHydrated(true);
-    setNow(new Date());
+    // setNow(new Date());
     const iv = setInterval(() => setClock(new Date()), 1000);
     return () => clearInterval(iv);
   }, []);
@@ -215,7 +213,6 @@ const CalendarPage = () => {
   function parseISO(value: string): Date | null {
     return new Date(value);
   }
-  
   return (
     <main className="p-4">
       <Container fluid>
@@ -228,27 +225,21 @@ const CalendarPage = () => {
               <h5 className="text-center mb-3">{format(currentDate, 'MMMM yyyy')}</h5>
 
               <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-  <div className="d-flex flex-wrap gap-2">
-    <ButtonGroup className="me-2">
-      <Button variant="outline-secondary" onClick={() => setCurrentDate(new Date())}>Today</Button>
-      <Button variant="outline-secondary" onClick={() => moveDate('PREV')}>Back</Button>
-      <Button variant="outline-secondary" onClick={() => moveDate('NEXT')}>Next</Button>
-    </ButtonGroup>
-    <ButtonGroup>
-      <Button variant={currentView === Views.MONTH ? 'secondary' : 'outline-secondary'} onClick={() => setCurrentView(Views.MONTH)}>Month</Button>
-      <Button variant={currentView === Views.WEEK ? 'secondary' : 'outline-secondary'} onClick={() => setCurrentView(Views.WEEK)}>Week</Button>
-      <Button variant={currentView === Views.DAY ? 'secondary' : 'outline-secondary'} onClick={() => setCurrentView(Views.DAY)}>Day</Button>
-      <Button variant={currentView === Views.AGENDA ? 'secondary' : 'outline-secondary'} onClick={() => setCurrentView(Views.AGENDA)}>Agenda</Button>
-    </ButtonGroup>
-  </div>
-  <Button onClick={() => setShowAddModal(true)}>+ Add Event</Button>
-</div>
-
-
-
-
-
-
+                <div className="d-flex flex-wrap gap-2">
+                  <ButtonGroup className="me-2">
+                    <Button variant="outline-secondary" onClick={() => setCurrentDate(new Date())}>Today</Button>
+                    <Button variant="outline-secondary" onClick={() => moveDate('PREV')}>Back</Button>
+                    <Button variant="outline-secondary" onClick={() => moveDate('NEXT')}>Next</Button>
+                  </ButtonGroup>
+                  <ButtonGroup>
+                    <Button variant={currentView === Views.MONTH ? 'secondary' : 'outline-secondary'} onClick={() => setCurrentView(Views.MONTH)}>Month</Button>
+                    <Button variant={currentView === Views.WEEK ? 'secondary' : 'outline-secondary'} onClick={() => setCurrentView(Views.WEEK)}>Week</Button>
+                    <Button variant={currentView === Views.DAY ? 'secondary' : 'outline-secondary'} onClick={() => setCurrentView(Views.DAY)}>Day</Button>
+                    <Button variant={currentView === Views.AGENDA ? 'secondary' : 'outline-secondary'} onClick={() => setCurrentView(Views.AGENDA)}>Agenda</Button>
+                  </ButtonGroup>
+                </div>
+                <Button onClick={() => setShowAddModal(true)}>+ Add Event</Button>
+              </div>
               <Calendar
                 localizer={localizer}
                 events={events}
@@ -285,56 +276,58 @@ const CalendarPage = () => {
           <Col lg={4}>
             {/* Clock */}
             {hydrated && (
-  <Card className="mb-3 p-3 text-center" style={{ backgroundColor: '#f4f1ff', borderRadius: '1rem' }}>
-    <h5>🕒 Today</h5>
-    <h2 className="fw-bold mt-2">{clock.toLocaleTimeString()}</h2>
-    <h6>{clock.toDateString()}</h6>
-  </Card>
-)}
+            <Card className="mb-3 p-3 text-center" style={{ backgroundColor: '#f4f1ff', borderRadius: '1rem' }}>
+              <h5>🕒 Today</h5>
+              <h2 className="fw-bold mt-2">{clock.toLocaleTimeString()}</h2>
+              <h6>{clock.toDateString()}</h6>
+            </Card>
+            )}
 
             {/* Legend */}
             <Card className="mb-3 p-3" style={{ backgroundColor: '#e0d7f3', borderRadius: '1rem' }}>
-  <h5 className="text-center">Legend</h5>
-  <ul className="list-unstyled">
-    {Array.from(new Set(events.map(e => e.title))).map((title, idx) => {
-      const color = events.find(e => e.title === title)?.color || '#ccc';
-      return (
-        <li key={idx} className="mb-2">
-          <span
-            style={{
-              backgroundColor: color,
-              padding: '4px 8px',
-              borderRadius: '4px',
-              display: 'inline-block',
-              width: '60px',
-            }}
-          />{' '}- {title}
-        </li>
-      );
-    })}
-  </ul>
-</Card>
+              <h5 className="text-center">Legend</h5>
+              <ul className="list-unstyled">
+                {Array.from(new Set(events.map(e => e.title))).map((title) => {
+                  const color = events.find(e => e.title === title)?.color || '#ccc';
+                  return (
+                    <li key={title} className="mb-2">
+                      <span
+                        style={{
+                          backgroundColor: color,
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                          display: 'inline-block',
+                          width: '60px',
+                        }}
+                      />
+                      {' '}
+                      {title}
+                    </li>
+                  );
+                })}
+              </ul>
+            </Card>
 
             {/* Upcoming Events */}
             <Card className="mb-3 p-3" style={{ backgroundColor: '#e0d7f3', borderRadius: '1rem' }}>
-  <h5 className="text-center">Upcoming Events</h5>
-  <ul className="list-unstyled">
-    {events
-      .filter(event => event.start > new Date())
-      .sort((a, b) => a.start.getTime() - b.start.getTime())
-      .slice(0, 5)
-      .map((event, idx) => (
-        <li key={idx} className="mb-2">
-          <strong>{event.title}</strong>
-          <br />
-          <small>{format(event.start, 'EEE MMM d, h:mm a')}</small>
-        </li>
-      ))}
-    {events.filter(event => event.start > new Date()).length === 0 && (
-      <li className="text-center text-muted">No upcoming events — add in a session!</li>
-    )}
-  </ul>
-</Card>
+              <h5 className="text-center">Upcoming Events</h5>
+              <ul className="list-unstyled">
+                {events
+                  .filter(event => event.start > new Date())
+                  .sort((a, b) => a.start.getTime() - b.start.getTime())
+                  .slice(0, 5)
+                  .map((event) => (
+                    <li key={event.id} className="mb-2">
+                      <strong>{event.title}</strong>
+                      <br />
+                      <small>{format(event.start, 'EEE MMM d, h:mm a')}</small>
+                    </li>
+                  ))}
+                {events.filter(event => event.start > new Date()).length === 0 && (
+                  <li className="text-center text-muted">No upcoming events — add in a session!</li>
+                )}
+              </ul>
+            </Card>
             {/* To-Do List */}
             <Card className="p-3" style={{ backgroundColor: '#e0d7f3', borderRadius: '1rem' }}>
               <h5 className="text-center">To-Do List</h5>
@@ -413,33 +406,22 @@ const CalendarPage = () => {
             </Form.Group>
 
             <Form.Group className="mb-3">
-  <Form.Label>Start Time</Form.Label>
-  <Form.Control
-    type="datetime-local"
-    value={newEventData.start ? format(newEventData.start, "yyyy-MM-dd'T'HH:mm") : ''}
-    onChange={(e) =>
-      setNewEventData({
-        ...newEventData,
-        start: e.target.value ? parseISO(e.target.value) : null,
-      })
-    }
-  />
-</Form.Group>
+              <Form.Label>Start Time</Form.Label>
+              <Form.Control
+                type="datetime-local"
+                value={newEventData.start ? format(newEventData.start, "yyyy-MM-dd'T'HH:mm") : ''}
+                onChange={(e) => setNewEventData({ ...newEventData, start: e.target.value ? parseISO(e.target.value) : null })}
+              />
+            </Form.Group>
 
-<Form.Group className="mb-3">
-  <Form.Label>End Time</Form.Label>
-  <Form.Control
-    type="datetime-local"
-    value={newEventData.end ? format(newEventData.end, "yyyy-MM-dd'T'HH:mm") : ''}
-    onChange={(e) =>
-      setNewEventData({
-        ...newEventData,
-        end: e.target.value ? parseISO(e.target.value) : null,
-      })
-    }
-  />
-</Form.Group>
-
+            <Form.Group className="mb-3">
+              <Form.Label>End Time</Form.Label>
+              <Form.Control
+                type="datetime-local"
+                value={newEventData.end ? format(newEventData.end, "yyyy-MM-dd'T'HH:mm") : ''}
+                onChange={(e) => setNewEventData({ ...newEventData, end: e.target.value ? parseISO(e.target.value) : null })}
+              />
+            </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Color</Form.Label>
@@ -479,4 +461,3 @@ const CalendarPage = () => {
 };
 
 export default CalendarPage;
-

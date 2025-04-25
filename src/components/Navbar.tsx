@@ -2,9 +2,9 @@
 
 import { usePathname } from 'next/navigation';
 import { Container, Nav, Navbar, NavDropdown, Button } from 'react-bootstrap';
-import { BoxArrowRight, Lock, PersonFill, PersonPlusFill } from 'react-bootstrap-icons';
+import { BoxArrowRight, PersonFill, PersonPlusFill } from 'react-bootstrap-icons';
 import { useUser } from '@/hooks/useUser'; // ⬅️ your custom hook
-import { supabase } from '@/lib/supabaseClient';
+import supabase from '@/lib/supabaseClient';
 
 const NavBar: React.FC = () => {
   const user = useUser(); // 👈 replaces useSession
@@ -24,15 +24,45 @@ const NavBar: React.FC = () => {
           <Nav className="gap-4 text-center">
             {user ? (
               <>
-                <Nav.Link href="/calendar" active={pathName === '/calendar'}><ins><em>Calendar</em></ins></Nav.Link>
-                <Nav.Link href="/sessions" active={pathName === '/sessions'}><ins><em>Study Session</em></ins></Nav.Link>
-                <Nav.Link href="/courses" active={pathName === '/courses'}><ins><em>My Courses</em></ins></Nav.Link>
-                <Nav.Link href="/auth/profilesignup" active={pathName === '/auth/profilesignup'}><ins><em>My Profile</em></ins></Nav.Link>
+                <Nav.Link
+                  href="/calendar"
+                  active={pathName === '/calendar'}
+                >
+                  <ins><em>Calendar</em></ins>
+                </Nav.Link>
+                <Nav.Link
+                  href="/sessions"
+                  active={pathName === '/sessions'}
+                >
+                  <ins><em>Study Session</em></ins>
+                </Nav.Link>
+                <Nav.Link
+                  href="/courses"
+                  active={pathName === '/courses'}
+                >
+                  <ins><em>My Courses</em></ins>
+                </Nav.Link>
+                <Nav.Link
+                  href="/auth/profilesignup"
+                  active={pathName === '/auth/profilesignup'}
+                >
+                  <ins><em>My Profile</em></ins>
+                </Nav.Link>
               </>
             ) : (
               <>
-                <Nav.Link href="/howitworks" active={pathName === '/howitworks'}><ins><em>How it Works</em></ins></Nav.Link>
-                <Nav.Link href="/locations" active={pathName === '/locations'}><ins><em>Locations on Campus</em></ins></Nav.Link>
+                <Nav.Link
+                  href="/howitworks"
+                  active={pathName === '/howitworks'}
+                >
+                  <ins><em>How it Works</em></ins>
+                </Nav.Link>
+                <Nav.Link
+                  href="/locations"
+                  active={pathName === '/locations'}
+                >
+                  <ins><em>Locations on Campus</em></ins>
+                </Nav.Link>
                 <Nav.Link href="/about" active={pathName === '/about'}><ins><em>About</em></ins></Nav.Link>
               </>
             )}
@@ -77,4 +107,3 @@ const NavBar: React.FC = () => {
 };
 
 export default NavBar;
-

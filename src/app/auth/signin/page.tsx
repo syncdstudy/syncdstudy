@@ -5,7 +5,7 @@ import { Card, Col, Container, Button, Form, Row, InputGroup } from 'react-boots
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Eye, EyeSlash } from 'react-bootstrap-icons';
-import { supabase } from '@/lib/supabaseClient';
+import supabase from '@/lib/supabaseClient';
 
 const SignIn = () => {
   const router = useRouter();
@@ -23,12 +23,12 @@ const SignIn = () => {
     const email = `${target.email.value}@hawaii.edu`;
     const password = target.password.value;
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error: signInError } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
-    if (error) {
+    if (signInError) {
       setError('Invalid username or password.');
     } else {
       router.push('/calendar');
@@ -97,7 +97,7 @@ const SignIn = () => {
 
                     {/* Forgot Password Link */}
                     <div className="text-end mb-3">
-                      <a href="#" style={{ fontSize: '0.9rem' }}>
+                      <a href="/auth/reset-password" style={{ fontSize: '0.9rem' }}>
                         Forgot password?
                       </a>
                     </div>
