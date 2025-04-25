@@ -1,6 +1,7 @@
 // src/app/about/page.tsx
 
 import React from 'react';
+import Image from 'next/image';
 
 const AboutPage = () => (
   <main className="container mx-auto py-10 px-4">
@@ -38,7 +39,7 @@ const AboutPage = () => (
           in the same classes. The platform allows students
           to create and join study sessions, ensuring that
           they can study with peers who share the same academic
-          goals. Whether you’re preparing for an exam or tackling
+          goals. Whether you&apos;re preparing for an exam or tackling
           a group project, SyncdStudy provides the tools you need
           to stay focused and organized.
         </p>
@@ -57,10 +58,11 @@ const AboutPage = () => (
         <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">Meet The Team</h2>
         <div className="team-grid">
           <div className="team-member text-center">
-            <img
+            <Image
               src="/team/member1.png"
               alt="Team Member 1"
-              style={{ width: '200px', height: '200px' }}
+              width={200}
+              height={200}
               className="rounded-full mx-auto mb-4"
             />
             <h3 className="font-semibold text-lg">Silvia Arjona Garcia</h3>
@@ -71,10 +73,11 @@ const AboutPage = () => (
             </p>
           </div>
           <div className="team-member text-center">
-            <img
+            <Image
               src="/team/member2.png"
               alt="Team Member 2"
-              style={{ width: '200px', height: '200px' }}
+              width={200}
+              height={200}
               className="rounded-full mx-auto mb-4"
             />
             <h3 className="font-semibold text-lg">Angela Joy Almeron</h3>
@@ -85,10 +88,11 @@ const AboutPage = () => (
             </p>
           </div>
           <div className="team-member text-center">
-            <img
+            <Image
               src="/team/member3.png"
               alt="Team Member 3"
-              style={{ width: '200px', height: '200px' }}
+              width={200}
+              height={200}
               className="rounded-full mx-auto mb-4"
             />
             <h3 className="font-semibold text-lg">Arisa Nakai</h3>
@@ -99,10 +103,11 @@ const AboutPage = () => (
             </p>
           </div>
           <div className="team-member text-center">
-            <img
+            <Image
               src="/team/member4.png"
               alt="Team Member 4"
-              style={{ width: '200px', height: '200px' }}
+              width={200}
+              height={200}
               className="rounded-full mx-auto mb-4"
             />
             <h3 className="font-semibold text-lg">Jaimee Yokoyama</h3>

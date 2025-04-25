@@ -12,7 +12,7 @@ import { useState } from 'react';
 import { Card, Col, Container, Button, Form, Row, InputGroup } from 'react-bootstrap';
 import { motion } from 'framer-motion';
 import { Eye, EyeSlash } from 'react-bootstrap-icons';
-import { supabase } from '@/lib/supabaseClient';
+import supabase from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
 
 type SignUpForm = {
@@ -24,6 +24,7 @@ type SignUpForm = {
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [error, setError] = useState('');
   const router = useRouter();
 
   const validationSchema = Yup.object().shape({
@@ -58,14 +59,12 @@ const SignUp = () => {
 
   const onSubmit = async (formData: SignUpForm) => {
     const fullEmail = `${formData.email}@hawaii.edu`;
-  
     const { error } = await supabase.auth.signUp({
       email: fullEmail,
       password: formData.password,
     });
-  
     if (error) {
-      alert('Error: ' + error.message);
+      setError(`Error: ${error.message}`);
     } else {
       // Smooth redirect to confirmation page
       router.push('/auth/confirmation');
@@ -92,6 +91,11 @@ const SignUp = () => {
                 }}
               >
                 <Card.Body className="p-4">
+                  {error && (
+                    <div className="alert alert-danger text-center py-2 mb-3" role="alert">
+                      {error}
+                    </div>
+                  )}
                   <Form onSubmit={handleSubmit(onSubmit)}>
                     {/* UH Username */}
                     <Form.Group className="form-group mb-3">

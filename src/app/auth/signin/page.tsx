@@ -5,7 +5,7 @@ import { Card, Col, Container, Button, Form, Row, InputGroup } from 'react-boots
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Eye, EyeSlash } from 'react-bootstrap-icons';
-import { supabase } from '@/lib/supabaseClient';
+import supabase from '@/lib/supabaseClient';
 
 const SignIn = () => {
   const router = useRouter();
@@ -23,17 +23,17 @@ const SignIn = () => {
     const email = `${target.email.value}@hawaii.edu`;
     const password = target.password.value;
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-    if (error) {
-      setError('Invalid username or password.');
-    } else {
-      router.push('/calendar');
-    }
-  };
+    if (signInError) {
+      setError('Invalid username or password.');
+    } else {
+      router.push('/calendar');
+    }
+  };
 
   return (
     <main>
@@ -95,12 +95,12 @@ const SignIn = () => {
                       </InputGroup>
                     </Form.Group>
 
-                    {/* Forgot Password Link */}
-                    <div className="text-end mb-3">
-                      <a href="#" style={{ fontSize: '0.9rem' }}>
-                        Forgot password?
-                      </a>
-                    </div>
+                    {/* Forgot Password Link */}
+                    <div className="text-end mb-3">
+                      <a href="/auth/reset-password" style={{ fontSize: '0.9rem' }}>
+                        Forgot password?
+                      </a>
+                    </div>
 
                     {/* Sign In Button */}
                     <Form.Group className="form-group d-grid">
