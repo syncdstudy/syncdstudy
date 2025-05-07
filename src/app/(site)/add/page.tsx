@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 import { getServerSession } from 'next-auth';
 import authOptions from '@/lib/authOptions';
 import { loggedInProtectedPage } from '@/lib/page-protection';

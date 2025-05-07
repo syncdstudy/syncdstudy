@@ -1,3 +1,4 @@
+// In your SignIn.tsx file
 'use client';
 
 import { useState } from 'react';
@@ -36,7 +37,7 @@ const SignIn = () => {
   };
 
   return (
-    <main>
+    <main className="signin-page">
       <Container>
         <Row className="justify-content-center mt-5">
           <Col xs={12} md={6} lg={5}>
