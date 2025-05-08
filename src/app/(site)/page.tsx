@@ -1,9 +1,10 @@
+/* eslint-disable max-len */
+
 'use client';
 
 import { Container, Button, Row, Col } from 'react-bootstrap';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-
 
 const Home = () => (
   <main>
@@ -15,15 +16,15 @@ const Home = () => (
       style={{ minHeight: '100vh' }}
     >
       <div className="info-box text-center">
-  <h2>Completely Free!</h2>
-  <p>Sign up within minutes</p>
-  <p>Instant access to study groups for over 10 subjects</p>
-  <p>Connect with students around campus</p>
-  <p>Entirely personalized experience</p>
-  <Link href="/auth/signup" passHref>
-  <Button className="custom-signup-button">Sign Up Now</Button>
-</Link>
-</div>
+        <h2>Completely Free!</h2>
+        <p>Sign up within minutes</p>
+        <p>Instant access to study groups for over 10 subjects</p>
+        <p>Connect with students around campus</p>
+        <p>Entirely personalized experience</p>
+        <Link href="/auth/signup" passHref>
+          <Button className="custom-signup-button">Sign Up Now</Button>
+        </Link>
+      </div>
 
     </Container>
 
