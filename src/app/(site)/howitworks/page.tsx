@@ -6,11 +6,7 @@ import { CheckCircle, JournalBookmark, CalendarRange, Trophy, People, EmojiSungl
 const HowItWorks = () => (
   <main className="container py-5">
     <div
-      className="p-5 rounded-4 shadow-sm"
-      style={{
-        backgroundColor: '#f3e8ff', // light purple
-        border: '1px solid black',
-      }}
+      className="p-5 rounded-4 shadow-sm info-box-1"
     >
       <h1 className="mb-4 text-center">How Sync&apos;d Study Works</h1>
       <section className="mb-5">

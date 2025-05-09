@@ -43,7 +43,6 @@ const AdminNavBar = () => {
             >
               <NavDropdown.Item onClick={handleLogout}>
                 <BoxArrowRight />
-                {' '}
                 Sign Out
               </NavDropdown.Item>
             </NavDropdown>
