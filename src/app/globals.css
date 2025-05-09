@@ -28,7 +28,7 @@ body {
   background-color: rgb(228, 215, 247, 0.8); 
   border: 3px solid rgb(235, 227, 227);
   border-radius: 20px;
-  padding: 30px;
+  padding: 1px;
   width: 600px;        
   margin: 0 auto;       
   text-align: center;
@@ -46,6 +46,15 @@ body {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
   animation: popUp 1.2s ease-out; /* Apply the pop-up animation */
   color: rgb(45, 44, 44);
+}
+.info-box-2 {
+  background-color: rgb(228, 215, 247, 0.8); 
+  border: 1px solid black;
+  border-radius: 20px;
+  padding: 30px;       
+  margin: 0 auto;       
+  text-align: start;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
 }
 
 /* for links. */
@@ -66,50 +75,64 @@ body {
 }
 
 /* for buttons. */
-.custom-button {
-  background-color: rgb(230, 197, 255);
-  border: 3px solid black;
+.custom-button { /* general. */
+  background-color: rgb(193, 174, 252);
+  border: 1px solid black;
   border-radius: 5px;
   color: black;
 }
 
 .custom-button:hover {
-  background-color: rgb(185, 121, 224);
+  background-color: rgb(60,3,103);
+  border: 1px solid black;
+  border-radius: 5px;
   color: white;
 }
 .custom-button-1 { /* other colors. */
   background-color: #FF8383;
-  border: 3px solid black;
+  border: 1px solid black;
   border-radius: 5px;
   color: black;
 }
 .custom-button-1:hover {
   background-color: #7D0A0A;
-  border: 3px solid black;
+  border: 1px solid black;
   border-radius: 5px;
   color: white;
 }
 .custom-button-2 { 
   background-color: #FFF2AF;
-  border: 3px solid black;
+  border: 1px solid black;
   border-radius: 5px;
   color: black;
 }
 .custom-button-2:hover {
   background-color: #FFB200;
-  border: 3px solid black;
+  border: 1px solid black;
   border-radius: 5px;
   color: white;
 }
 .custom-button-3 { 
   background-color: #DBDBDB;
-  border: 3px solid black;
+  border: 1px solid black;
   border-radius: 5px;
   color: black;
 }
 .custom-button-3:hover {
   background-color: #373A40;
-  border: 3px solid black;
+  border: 1px solid black;
+  border-radius: 5px;
+  color: white;
+}
+.custom-button-4 { 
+  background-color: #DDEB9D;
+  border: 1px solid black;
+  border-radius: 5px;
+  color: black;
+}
+.custom-button-4:hover {
+  background-color: #626F47;
+  border: 1px solid black;
   border-radius: 5px;
   color: white;
 }

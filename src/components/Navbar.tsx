@@ -30,7 +30,10 @@ const NavBar: React.FC = () => {
                 <Nav.Link href="/calendar" active={pathName === '/calendar'}>
                   <ins><em>Calendar</em></ins>
                 </Nav.Link>
-                <Nav.Link href="/sessions" active={pathName === '/sessions'}>
+                <Nav.Link
+                  href="/studysession"
+                  active={pathName === '/studysession'}
+                >
                   <ins><em>Study Session</em></ins>
                 </Nav.Link>
                 <Nav.Link href="/courses" active={pathName === '/courses'}>
