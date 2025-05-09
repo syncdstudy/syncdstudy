@@ -13,10 +13,12 @@ export const metadata: Metadata = {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={poppins.className}>
-      <AdminNavBar />
-      <main>{children}</main>
-      <Footer />
-    </div>
+    <html lang="en">
+      <body className={`${poppins.className} min-h-screen flex flex-col`}>
+        <AdminNavBar />
+        <main className="flex-grow">{children}</main>
+        <Footer />
+      </body>
+    </html>
   );
 }
