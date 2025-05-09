@@ -8,7 +8,7 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "playwright-development": "npx playwright test",
+    "playwright-development": "dotenv -e .env -- npx playwright test",
     "playwright-ci": "next dev && npx playwright test"
   },
   "prisma": {
@@ -51,6 +51,7 @@
     "@types/react-big-calendar": "^1.16.1",
     "@types/react-dom": "^18",
     "dotenv": "^16.5.0",
+    "dotenv-cli": "^8.0.0",
     "eslint": "^8",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-airbnb-typescript": "^18.0.0",
