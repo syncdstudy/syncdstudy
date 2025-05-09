@@ -325,3 +325,6 @@ body {
 .admin-link:hover {
   color: #5c4abf; /* Color when hovered (red) */
 }
+
+@import 'leaflet/dist/leaflet.css';
+
