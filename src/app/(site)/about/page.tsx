@@ -58,7 +58,11 @@ const AboutPage = () => (
               role: 'B.S. Astrophysics & B.A. Computer Science',
             },
             { name: 'Angela Joy Almeron', image: '/team/member2.png', role: 'B.S. Computer Science' },
-            { name: 'Arisa Nakai', image: '/team/member3.png', role: 'B.S. Computer Science & Business Management' },
+            {
+              name: 'Arisa Nakai',
+              image: '/team/member3.png',
+              role: 'B.S. Computer Science & B.B.A Business Management',
+            },
             { name: 'Jaimee Yokoyama', image: '/team/member4.png', role: 'B.A. Information and Computer Sciences' },
           ].map((member) => (
             <div key={member.name} className="text-center mb-6">
