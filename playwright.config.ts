@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 
 // Load env vars for local and CI environments
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 export default defineConfig({
   testDir: './tests',
