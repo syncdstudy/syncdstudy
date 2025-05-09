@@ -286,7 +286,7 @@ const CalendarPage = () => {
             )}
 
             {/* Legend */}
-            <Card className="mb-3 p-3" style={{ backgroundColor: '#e0d7f3', borderRadius: '1rem' }}>
+            <Card className="mb-2 p-3" style={{ backgroundColor: '#e0d7f3', borderRadius: '1rem' }}>
               <h5 className="text-center">Legend</h5>
               <ul className="list-unstyled">
                 {Array.from(new Set(events.map(e => e.title))).map((title) => {
@@ -349,6 +349,51 @@ const CalendarPage = () => {
                 <Button type="submit" variant="primary" className="ms-2">Add</Button>
               </Form>
             </Card>
+            {/* Submit Report */}
+            <Card className="mt-3 p-3" style={{ backgroundColor: '#ffe0e6', borderRadius: '1rem' }}>
+              <h5 className="text-center mb-3">Send Report</h5>
+              <Form
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  const form = e.currentTarget as HTMLFormElement;
+                  const formData = new FormData(form);
+                  const message = formData.get('message') as string;
+
+                  try {
+                    const res = await fetch('/api/reports', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ userId: 1, message }), // Replace 1 with dynamic ID when auth works
+                    });
+
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || 'Unknown error');
+                    // eslint-disable-next-line no-alert
+                    alert('✅ Report sent!');
+                    form.reset();
+                  } catch (err) {
+                    // eslint-disable-next-line no-alert
+                    alert('❌ Error sending report');
+                    console.error(err);
+                  }
+                }}
+              >
+
+                <Form.Group>
+                  <Form.Control
+                    name="message"
+                    as="textarea"
+                    rows={3}
+                    placeholder="Write your issue or suggestion..."
+                    required
+                  />
+                </Form.Group>
+                <div className="d-grid mt-2">
+                  <Button type="submit" variant="danger">Submit</Button>
+                </div>
+              </Form>
+            </Card>
+
           </Col>
         </Row>
       </Container>

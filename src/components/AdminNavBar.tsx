@@ -42,7 +42,9 @@ const AdminNavBar = () => {
               className="custom-button px-3 mx-1"
             >
               <NavDropdown.Item onClick={handleLogout}>
-                <BoxArrowRight /> Sign Out
+                <BoxArrowRight />
+                {' '}
+                Sign Out
               </NavDropdown.Item>
             </NavDropdown>
           </Nav>

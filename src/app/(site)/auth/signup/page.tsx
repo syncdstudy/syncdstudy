@@ -59,17 +59,34 @@ const SignUp = () => {
 
   const onSubmit = async (formData: SignUpForm) => {
     const fullEmail = `${formData.email}@hawaii.edu`;
+
     const { error } = await supabase.auth.signUp({
       email: fullEmail,
       password: formData.password,
     });
+
     if (error) {
       setError(`Error: ${error.message}`);
     } else {
-      // Smooth redirect to confirmation page
+      // ✅ Sync user into Prisma User table
+      try {
+        const res = await fetch('/api/sync/user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: fullEmail }),
+        });
+
+        const result = await res.json();
+        console.log('Sync response:', result);
+      } catch (err) {
+        console.error('Sync fetch failed:', err);
+      }
+
+      // 🚀 Redirect to confirmation
       router.push('/auth/confirmation');
     }
   };
+
   return (
     <main>
       <Container>

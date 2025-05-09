@@ -37,6 +37,8 @@ async function main() {
     },
   });
 
+  console.log('Seeded users:', users); // 👈 Add this line
+
   // Create and seed courses
   for (const courseName of config.defaultCourses || []) {
     console.log(`  Creating or finding course: ${courseName}`);
