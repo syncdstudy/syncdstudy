@@ -6,6 +6,8 @@ import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import supabase from '@/lib/supabaseClient';
 
+export const dynamic = 'force-dynamic';
+
 const ConfirmedPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
