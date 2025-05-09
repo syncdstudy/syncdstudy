@@ -7,11 +7,11 @@ const Footer = () => (
     <Container>
       <Row>
         <Col>
-          Sync&apos;d Study
-          <br />
-          Developed by Silvia Arjona Garcia, Angela Joy Almeron, Arisa Nakai, & Jaimee Yokoyama
+          Silvia Arjona Garcia, Angela Joy Almeron, Arisa Nakai, & Jaimee Yokoyama
           <br />
           University of Hawai&apos;i at Mānoa
+          <br />
+          Sync&apos;d Study. All rights reserved.
         </Col>
         <Col className="text-end d-flex align-items-end justify-content-end">
           <Link href="/adminsignin" className="admin-link" style={{ fontSize: '0.9rem' }}>

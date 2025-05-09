@@ -36,6 +36,17 @@ body {
   animation: popUp 1.2s ease-out; /* Apply the pop-up animation */
   color: rgb(45, 44, 44);
 }
+.info-box-1 {
+  background-color: rgb(228, 215, 247, 0.8); 
+  border: 3px solid rgb(235, 227, 227);
+  border-radius: 20px;
+  padding: 30px;
+  margin: 0 auto;       
+  text-align: start;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+  animation: popUp 1.2s ease-out; /* Apply the pop-up animation */
+  color: rgb(45, 44, 44);
+}
 
 /* for links. */
 .custom-link{
