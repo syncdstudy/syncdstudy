@@ -12,7 +12,7 @@ const Home = () => (
       id="landing-page"
       fluid
       className="d-flex justify-content-center align-items-center"
-      style={{ minHeight: '100px' }}
+      style={{ minHeight: '100vh' }}
     >
       <div className="info-box text-center">
         <h2>Completely Free!</h2>
