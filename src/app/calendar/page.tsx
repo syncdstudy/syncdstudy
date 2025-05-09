@@ -17,7 +17,7 @@ import {
   addWeeks,
   subWeeks,
   addDays,
-  subDays,
+  sub,
 } from 'date-fns';
 import { enUS } from 'date-fns/locale';
 import { Container, Row, Col, Card, Modal, Button, Form, ButtonGroup } from 'react-bootstrap';
@@ -202,7 +202,7 @@ const CalendarPage = () => {
         break;
       case Views.DAY:
       case Views.AGENDA:
-        next = amt > 0 ? addDays(currentDate, 1) : subDays(currentDate, 1);
+        next = amt > 0 ? addDays(currentDate, 1) : sub(currentDate, { days: 1 });
         break;
       default:
         next = new Date();
