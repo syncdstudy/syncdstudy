@@ -7,6 +7,8 @@ import UserTableClient from '@/components/UserTableClient';
 // eslint-disable-next-line import/extensions
 import ReportTable from '@/components/ReportTable';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ManageUsersPage() {
   const users: User[] = await prisma.user.findMany();
 
