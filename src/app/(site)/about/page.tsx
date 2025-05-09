@@ -6,7 +6,7 @@ import Image from 'next/image';
 const AboutPage = () => (
   <main className="container mx-auto py-5 px-4">
     {/* About the App Section */}
-    <section className="py-3">
+    <section className="py-1">
       <div className="info-box-1 text-center">
         <h1
           className="text-4xl font-bold mb-6"
@@ -29,7 +29,7 @@ const AboutPage = () => (
     </section>
 
     {/* Why Sync&apos;d Study Section */}
-    <section className="py-3">
+    <section className="py-4">
       <div className="info-box-1 text-center">
         <h2 className="text-3xl font-semibold mb-6" style={{ color: 'rgb(45, 44, 44)' }}>Why Sync&apos;d Study?</h2>
         <p className="text-lg" style={{ color: 'rgb(45, 44, 44)' }}>
