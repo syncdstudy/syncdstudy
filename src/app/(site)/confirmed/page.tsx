@@ -1,35 +1,8 @@
-/* eslint-disable import/extensions */
+import dynamic from 'next/dynamic';
 
-'use client';
+const ConfirmHandler = dynamic(() => import('@/components/ConfirmHandler'), { ssr: false });
 
-import { useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import supabase from '@/lib/supabaseClient';
-
-export const dynamic = 'force-dynamic';
-
-const ConfirmedPage = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const code = searchParams.get('code');
-
-  useEffect(() => {
-    const confirmAndLogin = async () => {
-      if (!code) return;
-
-      const { error } = await supabase.auth.exchangeCodeForSession(code);
-
-      if (error) {
-        console.error('Login failed after confirmation:', error.message);
-        return;
-      }
-
-      router.push('/calendar');
-    };
-
-    confirmAndLogin();
-  }, [code, router]);
-
+export default function ConfirmedPage() {
   return (
     <main style={{ textAlign: 'center', marginTop: '100px' }}>
       <h2>Confirming your account...</h2>
@@ -37,10 +10,8 @@ const ConfirmedPage = () => {
         If you&apos;re not redirected soon, click
         <br />
         <a href="/calendar">here</a>
-        .
       </p>
+      <ConfirmHandler />
     </main>
   );
-};
-
-export default ConfirmedPage;
+}
