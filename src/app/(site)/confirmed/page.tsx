@@ -6,7 +6,7 @@ import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import supabase from '@/lib/supabaseClient';
 
-const ConfirmedPage = () => {
+const ConfirmedContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const code = searchParams.get('code');
@@ -29,18 +29,22 @@ const ConfirmedPage = () => {
   }, [code, router]);
 
   return (
-    <Suspense fallback={<p>Confirming your account...</p>}>
-      <main style={{ textAlign: 'center', marginTop: '100px' }}>
-        <h2>Confirming your account...</h2>
-        <p>
-          If you&apos;re not redirected soon, click
-          <br />
-          <a href="/calendar">here</a>
-          .
-        </p>
-      </main>
-    </Suspense>
+    <div style={{ textAlign: 'center', marginTop: '100px' }}>
+      <h2>Confirming your account...</h2>
+      <p>
+        If you&apos;re not redirected soon, click
+        <br />
+        <a href="/calendar">here</a>
+        .
+      </p>
+    </div>
   );
 };
+
+const ConfirmedPage = () => (
+  <Suspense fallback={<p style={{ textAlign: 'center', marginTop: '100px' }}>Confirming your account...</p>}>
+    <ConfirmedContent />
+  </Suspense>
+);
 
 export default ConfirmedPage;
