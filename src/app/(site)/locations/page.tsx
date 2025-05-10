@@ -22,10 +22,10 @@ const LocationsPage = () => {
       <h1 className="text-center mb-4">Campus Study Locations</h1>
 
       <div className="text-center mb-3">
-        <button className="btn btn-outline-dark mx-2" onClick={() => setFilter('all')}>All</button>
-        <button className="btn btn-outline-primary mx-2" onClick={() => setFilter('indoor')}>Indoor 📚</button>
-        <button className="btn btn-outline-success mx-2" onClick={() => setFilter('outdoor')}>Outdoor 🌳</button>
-        <button className="btn btn-outline-danger mx-2" onClick={() => setFilter('food')}>Food ☕</button>
+        <button className="custom-button-3 mx-2" onClick={() => setFilter('all')}>All</button>
+        <button className="custom-button-1 mx-2" onClick={() => setFilter('indoor')}>Indoor 📚</button>
+        <button className="custom-button-4 mx-2" onClick={() => setFilter('outdoor')}>Outdoor 🌳</button>
+        <button className="custom-button-2 mx-2" onClick={() => setFilter('food')}>Food ☕</button>
       </div>
 
       <div className="d-flex flex-column flex-lg-row align-items-center justify-content-between gap-4">
@@ -51,6 +51,7 @@ const LocationsPage = () => {
                   {spot.name}
                 </strong>
                 :
+                {' '}
                 {spot.desc}
               </li>
             ))}
