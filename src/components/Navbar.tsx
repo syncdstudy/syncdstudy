@@ -23,10 +23,10 @@ const NavBar: React.FC = () => {
       <Container className="d-flex justify-content-between align-items-center">
         <Navbar.Brand href="/">
           <Image
-            src="/logo.png"  
+            src="/logo.png"
             alt="Sync'd Study Logo"
-            width={170}  
-            height={50}  
+            width={170}
+            height={50}
             style={{ verticalAlign: 'middle', marginRight: '10px' }}
           />
         </Navbar.Brand>
