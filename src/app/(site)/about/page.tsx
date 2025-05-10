@@ -56,23 +56,37 @@ const AboutPage = () => (
               name: 'Silvia Arjona Garcia',
               image: '/team/member1.png',
               role: 'B.S. Astrophysics & B.A. Computer Science',
+              portfolio: 'https://silviaarjonag.github.io/',
             },
-            { name: 'Angela Joy Almeron', image: '/team/member2.png', role: 'B.S. Computer Science' },
+            {
+              name: 'Angela Joy Almeron',
+              image: '/team/member2.png',
+              role: 'B.S. Computer Science',
+              portfolio: 'https://angelaalmeron.github.io/',
+            },
             {
               name: 'Arisa Nakai',
               image: '/team/member3.png',
               role: 'B.S. Computer Science & B.B.A Business Management',
+              portfolio: 'https://arisa-1208.github.io/',
             },
-            { name: 'Jaimee Yokoyama', image: '/team/member4.png', role: 'B.A. Information and Computer Sciences' },
+            {
+              name: 'Jaimee Yokoyama',
+              image: '/team/member4.png',
+              role: 'B.A. Information and Computer Sciences',
+              portfolio: 'https://jamiee-tech.github.io/',
+            },
           ].map((member) => (
             <div key={member.name} className="text-center mb-6">
-              <Image
-                src={member.image}
-                alt={member.name}
-                width={200}
-                height={200}
-                className="rounded-full mx-auto mb-4"
-              />
+              <a href={member.portfolio} target="_blank" rel="noopener noreferrer">
+                <Image
+                  src={member.image}
+                  alt={member.name}
+                  width={200}
+                  height={200}
+                  className="rounded-full mx-auto mb-4 cursor-pointer"
+                />
+              </a>
               <h3 className="font-semibold text-xl" style={{ color: 'rgb(45, 44, 44)' }}>{member.name}</h3>
               <p className="text-lg" style={{ color: 'rgb(45, 44, 44)' }}>{member.role}</p>
             </div>
