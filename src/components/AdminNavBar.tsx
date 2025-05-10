@@ -25,13 +25,7 @@ const AdminNavBar = () => {
               <ins><em>Manage Users</em></ins>
             </Nav.Link>
             <Nav.Link href="/admin/manage-content">
-              <ins><em>Manage Content</em></ins>
-            </Nav.Link>
-            <Nav.Link href="/admin/analytics">
-              <ins><em>Analytics</em></ins>
-            </Nav.Link>
-            <Nav.Link href="/admin/settings">
-              <ins><em>Settings</em></ins>
+              <ins><em>Leaderboard</em></ins>
             </Nav.Link>
           </Nav>
 

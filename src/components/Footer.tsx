@@ -7,16 +7,19 @@ const Footer = () => (
     <Container>
       <Row>
         <Col>
-          Silvia Arjona Garcia, Angela Joy Almeron, Arisa Nakai, & Jaimee Yokoyama
+          © 2025 Sync&apos;d Study. All rights reserved.
           <br />
           University of Hawai&apos;i at Mānoa
-          <br />
-          Sync&apos;d Study. All rights reserved.
         </Col>
-        <Col className="text-end d-flex align-items-end justify-content-end">
-          <Link href="/adminsignin" className="admin-link" style={{ fontSize: '0.9rem' }}>
-            Admin Sign In
-          </Link>
+        <Col className="text-end">
+          <div className="d-flex flex-column align-items-end">
+            <Link href="/contact" className="footer-link mb-2" style={{ fontSize: '0.9rem', color: '#576CBC' }}>
+              Contact Us
+            </Link>
+            <Link href="/adminsignin" className="footer-link" style={{ fontSize: '0.9rem', color: '#576CBC' }}>
+              Admin Sign In
+            </Link>
+          </div>
         </Col>
       </Row>
     </Container>

@@ -23,10 +23,10 @@ const NavBar: React.FC = () => {
       <Container className="d-flex justify-content-between align-items-center">
         <Navbar.Brand href="/">
           <Image
-            src="/logo.png"  
+            src="/logo.png"
             alt="Sync'd Study Logo"
-            width={170}  
-            height={50}  
+            width={170}
+            height={50}
             style={{ verticalAlign: 'middle', marginRight: '10px' }}
           />
         </Navbar.Brand>
@@ -36,10 +36,13 @@ const NavBar: React.FC = () => {
             {user ? (
               <>
                 <Nav.Link href="/calendar" active={pathName === '/calendar'}>
-                  <ins><em>Calendar</em></ins>
+                  <ins><em>Dashboard</em></ins>
                 </Nav.Link>
-                <Nav.Link href="/sessions" active={pathName === '/sessions'}>
+                <Nav.Link href="/study-session" active={pathName === '/study-session'}>
                   <ins><em>Study Session</em></ins>
+                </Nav.Link>
+                <Nav.Link href="/leaderboard" active={pathName === '/leaderboard'}>
+                  <ins><em>Leaderboard</em></ins>
                 </Nav.Link>
                 <Nav.Link href="/courses" active={pathName === '/courses'}>
                   <ins><em>My Courses</em></ins>
@@ -68,7 +71,7 @@ const NavBar: React.FC = () => {
           {user ? (
             <NavDropdown
               id="login-dropdown"
-              title={user.email || 'User'}
+              title={user.user?.email || 'User'}
               className="custom-button px-3 mx-1"
             >
               <NavDropdown.Item onClick={handleLogout}>
