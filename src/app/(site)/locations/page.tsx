@@ -13,21 +13,25 @@ const LocationsPage = () => {
     ? studySpots
     : studySpots.filter((spot) => spot.category === filter);
 
-  // Adjust height on window resize to keep it even
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      // Do nothing on the server
+      return undefined;
+    }
     const updateHeight = () => {
       const mapElement = document.querySelector('.leaflet-container');
       if (mapElement) {
         setContainerHeight(`${mapElement.clientHeight}px`);
       }
     };
-
-    // Set the initial height
+    // Set the initial height on mount
     updateHeight();
-
     // Adjust on resize
     window.addEventListener('resize', updateHeight);
-    return () => window.removeEventListener('resize', updateHeight);
+    // Clean up on unmount
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+    };
   }, []);
 
   return (
