@@ -2,7 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import '@/app/globals.css';
-import CampusMap, { studySpots } from '@/components/CampusMap';
+import dynamic from 'next/dynamic';
+import { studySpots } from '@/components/CampusMap';
+
+const CampusMap = dynamic(() => import('@/components/CampusMap'), {
+  ssr: false,
+});
 
 const LocationsPage = () => {
   const [selected, setSelected] = useState<string | null>(null);
@@ -14,24 +19,24 @@ const LocationsPage = () => {
     : studySpots.filter((spot) => spot.category === filter);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      // Do nothing on the server
-      return undefined;
+    // Check if window is available (only in the browser)
+    if (typeof window !== 'undefined') {
+      const updateHeight = () => {
+        const mapElement = document.querySelector('.leaflet-container');
+        if (mapElement) {
+          setContainerHeight(`${mapElement.clientHeight}px`);
+        }
+      };
+      // Set the initial height on mount
+      updateHeight();
+      // Adjust on resize
+      window.addEventListener('resize', updateHeight);
+      return () => {
+        window.removeEventListener('resize', updateHeight);
+      };
     }
-    const updateHeight = () => {
-      const mapElement = document.querySelector('.leaflet-container');
-      if (mapElement) {
-        setContainerHeight(`${mapElement.clientHeight}px`);
-      }
-    };
-    // Set the initial height on mount
-    updateHeight();
-    // Adjust on resize
-    window.addEventListener('resize', updateHeight);
-    // Clean up on unmount
-    return () => {
-      window.removeEventListener('resize', updateHeight);
-    };
+    // Return undefined explicitly to satisfy ESLint
+    return undefined;
   }, []);
 
   return (
