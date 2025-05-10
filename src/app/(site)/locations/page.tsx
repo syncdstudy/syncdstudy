@@ -36,7 +36,7 @@ const LocationsPage = () => {
 
         {/* List */}
         <div className="info-box text-start" style={{ flex: '1', maxWidth: '600px' }}>
-          <h4 className="text-center mb-4">Top 10 Study Spots</h4>
+          <h4 className="text-center mb-4">Popular Study Spots</h4>
           <ul className="list-unstyled">
             {filteredSpots.map((spot) => (
               <li
