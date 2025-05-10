@@ -176,7 +176,7 @@ const Home = () => {
                   </strong>
                   <br />
                   Click {' '}
-                  <Link href="/auth/signup">
+                  <Link className="custom-link" href="/auth/signup">
                     <span style={{ color: '#576CBC', cursor: 'pointer' }}>
                       here
                     </span>
@@ -214,14 +214,26 @@ const Home = () => {
                     Q: How do I find study locations on campus?
                   </strong>
                   <br />
-                  Click the &quot;Locations&quot; to view a list of popular study spots around campus.
+                  Click the {' '}
+                  <Link className="custom-link" href="/auth/signup">
+                    <span style={{ color: '#576CBC', cursor: 'pointer' }}>
+                      Locations
+                    </span>
+                  </Link>{' '}
+                  to view a list of popular study spots around campus.
                 </p>
                 <p>
                   <strong>
                     Q: Are there outdoor study spaces?
                   </strong>
                   <br />
-                  Yes, you can find outdoor study spaces by selecting the &quot;Outdoor&quot; filter under the &quot;Locations&quot; section.
+                  Yes, you can find outdoor study spaces by selecting the &quot;Outdoor&quot; filter under the {' '}
+                  <Link className="custom-link" href="/auth/signup">
+                    <span style={{ color: '#576CBC', cursor: 'pointer' }}>
+                      Locations
+                    </span>
+                  </Link>{' '}
+                  section.
                 </p>
               </Accordion.Body>
             </Accordion.Item>
@@ -235,7 +247,7 @@ const Home = () => {
                   </strong>
                   <br />
                   For help or to report an issue, click the {' '}
-                  <Link href="/auth/signup">
+                  <Link className="custom-link" href="/auth/signup">
                     <span style={{ color: '#576CBC', cursor: 'pointer' }}>
                       Contact Us
                     </span>
@@ -248,7 +260,7 @@ const Home = () => {
                   </strong>
                   <br />
                   You can send feedback, complaints, or additional help requests through the {' '}
-                  <Link href="/auth/signup">
+                  <Link className="custom-link" href="/auth/signup">
                     <span style={{ color: '#576CBC', cursor: 'pointer' }}>
                       Contact Us
                     </span>
