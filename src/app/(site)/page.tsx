@@ -1,6 +1,9 @@
+/* eslint-disable react/jsx-one-expression-per-line */
+/* eslint-disable max-len */
+
 'use client';
 
-import { Container, Button, Row, Col } from 'react-bootstrap';
+import { Container, Button, Row, Col, Accordion } from 'react-bootstrap';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { FaCheckCircle, FaListAlt, FaUsers, FaStar, FaComments } from 'react-icons/fa';
@@ -114,6 +117,53 @@ const Home = () => (
           <p className="text-muted">Engage in meaningful conversations with instant feedback.</p>
         </Col>
       </Row>
+    </Container>
+
+    {/* FAQ Section */}
+    <Container fluid className="py-5 d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
+      <div className="info-box-1 mx-auto" style={{ maxWidth: '800px', width: '100%' }}>
+        <motion.h3
+          className="text-center mb-5"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          Frequently Asked Questions
+        </motion.h3>
+        <Accordion defaultActiveKey="0">
+          <Accordion.Item eventKey="0">
+            <Accordion.Header>General</Accordion.Header>
+            <Accordion.Body>
+              <p><strong>Q: What is Sync&apos;d Study?</strong><br />A community platform for students to connect, study, and communicate.</p>
+              <p><strong>Q: How do I sign up?</strong><br />Click &quot;Sign Up&quot; on the homepage or Sign Up under &quot;Log In&quot; and create an account with your hawaii.edu email and password.</p>
+            </Accordion.Body>
+          </Accordion.Item>
+          <Accordion.Item eventKey="1">
+            <Accordion.Header>Sessions</Accordion.Header>
+            <Accordion.Body>
+              <p><strong>Q: How do I join or create a study session?</strong><br />You can join or create a study session by clicking on the &quot;Study Sessions&quot; and fill up a form about the session details.</p>
+              <p><strong>Q: Can I propose face-to-face sessions?</strong><br />Yes, you can propose face-to-face sessions for specific topics or study groups through the &quot;Study Sessions&quot; section.</p>
+            </Accordion.Body>
+          </Accordion.Item>
+
+          <Accordion.Item eventKey="2">
+            <Accordion.Header>Locations</Accordion.Header>
+            <Accordion.Body>
+              <p><strong>Q: How do I find study locations on campus?</strong><br />Click the &quot;Locations&quot; to view a list of popular study spots around campus.</p>
+              <p><strong>Q: Are there outdoor study spaces?</strong><br />Yes, you can find outdoor study spaces by selecting the &quot;Outdoor&quot; filter under the &quot;Locations&quot; section.</p>
+            </Accordion.Body>
+          </Accordion.Item>
+
+          <Accordion.Item eventKey="3">
+            <Accordion.Header>Support and Contact</Accordion.Header>
+            <Accordion.Body>
+              <p><strong>Q: How do I get help or report an issue?</strong><br />For help or to report an issue, click the &quot;Contact&quot; link in the footer to reach the support team.</p>
+              <p><strong>Q: Where can I send feedback or complaints?</strong><br />You can send feedback, complaints, or additional help requests through the &quot;Contact&quot; link in the footer.</p>
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+      </div>
     </Container>
   </main>
 );
