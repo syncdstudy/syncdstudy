@@ -38,7 +38,10 @@ const NavBar: React.FC = () => {
                 <Nav.Link href="/calendar" active={pathName === '/calendar'}>
                   <ins><em>Dashboard</em></ins>
                 </Nav.Link>
-                <Nav.Link href="/sessions" active={pathName === '/sessions'}>
+                <Nav.Link
+                  href="/study-session"
+                  active={pathName === '/study-session'}
+                >
                   <ins><em>Study Session</em></ins>
                 </Nav.Link>
                 <Nav.Link href="/leaderboard" active={pathName === '/leaderboard'}>
@@ -71,7 +74,7 @@ const NavBar: React.FC = () => {
           {user ? (
             <NavDropdown
               id="login-dropdown"
-              title={user.user?.email || 'User'}
+              title={user.email || 'User'}
               className="custom-button px-3 mx-1"
             >
               <NavDropdown.Item onClick={handleLogout}>

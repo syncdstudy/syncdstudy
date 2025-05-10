@@ -10,13 +10,11 @@ import { FaCheckCircle, FaListAlt, FaUsers, FaStar, FaComments } from 'react-ico
 import { useUser } from '@/hooks/useUser';
 
 const Home = () => {
-  const { user, loading } = useUser();
-
-  if (loading) return <div>Loading...</div>;
+  const user = useUser();
 
   return (
     <main>
-      {/* Show this section only to public users */}
+      {/* Public Hero Section */}
       {!user && (
         <Container
           id="landing-page"
@@ -37,7 +35,7 @@ const Home = () => {
         </Container>
       )}
 
-      {/* Show this section only to signed-in users */}
+      {/* Authenticated Welcome Section */}
       {user && (
         <Container
           fluid
@@ -45,15 +43,13 @@ const Home = () => {
           style={{ minHeight: '100vh' }}
         >
           <div className="info-box mb-5 text-center">
-            <h2>
-              Welcome back, {user.email}!
-            </h2>
+            <h2>Welcome back, {user.email}!</h2>
             <p>Ready to collaborate and learn together?</p>
           </div>
         </Container>
       )}
 
-      {/* App Highlights Section */}
+      {/* Shared App Highlights Section */}
       <Container fluid className="py-5" style={{ backgroundColor: 'rgb(228, 215, 247, 0.8)' }}>
         <motion.h3
           className="text-center mb-5"
