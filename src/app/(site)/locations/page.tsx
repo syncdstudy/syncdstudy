@@ -52,7 +52,7 @@ const LocationsPage = () => {
 
       <div className="d-flex flex-column flex-lg-row align-items-stretch justify-content-between gap-4">
         {/* Map */}
-        <div style={{ flex: '1', maxWidth: '600px' }}>
+        <div style={{ flex: '1', maxWidth: '600px', animation: "popUp 1.2s ease-out" }}>
           <CampusMap selectedName={selected} />
         </div>
 
