@@ -4,7 +4,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
+import { Container, Nav, Navbar, NavDropdown, Image } from 'react-bootstrap';
 import { BoxArrowRight, PersonFill, PersonPlusFill } from 'react-bootstrap-icons';
 import supabase from '@/lib/supabaseClient';
 import { useUser } from '@/hooks/useUser';
@@ -21,7 +21,15 @@ const NavBar: React.FC = () => {
   return (
     <Navbar className="navbar-custom" expand="lg">
       <Container className="d-flex justify-content-between align-items-center">
-        <Navbar.Brand href="/">Sync&apos;d Study</Navbar.Brand>
+        <Navbar.Brand href="/">
+          <Image
+            src="/logo.png"  
+            alt="Sync'd Study Logo"
+            width={170}  
+            height={50}  
+            style={{ verticalAlign: 'middle', marginRight: '10px' }}
+          />
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className="justify-content-center">
           <Nav className="gap-4 text-center">
