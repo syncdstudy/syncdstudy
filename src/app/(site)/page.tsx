@@ -132,14 +132,14 @@ const Home = () => (
           Frequently Asked Questions
         </motion.h3>
         <Accordion defaultActiveKey="0">
-          <Accordion.Item eventKey="0">
+          <Accordion.Item eventKey="1">
             <Accordion.Header>General</Accordion.Header>
             <Accordion.Body>
               <p><strong>Q: What is Sync&apos;d Study?</strong><br />A community platform for students to connect, study, and communicate.</p>
               <p><strong>Q: How do I sign up?</strong><br />Click &quot;Sign Up&quot; on the homepage or Sign Up under &quot;Log In&quot; and create an account with your hawaii.edu email and password.</p>
             </Accordion.Body>
           </Accordion.Item>
-          <Accordion.Item eventKey="1">
+          <Accordion.Item eventKey="2">
             <Accordion.Header>Sessions</Accordion.Header>
             <Accordion.Body>
               <p><strong>Q: How do I join or create a study session?</strong><br />You can join or create a study session by clicking on the &quot;Study Sessions&quot; and fill up a form about the session details.</p>
@@ -147,7 +147,7 @@ const Home = () => (
             </Accordion.Body>
           </Accordion.Item>
 
-          <Accordion.Item eventKey="2">
+          <Accordion.Item eventKey="3">
             <Accordion.Header>Locations</Accordion.Header>
             <Accordion.Body>
               <p><strong>Q: How do I find study locations on campus?</strong><br />Click the &quot;Locations&quot; to view a list of popular study spots around campus.</p>
@@ -155,7 +155,7 @@ const Home = () => (
             </Accordion.Body>
           </Accordion.Item>
 
-          <Accordion.Item eventKey="3">
+          <Accordion.Item eventKey="4">
             <Accordion.Header>Support and Contact</Accordion.Header>
             <Accordion.Body>
               <p><strong>Q: How do I get help or report an issue?</strong><br />For help or to report an issue, click the &quot;Contact&quot; link in the footer to reach the support team.</p>
