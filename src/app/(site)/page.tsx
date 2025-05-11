@@ -1,22 +1,31 @@
+/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable max-len */
 
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Container, Button, Row, Col, Accordion } from 'react-bootstrap';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { FaCheckCircle, FaListAlt, FaUsers, FaStar, FaComments } from 'react-icons/fa';
-import { useUser } from '@/hooks/useUser';
 
 const Home = () => {
-  const user = useUser();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+
+  useEffect(() => {
+    const loggedIn = localStorage.getItem('loggedIn') === 'true';
+    const email = localStorage.getItem('userEmail');
+    const name = email?.split('@')[0];
+    setIsLoggedIn(loggedIn);
+    setUsername(name || '');
+  }, []);
 
   return (
     <main>
       {/* Public Hero Section */}
-      {!user && (
+      {!isLoggedIn && (
         <Container
           id="landing-page"
           fluid
@@ -37,17 +46,23 @@ const Home = () => {
       )}
 
       {/* Authenticated Welcome Section */}
-      {user && (
-        <Container
-          fluid
-          className="py-5 d-flex flex-column align-items-center justify-content-center"
-          style={{ minHeight: '100vh' }}
-        >
-          <div className="info-box mb-5 text-center">
-            <h2>Welcome back, {user.email}!</h2>
-            <p>Ready to collaborate and learn together?</p>
-          </div>
-        </Container>
+      {isLoggedIn && (
+      <Container
+        fluid
+        className="py-5 d-flex flex-column align-items-center justify-content-center"
+        style={{ minHeight: '100vh' }}
+      >
+        <div className="info-box mb-5 text-center">
+          <h2>
+            Welcome back,
+            {' '}
+            {username}
+            ! 👋
+          </h2>
+          <p>Your next academic win is just around the corner.</p>
+          <p>Let’s make this session count. 💪</p>
+        </div>
+      </Container>
       )}
 
       {/* Shared App Highlights Section */}
@@ -66,8 +81,7 @@ const Home = () => {
           <Col
             as={motion.div}
             md={3}
-            className="mx-3 my-2 p-4 rounded-xl shadow-sm bg-white bg-opacity-90
-                      hover:shadow-2xl transition-all duration-300"
+            className="mx-3 my-2 p-4 rounded-xl shadow-sm bg-white bg-opacity-90 hover:shadow-2xl transition-all duration-300"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -81,8 +95,7 @@ const Home = () => {
           <Col
             as={motion.div}
             md={3}
-            className="mx-3 my-2 p-4 rounded-xl shadow-sm bg-white bg-opacity-90
-                      hover:shadow-2xl transition-all duration-300"
+            className="mx-3 my-2 p-4 rounded-xl shadow-sm bg-white bg-opacity-90 hover:shadow-2xl transition-all duration-300"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -96,8 +109,7 @@ const Home = () => {
           <Col
             as={motion.div}
             md={3}
-            className="mx-3 my-2 p-4 rounded-xl shadow-sm bg-white bg-opacity-90
-                      hover:shadow-2xl transition-all duration-300"
+            className="mx-3 my-2 p-4 rounded-xl shadow-sm bg-white bg-opacity-90 hover:shadow-2xl transition-all duration-300"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -111,8 +123,7 @@ const Home = () => {
           <Col
             as={motion.div}
             md={3}
-            className="mx-3 my-2 p-4 rounded-xl shadow-sm bg-white bg-opacity-90
-                      hover:shadow-2xl transition-all duration-300"
+            className="mx-3 my-2 p-4 rounded-xl shadow-sm bg-white bg-opacity-90 hover:shadow-2xl transition-all duration-300"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -126,8 +137,7 @@ const Home = () => {
           <Col
             as={motion.div}
             md={3}
-            className="mx-3 my-2 p-4 rounded-xl shadow-sm bg-white bg-opacity-90
-                      hover:shadow-2xl transition-all duration-300"
+            className="mx-3 my-2 p-4 rounded-xl shadow-sm bg-white bg-opacity-90 hover:shadow-2xl transition-all duration-300"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -161,24 +171,20 @@ const Home = () => {
               <Accordion.Header>General</Accordion.Header>
               <Accordion.Body>
                 <p>
-                  <strong>
-                    Q: What is Sync&apos;d Study?
-                  </strong>
+                  <strong>Q: What is Sync&apos;d Study?</strong>
                   <br />
                   A community platform for students to connect, study, and communicate.
                 </p>
                 <p>
-                  <strong>
-                    Q: How do I sign up?
-                  </strong>
+                  <strong>Q: How do I sign up?</strong>
                   <br />
-                  Click {' '}
-                  <Link className="custom-link" href="/auth/signup">
-                    <span style={{ color: '#576CBC', cursor: 'pointer' }}>
-                      here
-                    </span>
-                  </Link>{' '}
-                  and create an account with your <strong>hawaii.edu</strong> email and password.
+                  Click
+                  <Link className="custom-link" href="/auth/signup"><span style={{ color: '#576CBC', cursor: 'pointer' }}>here</span></Link>
+                  {' '}
+                  and create an account with your
+                  <strong>hawaii.edu</strong>
+                  {' '}
+                  email and password.
                 </p>
               </Accordion.Body>
             </Accordion.Item>
@@ -186,83 +192,56 @@ const Home = () => {
               <Accordion.Header>Sessions</Accordion.Header>
               <Accordion.Body>
                 <p>
-                  <strong>
-                    Q: How do I join or create a study session?
-                  </strong>
+                  <strong>Q: How do I join or create a study session?</strong>
                   <br />
-                  You can join or create a study session by clicking on the &quot;Study Sessions&quot;
-                  and filling out a form with the session details.
+                  Click "Study Sessions" and fill out a form with the session details.
                 </p>
                 <p>
-                  <strong>
-                    Q: Can I propose face-to-face sessions?
-                  </strong>
+                  <strong>Q: Can I propose face-to-face sessions?</strong>
                   <br />
                   Yes, you can propose face-to-face & online study sessions.
                 </p>
               </Accordion.Body>
             </Accordion.Item>
-
             <Accordion.Item eventKey="3">
               <Accordion.Header>Locations</Accordion.Header>
               <Accordion.Body>
                 <p>
-                  <strong>
-                    Q: How do I find study locations on campus?
-                  </strong>
+                  <strong>Q: How do I find study locations on campus?</strong>
                   <br />
-                  Click the {' '}
-                  <Link className="custom-link" href="/locations">
-                    <span style={{ color: '#576CBC', cursor: 'pointer' }}>
-                      Locations
-                    </span>
-                  </Link>{' '}
-                  to view a list of popular study spots around campus.
+                  Click
+                  <Link className="custom-link" href="/locations"><span style={{ color: '#576CBC', cursor: 'pointer' }}>Locations</span></Link>
+                  {' '}
+                  to view popular study spots around campus.
                 </p>
                 <p>
-                  <strong>
-                    Q: Are there outdoor study spaces?
-                  </strong>
+                  <strong>Q: Are there outdoor study spaces?</strong>
                   <br />
-                  Yes, you can find outdoor study spaces by selecting the &quot;Outdoor&quot; filter under the {' '}
-                  <Link className="custom-link" href="/locations">
-                    <span style={{ color: '#576CBC', cursor: 'pointer' }}>
-                      Locations
-                    </span>
-                  </Link>{' '}
+                  Yes! Filter by "Outdoor" under the
+                  <Link className="custom-link" href="/locations"><span style={{ color: '#576CBC', cursor: 'pointer' }}>Locations</span></Link>
+                  {' '}
                   section.
                 </p>
               </Accordion.Body>
             </Accordion.Item>
-
             <Accordion.Item eventKey="4">
               <Accordion.Header>Support and Contact</Accordion.Header>
               <Accordion.Body>
                 <p>
-                  <strong>
-                    Q: How do I get help or report an issue?
-                  </strong>
+                  <strong>Q: How do I get help or report an issue?</strong>
                   <br />
-                  For help or to report an issue, click the {' '}
-                  <Link className="custom-link" href="/contact">
-                    <span style={{ color: '#576CBC', cursor: 'pointer' }}>
-                      Contact Us
-                    </span>
-                  </Link>{' '}
-                  link that is located in the footer to reach the support team.
+                  Click the
+                  <Link className="custom-link" href="/contact"><span style={{ color: '#576CBC', cursor: 'pointer' }}>Contact Us</span></Link>
+                  {' '}
+                  link in the footer to reach the support team.
                 </p>
                 <p>
-                  <strong>
-                    Q: Where can I send feedback or complaints?
-                  </strong>
+                  <strong>Q: Where can I send feedback or complaints?</strong>
                   <br />
-                  You can send feedback, complaints, or additional help requests through the {' '}
-                  <Link className="custom-link" href="/contact">
-                    <span style={{ color: '#576CBC', cursor: 'pointer' }}>
-                      Contact Us
-                    </span>
-                  </Link>{' '}
-                  link that is located in the footer.
+                  Submit through the same
+                  <Link className="custom-link" href="/contact"><span style={{ color: '#576CBC', cursor: 'pointer' }}>Contact Us</span></Link>
+                  {' '}
+                  form at the bottom of the page.
                 </p>
               </Accordion.Body>
             </Accordion.Item>
