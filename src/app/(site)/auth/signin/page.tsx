@@ -1,4 +1,4 @@
-// In your SignIn.tsx file
+/* eslint-disable react/jsx-one-expression-per-line */
 
 'use client';
 
@@ -38,8 +38,9 @@ const SignIn = () => {
       if (!res.ok) {
         setError(result.error || 'Invalid username or password.');
       } else {
-        // Later: store session or token if needed
-        router.push('/calendar'); // success redirect
+        localStorage.setItem('loggedIn', 'true');
+        localStorage.setItem('userEmail', email);
+        router.push('/calendar');
       }
     } catch (err) {
       console.error('Login error:', err);
@@ -74,7 +75,6 @@ const SignIn = () => {
                     </div>
                   )}
                   <Form onSubmit={handleSubmit}>
-                    {/* Username */}
                     <Form.Group className="form-group mb-3">
                       <Form.Label>Username</Form.Label>
                       <InputGroup>
@@ -88,7 +88,6 @@ const SignIn = () => {
                       </InputGroup>
                     </Form.Group>
 
-                    {/* Password */}
                     <Form.Group className="form-group mb-3">
                       <Form.Label>Password</Form.Label>
                       <InputGroup>
@@ -107,14 +106,12 @@ const SignIn = () => {
                       </InputGroup>
                     </Form.Group>
 
-                    {/* Forgot Password Link */}
                     <div className="text-end mb-3">
                       <a href="/auth/reset-password" style={{ fontSize: '0.9rem' }}>
                         Forgot password?
                       </a>
                     </div>
 
-                    {/* Sign In Button */}
                     <Form.Group className="form-group d-grid">
                       <Button
                         type="submit"
@@ -127,9 +124,7 @@ const SignIn = () => {
                   </Form>
                 </Card.Body>
                 <Card.Footer className="text-center bg-transparent border-0 pt-0">
-                  Don’t have an account?
-                  {' '}
-                  <a href="/auth/signup">Sign up</a>
+                  Don’t have an account? <a href="/auth/signup">Sign up</a>
                 </Card.Footer>
               </Card>
             </motion.div>

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable react/jsx-one-expression-per-line */
 /* eslint-disable max-len */
 
@@ -211,7 +212,7 @@ const Home = () => {
                   </strong>
                   <br />
                   Click the {' '}
-                  <Link className="custom-link" href="/auth/signup">
+                  <Link className="custom-link" href="/locations">
                     <span style={{ color: '#576CBC', cursor: 'pointer' }}>
                       Locations
                     </span>
@@ -224,7 +225,7 @@ const Home = () => {
                   </strong>
                   <br />
                   Yes, you can find outdoor study spaces by selecting the &quot;Outdoor&quot; filter under the {' '}
-                  <Link className="custom-link" href="/auth/signup">
+                  <Link className="custom-link" href="/locations">
                     <span style={{ color: '#576CBC', cursor: 'pointer' }}>
                       Locations
                     </span>
@@ -243,7 +244,7 @@ const Home = () => {
                   </strong>
                   <br />
                   For help or to report an issue, click the {' '}
-                  <Link className="custom-link" href="/auth/signup">
+                  <Link className="custom-link" href="/contact">
                     <span style={{ color: '#576CBC', cursor: 'pointer' }}>
                       Contact Us
                     </span>
@@ -256,7 +257,7 @@ const Home = () => {
                   </strong>
                   <br />
                   You can send feedback, complaints, or additional help requests through the {' '}
-                  <Link className="custom-link" href="/auth/signup">
+                  <Link className="custom-link" href="/contact">
                     <span style={{ color: '#576CBC', cursor: 'pointer' }}>
                       Contact Us
                     </span>

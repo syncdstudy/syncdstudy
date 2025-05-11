@@ -1,10 +1,9 @@
-/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-shadow */
+/* eslint-disable react/jsx-one-expression-per-line */
 
 'use client';
 
-import { signIn } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
@@ -12,7 +11,6 @@ import { useState } from 'react';
 import { Card, Col, Container, Button, Form, Row, InputGroup } from 'react-bootstrap';
 import { motion } from 'framer-motion';
 import { Eye, EyeSlash } from 'react-bootstrap-icons';
-import supabase from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
 
 type SignUpForm = {
@@ -77,7 +75,10 @@ const SignUp = () => {
       if (!res.ok) {
         setError(result.error || 'Something went wrong');
       } else {
-        router.push('/auth/confirmation');
+        // ✅ Auto-login after successful registration
+        localStorage.setItem('loggedIn', 'true');
+        localStorage.setItem('userEmail', fullEmail);
+        router.push('/calendar');
       }
     } catch (err) {
       console.error('Registration error:', err);
@@ -112,7 +113,6 @@ const SignUp = () => {
                     </div>
                   )}
                   <Form onSubmit={handleSubmit(onSubmit)}>
-                    {/* UH Username */}
                     <Form.Group className="form-group mb-3">
                       <Form.Label>Username</Form.Label>
                       <InputGroup>
@@ -127,7 +127,6 @@ const SignUp = () => {
                       <div className="invalid-feedback">{errors.email?.message}</div>
                     </Form.Group>
 
-                    {/* Password */}
                     <Form.Group className="form-group mb-3">
                       <Form.Label>Password</Form.Label>
                       <InputGroup>
@@ -147,7 +146,6 @@ const SignUp = () => {
                       <div className="invalid-feedback">{errors.password?.message}</div>
                     </Form.Group>
 
-                    {/* Confirm Password */}
                     <Form.Group className="form-group mb-3">
                       <Form.Label>Confirm Password</Form.Label>
                       <InputGroup>
@@ -167,7 +165,6 @@ const SignUp = () => {
                       <div className="invalid-feedback">{errors.confirmPassword?.message}</div>
                     </Form.Group>
 
-                    {/* Buttons */}
                     <Form.Group className="form-group">
                       <Row>
                         <Col className="d-grid">
@@ -202,9 +199,7 @@ const SignUp = () => {
                   </Form>
                 </Card.Body>
                 <Card.Footer className="text-center bg-transparent border-0 pt-0">
-                  Already have an account?
-                  {' '}
-                  <a href="/auth/signin">Sign in</a>
+                  Already have an account? <a href="/auth/signin">Sign in</a>
                 </Card.Footer>
               </Card>
             </motion.div>
