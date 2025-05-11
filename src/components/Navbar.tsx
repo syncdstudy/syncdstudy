@@ -3,19 +3,29 @@
 
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import { BoxArrowRight, PersonFill, PersonPlusFill } from 'react-bootstrap-icons';
-import supabase from '@/lib/supabaseClient';
-import { useUser } from '@/hooks/useUser';
 
 const NavBar: React.FC = () => {
-  const user = useUser();
-  const pathName = usePathname();
+  const pathname = usePathname();
+  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = '/';
+  useEffect(() => {
+    const status = localStorage.getItem('loggedIn');
+    const email = localStorage.getItem('userEmail');
+    setIsLoggedIn(status === 'true');
+    setUserEmail(email || '');
+  }, [pathname]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('loggedIn');
+    localStorage.removeItem('userEmail');
+    setIsLoggedIn(false);
+    router.push('/');
   };
 
   return (
@@ -25,30 +35,30 @@ const NavBar: React.FC = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className="justify-content-center">
           <Nav className="gap-4 text-center">
-            {user ? (
+            {isLoggedIn ? (
               <>
-                <Nav.Link href="/calendar" active={pathName === '/calendar'}>
+                <Nav.Link href="/calendar" active={pathname === '/calendar'}>
                   <ins><em>Calendar</em></ins>
                 </Nav.Link>
-                <Nav.Link href="/sessions" active={pathName === '/sessions'}>
+                <Nav.Link href="/sessions" active={pathname === '/sessions'}>
                   <ins><em>Study Session</em></ins>
                 </Nav.Link>
-                <Nav.Link href="/courses" active={pathName === '/courses'}>
+                <Nav.Link href="/courses" active={pathname === '/courses'}>
                   <ins><em>My Courses</em></ins>
                 </Nav.Link>
-                <Nav.Link href="/profile" active={pathName === '/profile'}>
+                <Nav.Link href="/profile" active={pathname === '/profile'}>
                   <ins><em>My Profile</em></ins>
                 </Nav.Link>
               </>
             ) : (
               <>
-                <Nav.Link href="/howitworks" active={pathName === '/howitworks'}>
+                <Nav.Link href="/howitworks" active={pathname === '/howitworks'}>
                   <ins><em>How it Works</em></ins>
                 </Nav.Link>
-                <Nav.Link href="/locations" active={pathName === '/locations'}>
+                <Nav.Link href="/locations" active={pathname === '/locations'}>
                   <ins><em>Locations on Campus</em></ins>
                 </Nav.Link>
-                <Nav.Link href="/about" active={pathName === '/about'}>
+                <Nav.Link href="/about" active={pathname === '/about'}>
                   <ins><em>About</em></ins>
                 </Nav.Link>
               </>
@@ -57,10 +67,10 @@ const NavBar: React.FC = () => {
         </Navbar.Collapse>
 
         <Nav>
-          {user ? (
+          {isLoggedIn ? (
             <NavDropdown
               id="login-dropdown"
-              title={user.email || 'User'}
+              title={(userEmail && userEmail.split('@')[0]) || 'User'}
               className="custom-button px-3 mx-1"
             >
               <NavDropdown.Item onClick={handleLogout}>

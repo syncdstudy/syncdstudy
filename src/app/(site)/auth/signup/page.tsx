@@ -77,7 +77,10 @@ const SignUp = () => {
       if (!res.ok) {
         setError(result.error || 'Something went wrong');
       } else {
-        router.push('/auth/confirmation');
+        // Automatically log them in
+        localStorage.setItem('loggedIn', 'true');
+        localStorage.setItem('userEmail', fullEmail);
+        router.push('/calendar');
       }
     } catch (err) {
       console.error('Registration error:', err);

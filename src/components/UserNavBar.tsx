@@ -1,22 +1,28 @@
-/* eslint-disable import/order */
-/* eslint-disable import/extensions */
-/* eslint-disable react/jsx-one-expression-per-line */
-
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { Container, Nav, Navbar, NavDropdown, Button } from 'react-bootstrap';
 import { BoxArrowRight } from 'react-bootstrap-icons';
-import { useUser } from '@/hooks/useUser';
-import supabase from '@/lib/supabaseClient';
 
 const UserNavBar: React.FC = () => {
-  const pathName = usePathname();
-  const user = useUser();
+  const pathname = usePathname();
+  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = '/';
+  useEffect(() => {
+    const status = localStorage.getItem('loggedIn');
+    const email = localStorage.getItem('userEmail');
+    setIsLoggedIn(status === 'true');
+    setUserEmail(email || '');
+  }, [pathname]); // re-run on route changes
+
+  const handleLogout = () => {
+    localStorage.removeItem('loggedIn');
+    localStorage.removeItem('userEmail');
+    setIsLoggedIn(false);
+    router.push('/');
   };
 
   return (
@@ -25,29 +31,44 @@ const UserNavBar: React.FC = () => {
         <Navbar.Brand href="/">Sync&apos;d Study</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className="justify-content-center">
-          <Nav className="gap-4 text-center">
-            <Nav.Link href="/calendar" active={pathName === '/calendar'}>
-              <ins><em>Calendar</em></ins>
-            </Nav.Link>
-            <Nav.Link href="/sessions" active={pathName === '/sessions'}>
-              <ins><em>Study Session</em></ins>
-            </Nav.Link>
-            <Nav.Link href="/courses" active={pathName === '/courses'}>
-              <ins><em>My Courses</em></ins>
-            </Nav.Link>
-            <Nav.Link href="/auth/profilesignup" active={pathName === '/auth/profilesignup'}>
-              <ins><em>My Profile</em></ins>
-            </Nav.Link>
-          </Nav>
+          {isLoggedIn && (
+            <Nav className="gap-4 text-center">
+              <Nav.Link href="/calendar" active={pathname === '/calendar'}>
+                <ins><em>Calendar</em></ins>
+              </Nav.Link>
+              <Nav.Link href="/sessions" active={pathname === '/sessions'}>
+                <ins><em>Study Session</em></ins>
+              </Nav.Link>
+              <Nav.Link href="/courses" active={pathname === '/courses'}>
+                <ins><em>My Courses</em></ins>
+              </Nav.Link>
+              <Nav.Link href="/auth/profilesignup" active={pathname === '/auth/profilesignup'}>
+                <ins><em>My Profile</em></ins>
+              </Nav.Link>
+            </Nav>
+          )}
         </Navbar.Collapse>
         <Nav>
-          <Button size="sm" className="custom-button px-3 mx-1">
-            <NavDropdown id="login-dropdown" title={user?.email}>
-              <NavDropdown.Item onClick={handleLogout}>
-                <BoxArrowRight /> Sign Out
-              </NavDropdown.Item>
-            </NavDropdown>
-          </Button>
+          {isLoggedIn ? (
+            <Button size="sm" className="custom-button px-3 mx-1">
+              <NavDropdown id="login-dropdown" title={userEmail}>
+                <NavDropdown.Item onClick={handleLogout}>
+                  <BoxArrowRight />
+                  {' '}
+                  Sign Out
+                </NavDropdown.Item>
+              </NavDropdown>
+            </Button>
+          ) : (
+            <div className="d-flex gap-2">
+              <Button variant="outline-primary" size="sm" onClick={() => router.push('/auth/signin')}>
+                Sign In
+              </Button>
+              <Button variant="primary" size="sm" onClick={() => router.push('/auth/signup')}>
+                Sign Up
+              </Button>
+            </div>
+          )}
         </Nav>
       </Container>
     </Navbar>

@@ -38,8 +38,9 @@ const SignIn = () => {
       if (!res.ok) {
         setError(result.error || 'Invalid username or password.');
       } else {
-        // Later: store session or token if needed
-        router.push('/calendar'); // success redirect
+        localStorage.setItem('loggedIn', 'true'); // ✅ track login
+        localStorage.setItem('userEmail', email); // (optional)
+        router.push('/calendar'); // redirect as before
       }
     } catch (err) {
       console.error('Login error:', err);
