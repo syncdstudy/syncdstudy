@@ -5,10 +5,8 @@ import dynamic from 'next/dynamic';
 import '@/app/globals.css';
 import { studySpots } from '@/components/CampusMap';
 
-// ⛔️ DO NOT import CampusMap at the top directly
-const DynamicCampusMap = dynamic(() => import('@/components/CampusMap'), {
-  ssr: false, // ✅ disables server-side rendering
-});
+// ✅ Dynamically import CampusMap with SSR disabled
+const CampusMap = dynamic(() => import('@/components/CampusMap'), { ssr: false });
 
 const LocationsPage = () => {
   const [selected, setSelected] = useState<string | null>(null);
@@ -39,13 +37,13 @@ const LocationsPage = () => {
           Outdoor 🌳
         </button>
         <button type="button" className="btn btn-outline-danger mx-2" onClick={() => setFilter('food')}>Food ☕</button>
-
       </div>
 
       <div className="d-flex flex-column flex-lg-row align-items-center justify-content-between gap-4">
         {/* Map */}
         <div style={{ flex: '1', maxWidth: '600px' }}>
-          <DynamicCampusMap selectedName={selected} />
+          {/* ✅ Correct usage here */}
+          <CampusMap selectedName={selected} />
         </div>
 
         {/* List */}
