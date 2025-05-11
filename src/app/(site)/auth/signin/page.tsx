@@ -40,6 +40,7 @@ const SignIn = () => {
       } else {
         localStorage.setItem('loggedIn', 'true');
         localStorage.setItem('userEmail', email);
+        localStorage.setItem('userId', result.userId); // ✅ Save UUID here!
         router.push('/calendar');
       }
     } catch (err) {

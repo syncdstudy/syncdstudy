@@ -1,14 +1,76 @@
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-alert */
+
 'use client';
 
 import React, { useRef } from 'react';
 import CurrentSessions from '@/components/CurrentSession';
 import SessionInvite from '@/components/SessionInvite';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const StudySessionPage = () => {
   const formRef = useRef<HTMLFormElement>(null);
 
   const handleReset = () => {
     formRef.current?.reset();
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      alert('User not logged in!');
+      return;
+    }
+
+    const form = e.currentTarget;
+    const elements = form.elements as HTMLFormControlsCollection;
+
+    const subject = (elements[0] as HTMLInputElement).value.trim();
+    const course = (elements[1] as HTMLInputElement).value.trim();
+    const date = (elements[2] as HTMLInputElement).value;
+    const startTime = (elements[3] as HTMLInputElement).value;
+    const endTime = (elements[4] as HTMLInputElement).value;
+    const location = (elements[5] as HTMLInputElement).value.trim();
+    const description = (elements[6] as HTMLTextAreaElement).value.trim();
+
+    const modeRadios = form.querySelectorAll('input[name="mode"]');
+    let mode = '';
+    modeRadios.forEach((input: any) => {
+      if (input.checked) mode = input.id === 'online' ? 'Online' : 'In-person';
+    });
+
+    if (!subject || !course || !date || !startTime || !endTime || !mode) {
+      alert('Please fill out all required fields.');
+      return;
+    }
+
+    const session = {
+      name: `${subject} - ${course}`,
+      date,
+      time: `${startTime}–${endTime}`,
+      location,
+      mode,
+      description,
+      creator_id: userId,
+    };
+
+    const res = await fetch('/api/sessions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(session),
+    });
+
+    if (res.ok) {
+      toast.success('Study session created!');
+      formRef.current?.reset();
+      window.location.reload(); // Or ideally: refresh just the session components
+    } else {
+      alert('Failed to create study session.');
+    }
   };
 
   return (
@@ -20,7 +82,7 @@ const StudySessionPage = () => {
           <div className="col-lg-7">
             <div className="border border-dark p-4 rounded shadow" style={{ backgroundColor: '#e5d8f6' }}>
               <h4 className="text-center mb-4">Create a Study Session</h4>
-              <form ref={formRef}>
+              <form ref={formRef} onSubmit={handleSubmit}>
                 <div className="d-flex gap-2">
                   <input type="text" className="form-control mb-3" placeholder="Subject Name" />
                   <input type="text" className="form-control mb-3" placeholder="Course Name" />
@@ -115,6 +177,8 @@ const StudySessionPage = () => {
           </div>
         </div>
       </div>
+
+      <ToastContainer position="top-center" autoClose={3000} />
     </main>
   );
 };
