@@ -60,30 +60,28 @@ const SignUp = () => {
   const onSubmit = async (formData: SignUpForm) => {
     const fullEmail = `${formData.email}@hawaii.edu`;
 
-    const { error } = await supabase.auth.signUp({
-      email: fullEmail,
-      password: formData.password,
-    });
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: fullEmail,
+          password: formData.password,
+        }),
+      });
 
-    if (error) {
-      setError(`Error: ${error.message}`);
-    } else {
-      // ✅ Sync user into Prisma User table
-      try {
-        const res = await fetch('/api/sync/user', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: fullEmail }),
-        });
+      const result = await res.json();
 
-        const result = await res.json();
-        console.log('Sync response:', result);
-      } catch (err) {
-        console.error('Sync fetch failed:', err);
+      if (!res.ok) {
+        setError(result.error || 'Something went wrong');
+      } else {
+        router.push('/auth/confirmation');
       }
-
-      // 🚀 Redirect to confirmation
-      router.push('/auth/confirmation');
+    } catch (err) {
+      console.error('Registration error:', err);
+      setError('Failed to register. Please try again later.');
     }
   };
 

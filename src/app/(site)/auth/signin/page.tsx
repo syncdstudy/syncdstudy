@@ -7,7 +7,6 @@ import { Card, Col, Container, Button, Form, Row, InputGroup } from 'react-boots
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Eye, EyeSlash } from 'react-bootstrap-icons';
-import supabase from '@/lib/supabaseClient';
 
 const SignIn = () => {
   const router = useRouter();
@@ -25,15 +24,26 @@ const SignIn = () => {
     const email = `${target.email.value}@hawaii.edu`;
     const password = target.password.value;
 
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (signInError) {
-      setError('Invalid username or password.');
-    } else {
-      router.push('/calendar');
+      const result = await res.json();
+
+      if (!res.ok) {
+        setError(result.error || 'Invalid username or password.');
+      } else {
+        // Later: store session or token if needed
+        router.push('/calendar'); // success redirect
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      setError('Something went wrong. Please try again later.');
     }
   };
 
