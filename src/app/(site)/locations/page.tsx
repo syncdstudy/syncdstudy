@@ -44,7 +44,7 @@ const LocationsPage = () => {
           className="custom-button-3 mx-3 p-2"
           onClick={() => setFilter('all')}
         >
-            <em>All Spots</em>
+          <em>All Spots</em>
         </button>
         <button
           type="button"
