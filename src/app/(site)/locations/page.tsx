@@ -1,99 +1,74 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import '@/app/globals.css';
+import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
+import '@/app/globals.css';
 import { studySpots } from '@/components/CampusMap';
 
-const CampusMap = dynamic(() => import('@/components/CampusMap'), {
-  ssr: false,
+// ⛔️ DO NOT import CampusMap at the top directly
+const DynamicCampusMap = dynamic(() => import('@/components/CampusMap'), {
+  ssr: false, // ✅ disables server-side rendering
 });
 
 const LocationsPage = () => {
   const [selected, setSelected] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'indoor' | 'outdoor' | 'food'>('all');
-  const [containerHeight, setContainerHeight] = useState('600px');
 
   const filteredSpots = filter === 'all'
     ? studySpots
     : studySpots.filter((spot) => spot.category === filter);
 
-  useEffect(() => {
-    // Check if window is available (only in the browser)
-    if (typeof window !== 'undefined') {
-      const updateHeight = () => {
-        const mapElement = document.querySelector('.leaflet-container');
-        if (mapElement) {
-          setContainerHeight(`${mapElement.clientHeight}px`);
-        }
-      };
-      // Set the initial height on mount
-      updateHeight();
-      // Adjust on resize
-      window.addEventListener('resize', updateHeight);
-      return () => {
-        window.removeEventListener('resize', updateHeight);
-      };
-    }
-    // Return undefined explicitly to satisfy ESLint
-    return undefined;
-  }, []);
-
   return (
     <main className="container py-5">
-      <div className="info-box-1 text-center mb-4" style={{ maxWidth: '900px', margin: '0 auto', padding: '20px' }}>
-        <h1 className="mb-3">Campus Study Locations</h1>
-        <p>
-          <em>
-            For the best experience, allow this application to access your location to see where you are on the map.
-            You can also click on any popular study spot to quickly find it, or filter by Indoor, Outdoor, or Food Hub
-            based on your preferences.
-          </em>
-        </p>
-      </div>
+      <h1 className="text-center mb-4">Campus Study Locations</h1>
 
       <div className="text-center mb-3">
-        <button type="button" className="custom-button-3 mx-3 p-2" onClick={() => setFilter('all')}>
-          <em>All Spots</em>
+        <button type="button" className="btn btn-outline-dark mx-2" onClick={() => setFilter('all')}>All</button>
+        <button
+          type="button"
+          className="btn btn-outline-primary mx-2"
+          onClick={() => setFilter('indoor')}
+        >
+          Indoor 📚
         </button>
-        <button type="button" className="custom-button-1 mx-3 p-2" onClick={() => setFilter('indoor')}>
-          <em>Indoor</em>
+        <button
+          type="button"
+          className="btn btn-outline-success mx-2"
+          onClick={() => setFilter('outdoor')}
+        >
+          Outdoor 🌳
         </button>
-        <button type="button" className="custom-button-4 mx-3 p-2" onClick={() => setFilter('outdoor')}>
-          <em>Outdoor</em>
-        </button>
-        <button type="button" className="custom-button-2 mx-3 p-2" onClick={() => setFilter('food')}>
-          <em>Food Hub</em>
-        </button>
+        <button type="button" className="btn btn-outline-danger mx-2" onClick={() => setFilter('food')}>Food ☕</button>
+
       </div>
 
-      <div className="d-flex flex-column flex-lg-row align-items-stretch justify-content-between gap-4">
+      <div className="d-flex flex-column flex-lg-row align-items-center justify-content-between gap-4">
         {/* Map */}
-        <div style={{ flex: '1', maxWidth: '600px', animation: 'popUp 1.2s ease-out' }}>
-          <CampusMap selectedName={selected} />
+        <div style={{ flex: '1', maxWidth: '600px' }}>
+          <DynamicCampusMap selectedName={selected} />
         </div>
 
         {/* List */}
-        <div
-          className="info-box text-start"
-          style={{ flex: '1', maxWidth: '600px', height: containerHeight, overflowY: 'auto' }}
-        >
-          <h4 className="text-center mb-4">Popular Study Spots</h4>
+        <div className="info-box text-start" style={{ flex: '1', maxWidth: '600px' }}>
+          <h4 className="text-center mb-4">Top 10 Study Spots</h4>
           <ul className="list-unstyled">
             {filteredSpots.map((spot) => (
-              <button
+              // eslint-disable-next-line jsx-a11y/click-events-have-key-events
+              <li
                 key={spot.name}
-                className="list-group-item list-group-item-action mb-3"
-                type="button"
+                className="mb-3"
+                // eslint-disable-next-line jsx-a11y/no-noninteractive-element-to-interactive-role
+                role="button"
                 onClick={() => setSelected(spot.name)}
               >
                 <strong>
                   {spot.icon}
+                  {' '}
                   {spot.name}
                 </strong>
-                <br />
+                :
                 {spot.desc}
-              </button>
+              </li>
             ))}
           </ul>
         </div>
