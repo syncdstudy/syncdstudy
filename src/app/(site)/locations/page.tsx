@@ -17,7 +17,26 @@ const LocationsPage = () => {
 
   return (
     <main className="container py-5">
-      <h1 className="text-center mb-4">Campus Study Locations</h1>
+      <div
+        className="text-center px-4 py-4 mb-5"
+        style={{
+          backgroundColor: 'rgba(228, 215, 247, 0.8)',
+          border: '3px solid rgb(235, 227, 227)',
+          borderRadius: '20px',
+          maxWidth: '900px',
+          margin: '0 auto',
+          boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+          color: 'rgb(45, 44, 44)',
+          animation: 'popUp 1.2s ease-out',
+        }}
+      >
+        <h1 className="mb-3" style={{ fontWeight: '600' }}>Campus Study Locations</h1>
+        <p style={{ fontStyle: 'italic', fontSize: '1rem' }}>
+          For the best experience, allow this application to access your location to see where you are on the map.
+          You can also click on any popular study spot to quickly find it, or filter by Indoor, Outdoor, or Food Hub
+          based on your preferences.
+        </p>
+      </div>
 
       <div className="text-center mb-3">
         <button type="button" className="btn btn-outline-dark mx-2" onClick={() => setFilter('all')}>All</button>
@@ -45,7 +64,16 @@ const LocationsPage = () => {
         </div>
 
         {/* List */}
-        <div className="info-box text-start" style={{ flex: '1', maxWidth: '600px' }}>
+        <div
+          className="info-box text-start"
+          style={{
+            flex: '1',
+            maxWidth: '600px',
+            height: '600px', // match map height
+            overflowY: 'auto',
+          }}
+        >
+
           <h4 className="text-center mb-4">Top 10 Study Spots</h4>
           <ul className="list-unstyled">
             {filteredSpots.map((spot) => (
