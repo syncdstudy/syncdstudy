@@ -59,17 +59,32 @@ const SignUp = () => {
 
   const onSubmit = async (formData: SignUpForm) => {
     const fullEmail = `${formData.email}@hawaii.edu`;
-    const { error } = await supabase.auth.signUp({
-      email: fullEmail,
-      password: formData.password,
-    });
-    if (error) {
-      setError(`Error: ${error.message}`);
-    } else {
-      // Smooth redirect to confirmation page
-      router.push('/auth/confirmation');
+
+    try {
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: fullEmail,
+          password: formData.password,
+        }),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        setError(result.error || 'Something went wrong');
+      } else {
+        router.push('/auth/confirmation');
+      }
+    } catch (err) {
+      console.error('Registration error:', err);
+      setError('Failed to register. Please try again later.');
     }
   };
+
   return (
     <main>
       <Container>
