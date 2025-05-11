@@ -178,10 +178,10 @@ const Home = () => {
                 <p>
                   <strong>Q: How do I sign up?</strong>
                   <br />
-                  Click
+                  Click {' '}
                   <Link className="custom-link" href="/auth/signup"><span style={{ color: '#576CBC', cursor: 'pointer' }}>here</span></Link>
                   {' '}
-                  and create an account with your
+                  and create an account with your {' '}
                   <strong>hawaii.edu</strong>
                   {' '}
                   email and password.
@@ -209,7 +209,7 @@ const Home = () => {
                 <p>
                   <strong>Q: How do I find study locations on campus?</strong>
                   <br />
-                  Click
+                  Click {' '}
                   <Link className="custom-link" href="/locations"><span style={{ color: '#576CBC', cursor: 'pointer' }}>Locations</span></Link>
                   {' '}
                   to view popular study spots around campus.
@@ -217,7 +217,7 @@ const Home = () => {
                 <p>
                   <strong>Q: Are there outdoor study spaces?</strong>
                   <br />
-                  Yes! Filter by "Outdoor" under the
+                  Yes! Filter by "Outdoor" under the {' '}
                   <Link className="custom-link" href="/locations"><span style={{ color: '#576CBC', cursor: 'pointer' }}>Locations</span></Link>
                   {' '}
                   section.
@@ -230,7 +230,7 @@ const Home = () => {
                 <p>
                   <strong>Q: How do I get help or report an issue?</strong>
                   <br />
-                  Click the
+                  Click the {' '}
                   <Link className="custom-link" href="/contact"><span style={{ color: '#576CBC', cursor: 'pointer' }}>Contact Us</span></Link>
                   {' '}
                   link in the footer to reach the support team.
@@ -238,7 +238,7 @@ const Home = () => {
                 <p>
                   <strong>Q: Where can I send feedback or complaints?</strong>
                   <br />
-                  Submit through the same
+                  Submit through the same {' '}
                   <Link className="custom-link" href="/contact"><span style={{ color: '#576CBC', cursor: 'pointer' }}>Contact Us</span></Link>
                   {' '}
                   form at the bottom of the page.
