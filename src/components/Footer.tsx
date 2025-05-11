@@ -1,4 +1,5 @@
 import { Col, Container, Row } from 'react-bootstrap';
+import Link from 'next/link';
 
 /** The Footer appears at the bottom of every page. Rendered by the App Layout component. */
 const Footer = () => (
@@ -6,12 +7,19 @@ const Footer = () => (
     <Container>
       <Row>
         <Col>
-          Sync&apos;d Study
+          © 2025 Sync&apos;d Study. All rights reserved.
           <br />
-          Developed by Silvia Arjona Garcia, Angela Joy Almeron, Arisa Nakai, & Jaimee Yokoyama
-          <br />
-          University of Hawai&apos;i at Manoā
-          <br />
+          University of Hawai&apos;i at Mānoa
+        </Col>
+        <Col className="text-end">
+          <div className="d-flex flex-column align-items-end">
+            <Link href="/contact" className="footer-link mb-2" style={{ fontSize: '0.9rem', color: '#576CBC' }}>
+              Contact Us
+            </Link>
+            <Link href="/adminsignin" className="footer-link" style={{ fontSize: '0.9rem', color: '#576CBC' }}>
+              Admin Sign In
+            </Link>
+          </div>
         </Col>
       </Row>
     </Container>
