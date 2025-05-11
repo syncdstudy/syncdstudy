@@ -3,9 +3,8 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import '@/app/globals.css';
-import { studySpots } from '@/components/CampusMap';
+import { studySpots } from '@/components/data/studySpots'; // ✅ new safe import
 
-// ✅ Dynamically import CampusMap with SSR disabled
 const CampusMap = dynamic(() => import('@/components/CampusMap'), { ssr: false });
 
 const LocationsPage = () => {
@@ -42,7 +41,6 @@ const LocationsPage = () => {
       <div className="d-flex flex-column flex-lg-row align-items-center justify-content-between gap-4">
         {/* Map */}
         <div style={{ flex: '1', maxWidth: '600px' }}>
-          {/* ✅ Correct usage here */}
           <CampusMap selectedName={selected} />
         </div>
 
@@ -65,6 +63,7 @@ const LocationsPage = () => {
                   {spot.name}
                 </strong>
                 :
+                {' '}
                 {spot.desc}
               </li>
             ))}
