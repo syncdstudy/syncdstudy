@@ -1,37 +1,38 @@
 'use client';
 
-import { useState } from 'react';
-import { Table, Button } from 'react-bootstrap';
+import { useEffect, useState } from 'react';
+import { Table, Spinner } from 'react-bootstrap';
 
-interface User {
-  id: number;
+interface SupabaseUser {
+  id: string;
   email: string;
-  role: string;
+  created_at: string;
 }
 
-export default function UserTableClient({ initialUsers }: { initialUsers: User[] }) {
-  const [users, setUsers] = useState<User[]>(initialUsers);
+export default function UserTableClient() {
+  const [users, setUsers] = useState<SupabaseUser[]>([]);
   const [search, setSearch] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  const handleDelete = async (id: number) => {
-    // eslint-disable-next-line no-alert
-    const confirmed = window.confirm('Are you sure you want to delete this user?');
-    if (!confirmed) return;
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const res = await fetch('/api/supabase-users');
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        setUsers(data);
+      } else {
+        console.error('Unexpected response from /api/supabase-users:', data);
+        setUsers([]);
+      }
+      setLoading(false);
+    };
 
-    const res = await fetch(`/api/users/${id}/delete`, {
-      method: 'DELETE',
-    });
+    fetchUsers();
+  }, []);
 
-    if (res.ok) {
-      setUsers(users.filter((u) => u.id !== id));
-    } else {
-      // eslint-disable-next-line no-alert
-      alert('Failed to delete user');
-    }
-  };
-
-  const filteredUsers = users.filter((user) => user.email.toLowerCase().includes(search.toLowerCase())
-    || user.role.toLowerCase().includes(search.toLowerCase()));
+  const filteredUsers = users
+    .filter((user) => user.email.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
   return (
     <>
@@ -39,51 +40,36 @@ export default function UserTableClient({ initialUsers }: { initialUsers: User[]
         <input
           type="text"
           className="form-control"
-          placeholder="Search by email or role..."
+          placeholder="Search by email..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
-      <Table striped bordered hover responsive>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredUsers.map((user) => (
-            <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>{user.email}</td>
-              <td>{user.role}</td>
-              <td>
-                <div className="d-flex gap-2">
-                  <Button
-                    type="button"
-                    variant="outline-primary"
-                    size="sm"
-                    onClick={() => console.log('View', user.email)}
-                  >
-                    View
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline-danger"
-                    size="sm"
-                    onClick={() => handleDelete(user.id)}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+      {loading ? (
+        <div className="text-center">
+          <Spinner animation="border" />
+        </div>
+      ) : (
+        <div style={{ maxHeight: '550px', overflowY: 'auto' }}>
+          <Table striped bordered hover responsive>
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredUsers.map((user) => (
+                <tr key={user.id}>
+                  <td>{user.email}</td>
+                  <td>{new Date(user.created_at).toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+      )}
     </>
   );
 }

@@ -1,4 +1,3 @@
-/* eslint-disable import/extensions */
 import type { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
 import AdminNavBar from '@/components/AdminNavBar';
@@ -13,11 +12,13 @@ export const metadata: Metadata = {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className={`${poppins.className} min-h-screen flex flex-col`}>
-        <AdminNavBar />
-        <main className="flex-grow">{children}</main>
-        <Footer />
+    <html lang="en" className="h-full">
+      <body className={`${poppins.className} h-full m-0 p-0`}>
+        <div className="admin-grid-layout">
+          <header><AdminNavBar /></header>
+          <main>{children}</main>
+          <footer><Footer /></footer>
+        </div>
       </body>
     </html>
   );

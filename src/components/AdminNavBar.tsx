@@ -18,7 +18,7 @@ const AdminNavBar = () => {
         <Navbar.Toggle />
         <Navbar.Collapse className="justify-content-between">
           <Nav className="mx-auto gap-4">
-            <Nav.Link href="/admin/dashboard">
+            <Nav.Link href="/admin">
               <ins><em>Dashboard</em></ins>
             </Nav.Link>
             <Nav.Link href="/admin/manage-users">
