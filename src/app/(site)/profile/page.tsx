@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable import/no-duplicates */
@@ -130,8 +131,13 @@ const MyProfilePage = () => {
         <Card className="mx-auto p-4" style={{ maxWidth: '960px', borderRadius: '1.25rem' }}>
           <Row>
             <Col md={4} className="text-center mb-4 mb-md-0">
+<<<<<<< Updated upstream
               <Image
                 src="/image.png"
+=======
+              <img
+                src={userData.avatar_url || '/default-avatar.png'} // ✅ use fallback image
+>>>>>>> Stashed changes
                 alt="Profile"
                 width={120}
                 height={120}
