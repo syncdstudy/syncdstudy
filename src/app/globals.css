@@ -349,3 +349,36 @@ body {
   grid-template-rows: auto 1fr auto;
   min-height: 100vh;
 }
+.contact-form {
+  background-color: rgba(228, 215, 247, 0.9);
+  border: 3px solid rgb(235, 227, 227);
+  border-radius: 20px;
+  padding: 40px;
+  width: 720px; /* Wider form */
+  margin: 0 auto;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  animation: popUp 1.2s ease-out;
+  color: rgb(45, 44, 44);
+}
+
+.contact-button {
+  background-color: #9c88ff !important;
+  color: white !important;
+  border: none !important;
+  font-weight: 500;
+  padding: 10px 16px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.contact-button:hover {
+  background-color: rgb(185, 121, 224) !important;
+  color: white !important;
+}
+.contact-button:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(156, 136, 255, 0.5); /* Soft purple glow */
+}
+

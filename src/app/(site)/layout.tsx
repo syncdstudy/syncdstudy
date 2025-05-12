@@ -6,9 +6,11 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <NavBar />
-        {children}
-        <Footer />
+        <div className="wrapper">
+          <NavBar />
+          {children}
+          <Footer />
+        </div>
       </body>
     </html>
   );

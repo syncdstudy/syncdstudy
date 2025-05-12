@@ -14,7 +14,12 @@ export async function GET() {
       },
     });
 
-    return NextResponse.json({ reports });
+    const formatted = reports.map((r) => ({
+      ...r,
+      userEmail: r.user?.email ?? r.contactEmail ?? 'Unknown',
+    }));
+
+    return NextResponse.json({ reports: formatted });
   } catch (error) {
     console.error('Failed to fetch reports:', error);
     return NextResponse.json({ error: 'Could not fetch reports' }, { status: 500 });

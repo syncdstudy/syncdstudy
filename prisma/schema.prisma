@@ -4,8 +4,8 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("PRISMA_DATABASE_URL")
-  directUrl = env("POSTGRES_URL")
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -13,7 +13,6 @@ model User {
   email       String                         @unique
   password    String
   role        Role                           @default(USER)
-  points      Int                            @default(0)
   preferences CourseNotificationPreference[]
   reports     Report[]
   courses     Course[]                       @relation("CourseToUser")
@@ -56,8 +55,7 @@ model StudySession {
   creator_id   String?        @db.Uuid
   id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   location     String?
-  user_id      String?        @db.Uuid
-  user         AppUser?         @relation(fields: [creator_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "StudySession_creator_id_fkey1")
+  user         AppUser?       @relation(fields: [creator_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "StudySession_creator_id_fkey1")
   participants participants[]
 }
 
@@ -69,9 +67,8 @@ model activitylog {
 }
 
 model AppUser {
-  id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email        String         @unique
-  password     String
+  id           String         @id(map: "users_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email        String         @unique(map: "users_email_key")
   created_at   DateTime?      @default(now()) @db.Timestamptz(6)
   first_name   String?
   last_name    String?
@@ -79,6 +76,9 @@ model AppUser {
   major        String?        @default("''")
   minor        String?
   interests    String[]
+  points       Int?           @default(0)
+  role         String         @default("USER")
+  password     String?
   StudySession StudySession[]
   participants participants[]
 
@@ -86,12 +86,14 @@ model AppUser {
 }
 
 model Report {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  message   String
-  resolved  Boolean  @default(false)
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
+  id           Int      @id @default(autoincrement())
+  userId       Int?
+  message      String
+  resolved     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  contactEmail String?
+  topic        String?
+  user         User?    @relation(fields: [userId], references: [id], onDelete: Restrict)
 }
 
 model participants {
@@ -100,14 +102,14 @@ model participants {
   session_id   String?       @db.Uuid
   created_at   DateTime?     @default(now()) @db.Timestamptz(6)
   StudySession StudySession? @relation(fields: [session_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user         AppUser         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user         AppUser       @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model announcement {
-  id        Int      @id @default(autoincrement())
-  message   String   @db.Text
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  id         BigInt   @id @default(autoincrement())
+  message    String
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
 }
 
 enum Role {

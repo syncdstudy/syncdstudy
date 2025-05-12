@@ -1,3 +1,5 @@
+/* eslint-disable no-nested-ternary */
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -233,15 +235,23 @@ const AdminPage = () => {
               <h5 className="text-center">Recent Activity</h5>
               <ul className="list-unstyled mb-0" style={{ overflowY: 'auto' }}>
                 {activityFeed.map((activity, index) => {
-                  const match = activity.match(/^New user:\s*(.+)$/i); // case-insensitive match
+                  const newUserMatch = activity.match(/^New user:\s*(.+)$/i);
+                  const reportMatch = activity.match(/^New report from:\s*(.+)$/i);
+
                   return (
                     // eslint-disable-next-line react/no-array-index-key
                     <li key={index} className="mb-2">
-                      {match ? (
+                      {newUserMatch ? (
                         <>
                           <strong>New user:</strong>
                           {' '}
-                          {match[1]}
+                          {newUserMatch[1]}
+                        </>
+                      ) : reportMatch ? (
+                        <>
+                          <strong style={{ color: 'rgb(115, 18, 119)' }}>New report from:</strong>
+                          {' '}
+                          {reportMatch[1]}
                         </>
                       ) : (
                         <span>{activity}</span>
@@ -249,6 +259,7 @@ const AdminPage = () => {
                     </li>
                   );
                 })}
+
               </ul>
 
             </Card>
