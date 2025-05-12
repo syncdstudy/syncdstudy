@@ -55,9 +55,6 @@ const NavBar: React.FC = () => {
                 <Nav.Link href="/study-session" active={pathname === '/study-session'}>
                   <ins><em>Study Session</em></ins>
                 </Nav.Link>
-                <Nav.Link href="/leaderboard" active={pathname === '/leaderboard'}>
-                  <ins><em>Leaderboard</em></ins>
-                </Nav.Link>
                 <Nav.Link href="/locations" active={pathname === '/locations'}>
                   <ins><em>Study Spots</em></ins>
                 </Nav.Link>
