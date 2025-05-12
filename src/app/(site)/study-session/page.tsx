@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-alert */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 
@@ -77,8 +78,8 @@ const StudySessionPage = () => {
               <h4 className="text-center mb-4">Create a Study Session</h4>
               <form ref={formRef} onSubmit={handleSubmit}>
                 <div className="d-flex gap-2">
-                  <input name="subject" type="text" className="form-control mb-3" placeholder="Subject Name" />
-                  <input name="course" type="text" className="form-control mb-3" placeholder="Course Name" />
+                  <input name="subject" type="text" className="form-control mb-3" placeholder="Subject (e.g. ICS 314)" />
+                  <input name="course" type="text" className="form-control mb-3" placeholder="Course (e.g. Software Engineering" />
                 </div>
                 <div className="d-flex gap-2 mb-3">
                   <input
