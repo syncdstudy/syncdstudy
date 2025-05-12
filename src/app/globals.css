@@ -340,3 +340,8 @@ body {
 
 @import 'leaflet/dist/leaflet.css';
 
+.admin-grid-layout {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+}

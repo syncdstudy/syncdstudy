@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 
   // Get user from database
   const { data: user, error } = await supabase
-    .from('users')
+    .from('app_users')
     .select('*')
     .eq('email', email)
     .single();

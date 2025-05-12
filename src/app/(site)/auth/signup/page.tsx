@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-shadow */
-/* eslint-disable react/jsx-one-expression-per-line */
-
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -12,6 +8,12 @@ import { Card, Col, Container, Button, Form, Row, InputGroup } from 'react-boots
 import { motion } from 'framer-motion';
 import { Eye, EyeSlash } from 'react-bootstrap-icons';
 import { useRouter } from 'next/navigation';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+);
 
 type SignUpForm = {
   email: string;
@@ -46,43 +48,33 @@ const SignUp = () => {
     register,
     handleSubmit,
     reset,
-    watch,
     formState: { errors },
   } = useForm<SignUpForm>({
     resolver: yupResolver(validationSchema),
   });
 
-  const username = watch('email');
-  const fullEmail = username ? `${username}@hawaii.edu` : '';
-
   const onSubmit = async (formData: SignUpForm) => {
     const fullEmail = `${formData.email}@hawaii.edu`;
 
-    try {
-      const res = await fetch('/api/register', {
+    // eslint-disable-next-line @typescript-eslint/no-shadow
+    const { error } = await supabase.auth.signUp({
+      email: fullEmail,
+      password: formData.password,
+    });
+
+    if (error) {
+      setError(error.message);
+    } else {
+      // ✅ Log signup activity
+      await fetch('/api/log-signup', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: fullEmail,
-          password: formData.password,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: fullEmail }),
       });
 
-      const result = await res.json();
-
-      if (!res.ok) {
-        setError(result.error || 'Something went wrong');
-      } else {
-        // ✅ Auto-login after successful registration
-        localStorage.setItem('loggedIn', 'true');
-        localStorage.setItem('userEmail', fullEmail);
-        router.push('/calendar');
-      }
-    } catch (err) {
-      console.error('Registration error:', err);
-      setError('Failed to register. Please try again later.');
+      localStorage.setItem('loggedIn', 'true');
+      localStorage.setItem('userEmail', fullEmail);
+      router.push('/calendar');
     }
   };
 
@@ -133,7 +125,7 @@ const SignUp = () => {
                         <Form.Control
                           type={showPassword ? 'text' : 'password'}
                           {...register('password')}
-                          className={`Form-control ${errors.password ? 'is-invalid' : ''}`}
+                          className={`form-control ${errors.password ? 'is-invalid' : ''}`}
                         />
                         <Button
                           variant="outline-secondary"
@@ -152,7 +144,7 @@ const SignUp = () => {
                         <Form.Control
                           type={showConfirm ? 'text' : 'password'}
                           {...register('confirmPassword')}
-                          className={`Form-control ${errors.confirmPassword ? 'is-invalid' : ''}`}
+                          className={`form-control ${errors.confirmPassword ? 'is-invalid' : ''}`}
                         />
                         <Button
                           variant="outline-secondary"
@@ -199,7 +191,9 @@ const SignUp = () => {
                   </Form>
                 </Card.Body>
                 <Card.Footer className="text-center bg-transparent border-0 pt-0">
-                  Already have an account? <a href="/auth/signin">Sign in</a>
+                  Already have an account?
+                  {' '}
+                  <a href="/auth/signin">Sign in</a>
                 </Card.Footer>
               </Card>
             </motion.div>
