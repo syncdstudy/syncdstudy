@@ -1,3 +1,9 @@
+/* eslint-disable @typescript-eslint/no-redeclare */
+/* eslint-disable react/jsx-indent-props */
+/* eslint-disable max-len */
+/* eslint-disable react/jsx-indent */
+/* eslint-disable react/jsx-closing-tag-location */
+/* eslint-disable @typescript-eslint/comma-dangle */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable react/jsx-one-expression-per-line */
@@ -8,24 +14,39 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as Yup from 'yup';
 import { useState } from 'react';
-import { Card, Col, Container, Button, Form, Row, InputGroup } from 'react-bootstrap';
+import {
+  Card,
+  Col,
+  Container,
+  Button,
+  Form,
+  Row,
+  InputGroup,
+} from 'react-bootstrap';
 import { motion } from 'framer-motion';
 import { Eye, EyeSlash } from 'react-bootstrap-icons';
 import { useRouter } from 'next/navigation';
 
 type SignUpForm = {
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   confirmPassword: string;
+  year: string;
+  major?: string;
 };
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const router = useRouter();
 
   const validationSchema = Yup.object().shape({
+    firstName: Yup.string().required('First name is required'),
+    lastName: Yup.string().required('Last name is required'),
     email: Yup.string()
       .required('UH username is required')
       .matches(/^[a-zA-Z0-9._-]+$/, 'Invalid UH username'),
@@ -35,11 +56,13 @@ const SignUp = () => {
       .max(40, 'Password must not exceed 40 characters')
       .matches(
         /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&^_-]+$/,
-        'Password must include at least one letter and one number',
+        'Password must include at least one letter and one number'
       ),
     confirmPassword: Yup.string()
       .required('Confirm Password is required')
       .oneOf([Yup.ref('password'), ''], 'Confirm Password does not match'),
+    year: Yup.string().required('Year is required'),
+    major: Yup.string(),
   });
 
   const {
@@ -55,6 +78,13 @@ const SignUp = () => {
   const username = watch('email');
   const fullEmail = username ? `${username}@hawaii.edu` : '';
 
+  const passwordValue = watch('password');
+  const isPasswordValid = (password: string): boolean => /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&^_-]{6,40}$/.test(password);
+
+  const confirmPasswordValue = watch('confirmPassword');
+  const doPasswordsMatch = passwordValue === confirmPasswordValue && isPasswordValid(passwordValue);
+  const showMatchFeedback = confirmPasswordValue && passwordValue && isPasswordValid(passwordValue);
+
   const onSubmit = async (formData: SignUpForm) => {
     const fullEmail = `${formData.email}@hawaii.edu`;
 
@@ -67,6 +97,10 @@ const SignUp = () => {
         body: JSON.stringify({
           email: fullEmail,
           password: formData.password,
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          year: formData.year,
+          major: formData.major || '',
         }),
       });
 
@@ -74,66 +108,123 @@ const SignUp = () => {
 
       if (!res.ok) {
         setError(result.error || 'Something went wrong');
+        setSuccess('');
       } else {
-        // ✅ Auto-login after successful registration
-        localStorage.setItem('loggedIn', 'true');
-        localStorage.setItem('userEmail', fullEmail);
-        router.push('/calendar');
+        setError('');
+        setSuccess('🎉 Account created successfully! Redirecting...');
+        setTimeout(() => {
+          localStorage.setItem('loggedIn', 'true');
+          localStorage.setItem('userEmail', fullEmail);
+          router.push('/profile');
+        }, 1500);
       }
     } catch (err) {
       console.error('Registration error:', err);
       setError('Failed to register. Please try again later.');
+      setSuccess('');
     }
   };
 
   return (
-    <main>
+    <main
+      style={{
+        display: 'flex',
+        alignItems: 'start',
+        justifyContent: 'center',
+        paddingTop: '2rem',
+        paddingBottom: '3rem',
+      }}
+    >
       <Container>
-        <Row className="justify-content-center mt-5">
-          <Col xs={12} md={6} lg={5}>
+        <Row className="justify-content-center">
+          <Col xs={12} md={8} lg={6}>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <h1 className="text-center mb-4">Sign Up</h1>
               <Card
+                className="w-100"
                 style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                  borderRadius: '1rem',
-                  boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
-                  backdropFilter: 'blur(8px)',
+                  maxWidth: '650px',
+                  margin: '0 auto',
+                  backgroundColor: 'rgba(255, 255, 255, 0.92)',
+                  borderRadius: '1.5rem',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                  backdropFilter: 'blur(12px)',
                   border: '1px solid rgba(0, 0, 0, 0.05)',
                 }}
               >
-                <Card.Body className="p-4">
+                <Card.Body className="p-5">
+                  <h4
+                  className="text-center mb-2"
+                  style={{ fontWeight: 500, fontSize: '1.9rem' }}
+                  >
+                  🌸 Welcome to Sync’d Study!
+                  </h4>
+                  <p
+                  className="text-center text-muted mb-4"
+                  style={{ fontSize: '0.95rem' }}
+                  >
+                  Create your account to start joining and leading study sessions
+                  </p>
+
                   {error && (
                     <div className="alert alert-danger text-center py-2 mb-3" role="alert">
                       {error}
                     </div>
                   )}
+
+                  {success && (
+                    <div className="alert alert-success text-center py-2 mb-3" role="alert">
+                      {success}
+                    </div>
+                  )}
+
                   <Form onSubmit={handleSubmit(onSubmit)}>
-                    <Form.Group className="form-group mb-3">
-                      <Form.Label>Username</Form.Label>
+                    <Form.Group className="mb-3">
+                      <Form.Label>First Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter your first name"
+                        {...register('firstName')}
+                        className={errors.firstName ? 'is-invalid' : ''}
+                      />
+                      <div className="invalid-feedback">{errors.firstName?.message}</div>
+                    </Form.Group>
+
+                    <Form.Group className="mb-3">
+                      <Form.Label>Last Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="Enter your last name"
+                        {...register('lastName')}
+                        className={errors.lastName ? 'is-invalid' : ''}
+                      />
+                      <div className="invalid-feedback">{errors.lastName?.message}</div>
+                    </Form.Group>
+
+                    <Form.Group className="mb-3">
+                      <Form.Label>UH Username</Form.Label>
                       <InputGroup>
                         <Form.Control
                           type="text"
                           placeholder="Enter UH username"
                           {...register('email')}
-                          className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                          className={errors.email ? 'is-invalid' : ''}
                         />
                         <InputGroup.Text>@hawaii.edu</InputGroup.Text>
                       </InputGroup>
                       <div className="invalid-feedback">{errors.email?.message}</div>
                     </Form.Group>
 
-                    <Form.Group className="form-group mb-3">
+                    <Form.Group className="mb-3">
                       <Form.Label>Password</Form.Label>
                       <InputGroup>
                         <Form.Control
                           type={showPassword ? 'text' : 'password'}
                           {...register('password')}
-                          className={`Form-control ${errors.password ? 'is-invalid' : ''}`}
+                          className={errors.password ? 'is-invalid' : ''}
                         />
                         <Button
                           variant="outline-secondary"
@@ -143,16 +234,36 @@ const SignUp = () => {
                           {showPassword ? <EyeSlash /> : <Eye />}
                         </Button>
                       </InputGroup>
+
+                      {/* ✅ Checkmark or hint text shown below input */}
+                      {isPasswordValid(passwordValue) && !errors.password && (
+                        <Form.Text
+                          className="text-success d-block mt-1"
+                          style={{ fontSize: '0.85rem' }}
+                        >
+                          ✔ Password looks good!
+                        </Form.Text>
+                      )}
+
+                      {!isPasswordValid(passwordValue) && !errors.password && (
+                        <Form.Text
+                          className="text-muted d-block mt-1"
+                          style={{ fontSize: '0.85rem' }}
+                        >
+                          Password must be at least 6 characters and include a letter and a number.
+                        </Form.Text>
+                      )}
+
                       <div className="invalid-feedback">{errors.password?.message}</div>
                     </Form.Group>
 
-                    <Form.Group className="form-group mb-3">
+                    <Form.Group className="mb-3">
                       <Form.Label>Confirm Password</Form.Label>
                       <InputGroup>
                         <Form.Control
                           type={showConfirm ? 'text' : 'password'}
                           {...register('confirmPassword')}
-                          className={`Form-control ${errors.confirmPassword ? 'is-invalid' : ''}`}
+                          className={errors.confirmPassword ? 'is-invalid' : ''}
                         />
                         <Button
                           variant="outline-secondary"
@@ -162,40 +273,74 @@ const SignUp = () => {
                           {showConfirm ? <EyeSlash /> : <Eye />}
                         </Button>
                       </InputGroup>
+
+                      {/* ✅ Checkmark if passwords match and no error */}
+                      {doPasswordsMatch && !errors.confirmPassword && (
+                        <Form.Text
+                          className="text-success d-block mt-1"
+                          style={{ fontSize: '0.85rem' }}
+                        >
+                          ✔ Passwords match!
+                        </Form.Text>
+                      )}
+
                       <div className="invalid-feedback">{errors.confirmPassword?.message}</div>
                     </Form.Group>
 
-                    <Form.Group className="form-group">
-                      <Row>
-                        <Col className="d-grid">
-                          <Button
-                            type="submit"
-                            className="rounded-pill w-100"
-                            style={{
-                              backgroundColor: '#9c88ff',
-                              color: 'white',
-                              border: 'none',
-                            }}
-                          >
-                            Register
-                          </Button>
-                        </Col>
-                        <Col className="d-grid">
-                          <Button
-                            type="button"
-                            onClick={() => reset()}
-                            className="rounded-pill w-100 mt-2 mt-md-0"
-                            style={{
-                              backgroundColor: '#e0d7f3',
-                              color: '#4a4a4a',
-                              border: 'none',
-                            }}
-                          >
-                            Reset
-                          </Button>
-                        </Col>
-                      </Row>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Year in School</Form.Label>
+                      <Form.Select
+                        {...register('year')}
+                        className={errors.year ? 'is-invalid' : ''}
+                      >
+                        <option value="">Select year</option>
+                        <option value="Freshman">Freshman</option>
+                        <option value="Sophomore">Sophomore</option>
+                        <option value="Junior">Junior</option>
+                        <option value="Senior">Senior</option>
+                        <option value="Graduate">Graduate</option>
+                      </Form.Select>
+                      <div className="invalid-feedback">{errors.year?.message}</div>
                     </Form.Group>
+
+                    <Form.Group className="mb-4">
+                      <Form.Label>Major (optional)</Form.Label>
+                      <Form.Control
+                        type="text"
+                        placeholder="e.g., Computer Science"
+                        {...register('major')}
+                      />
+                    </Form.Group>
+
+                    <Row>
+                      <Col className="d-grid">
+                        <Button
+                          type="submit"
+                          className="rounded-pill w-100"
+                          style={{
+                            backgroundColor: '#9c88ff',
+                            color: 'white',
+                            border: 'none',
+                          }}
+                        >
+                          Register
+                        </Button>
+                      </Col>
+                      <Col className="d-grid">
+                        <Button
+                          type="button"
+                          onClick={() => reset()}
+                          className="rounded-pill w-100 mt-2 mt-md-0"
+                          style={{
+                            backgroundColor: '#e0d7f3',
+                            color: '#4a4a4a',
+                            border: 'none',
+                          }}
+                        >
+                          Reset
+                        </Button>
+                      </Col>
+                    </Row>
                   </Form>
                 </Card.Body>
                 <Card.Footer className="text-center bg-transparent border-0 pt-0">

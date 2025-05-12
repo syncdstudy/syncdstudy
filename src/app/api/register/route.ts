@@ -5,14 +5,14 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!, // service role needed for inserting users
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
 export async function POST(req: Request) {
-  const { email, password } = await req.json();
+  const { email, password, firstName, lastName, year, major } = await req.json();
 
-  if (!email || !password) {
-    return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
+  if (!email || !password || !firstName || !lastName || !year) {
+    return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
   // Check if user already exists
@@ -29,11 +29,15 @@ export async function POST(req: Request) {
   // Hash password
   const hashedPassword = await hash(password, 10);
 
-  // Insert user
+  // Insert user into Supabase
   const { error } = await supabase.from('users').insert([
     {
       email,
       password: hashedPassword,
+      first_name: firstName,
+      last_name: lastName,
+      year,
+      major: major || '', // fallback to empty string if undefined
     },
   ]);
 
