@@ -4,8 +4,8 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  url       = env("PRISMA_DATABASE_URL")
+  directUrl = env("POSTGRES_URL")
 }
 
 model User {
@@ -70,7 +70,7 @@ model activitylog {
 model AppUser {
   id           String         @id(map: "users_pkey") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email        String         @unique(map: "users_email_key")
-  created_at   DateTime?      @default(now()) @db.Timestamptz(6)
+  created_at   DateTime       @default(now())
   first_name   String?
   last_name    String?
   year         String?
@@ -80,6 +80,7 @@ model AppUser {
   points       Int?           @default(0)
   role         String         @default("USER")
   password     String?
+  avatar_url   String?        // optional, since not everyone uploads one
   StudySession StudySession[]
   participants participants[]
 

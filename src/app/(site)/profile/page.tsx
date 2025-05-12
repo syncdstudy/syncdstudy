@@ -49,6 +49,7 @@ const MyProfilePage = () => {
     major?: string;
     minor?: string;
     year?: string;
+    avatar_url?: string;
     interests: string[];
   }
 
@@ -69,10 +70,21 @@ const MyProfilePage = () => {
   const [interests, setInterests] = useState('');
 
   useEffect(() => {
-    const userId = localStorage.getItem('userId');
-    if (!userId) return;
-
     const fetchUser = async () => {
+      let userId = localStorage.getItem('userId');
+
+      // ✅ If not in localStorage, get from Supabase Auth
+      if (!userId) {
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error || !user) {
+          console.error('No logged-in user');
+          return;
+        }
+        userId = user.id;
+        localStorage.setItem('userId', userId); // store it for later
+      }
+
+      // ✅ Now fetch from your database
       const res = await fetch('/api/get-user', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -124,14 +136,88 @@ const MyProfilePage = () => {
 
   // Removed redundant function declarations for setMinor and setInterests
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // ✅ Get current Supabase Auth user
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      console.error('🔒 Could not get logged-in user:', authError);
+      alert('You must be signed in to upload a profile picture.');
+      return;
+    }
+
+    const authUserId = user.id;
+    const storedUserId = localStorage.getItem('userId');
+
+    console.log('🔍 Supabase Auth user ID:', authUserId);
+    console.log('🗃️ LocalStorage user ID:', storedUserId);
+
+    // ✅ Use the auth user ID (more reliable than localStorage)
+    const userId = authUserId;
+
+    // ✅ Check file input
+    if (!e.target.files || e.target.files.length === 0) {
+      alert('Please select a file.');
+      return;
+    }
+
+    const file = e.target.files[0];
+    const fileExt = file.name.split('.').pop();
+    const filePath = `${userId}/avatar.${fileExt}`;
+
+    console.log('📁 Uploading to filePath:', filePath);
+
+    // ✅ Upload to Supabase Storage
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(filePath, file, { upsert: true });
+
+    if (uploadError) {
+      console.error('📦 Upload error:', uploadError.message);
+      alert(`Upload failed: ${uploadError.message}`);
+      return;
+    }
+
+    // ✅ Get public URL of uploaded image
+    const { data: publicURL } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(filePath);
+
+    if (!publicURL?.publicUrl) {
+      console.error('❌ Failed to retrieve public URL');
+      alert('Upload failed: could not get public image URL.');
+      return;
+    }
+
+    // ✅ Update avatar_url in app_users
+    const { error: updateError } = await supabase
+      .from('app_users')
+      .update({ avatar_url: publicURL.publicUrl })
+      .eq('id', userId);
+
+    if (updateError) {
+      console.error('❌ RLS Update error:', updateError.message);
+      alert(`Upload failed: ${updateError.message}`);
+      return;
+    }
+
+    // ✅ Update UI with new avatar
+    setUserData((prev) => ({
+      ...prev,
+      avatar_url: publicURL.publicUrl,
+    }));
+
+    console.log('✅ Avatar updated!');
+  };
+
   return (
-    <main style={{ backgroundColor: '#f6f2ff', minHeight: '105vh', padding: '3rem 0 8rem' }}>
+    <main style={{ backgroundColor: '#f6f2ff', minHeight: '105vh', padding: '2rem 0 3rem' }}>
       <Container>
         <Card className="mx-auto p-4" style={{ maxWidth: '960px', borderRadius: '1.25rem' }}>
           <Row>
             <Col md={4} className="text-center mb-4 mb-md-0">
               <Image
-                src="/image.png"
+                src={userData.avatar_url || '/default-avatar.png'} // ✅ use fallback image
                 alt="Profile"
                 width={120}
                 height={120}
@@ -178,9 +264,6 @@ const MyProfilePage = () => {
                       <Badge key={idx} bg="secondary">{interest}</Badge>
                     ))}
                   </div>
-                  <p><strong>Progress</strong></p>
-                  <small>Level 2 Sensei – 12 pts to next level</small>
-                  <ProgressBar now={18} max={30} label="18 pts" style={{ height: '1rem', marginTop: '4px' }} />
                 </Col>
 
                 <Col md={6}>
@@ -200,6 +283,10 @@ const MyProfilePage = () => {
                     {' '}
                     2
                   </p>
+
+                  <h6 className="fw-bold border-bottom pb-3" style={{ borderColor: '#9c88ff' }}>Progress</h6>
+                  <small>Level 2 Sensei – 12 pts to next level</small>
+                  <ProgressBar now={18} max={30} label="18 pts" style={{ height: '1rem', marginTop: '4px' }} />
                 </Col>
               </Row>
             </Col>
@@ -210,7 +297,7 @@ const MyProfilePage = () => {
           {/* Achievements */}
           <div className="mt-0">
             <div className="d-flex justify-content-between align-items-center mb-1">
-              <h6 className="fw-bold border-bottom pb-1 mb-3" style={{ borderColor: '#9c88ff' }}>Achievements</h6>
+              <h6 className="fw-bold border-bottom pb-1 mb-1" style={{ borderColor: '#9c88ff' }}>Achievements</h6>
               <div className="d-flex gap-2">
                 <Button variant="light" size="sm" onClick={scrollLeft}><ChevronLeft /></Button>
                 <Button variant="light" size="sm" onClick={scrollRight}><ChevronRight /></Button>
@@ -315,6 +402,24 @@ const MyProfilePage = () => {
               <Modal.Title>Edit Profile</Modal.Title>
             </Modal.Header>
             <Modal.Body>
+              {userData.avatar_url && (
+              <div className="text-center mb-3">
+                <Image
+                  src={userData.avatar_url}
+                  alt="Avatar Preview"
+                  width={100}
+                  height={100}
+                  className="rounded-circle"
+                  style={{ objectFit: 'cover' }}
+                />
+              </div>
+              )}
+
+              <Form.Group className="mb-3">
+                <Form.Label>Change Profile Picture</Form.Label>
+                <Form.Control type="file" accept="image/*" onChange={handleAvatarUpload} />
+              </Form.Group>
+
               <Form onSubmit={(e) => { e.preventDefault(); handleUpdate(); setShowModal(false); }}>
                 <Form.Group className="mb-3">
                   <Form.Label>Major</Form.Label>

@@ -89,6 +89,8 @@ const SignUp = () => {
         password: formData.password,
       });
 
+      console.log('🧪 Supabase Auth result:', signUpData, signUpError);
+
       if (signUpError) {
         setError(signUpError.message);
         return;
@@ -105,6 +107,7 @@ const SignUp = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          id: userId,
           email: fullEmail,
           password: formData.password,
           firstName: formData.firstName,
@@ -230,16 +233,17 @@ const SignUp = () => {
                       </InputGroup>
 
                       {/* ✅ Password validation hint */}
-                      {isPasswordValid(passwordValue) && !errors.password && (
-                        <Form.Text className="text-success d-block mt-1" style={{ fontSize: '0.85rem' }}>
-                          ✔ Password looks good!
-                        </Form.Text>
-                      )}
 
-                      {!isPasswordValid(passwordValue) && !errors.password && (
-                        <Form.Text className="text-muted d-block mt-1" style={{ fontSize: '0.85rem' }}>
-                          Password must include a letter and a number.
-                        </Form.Text>
+                      {passwordValue && passwordValue.length > 0 && (
+                        isPasswordValid(passwordValue) ? (
+                          <Form.Text className="text-success d-block mt-1" style={{ fontSize: '0.85rem' }}>
+                            ✔ Password looks good!
+                          </Form.Text>
+                        ) : (
+                          <Form.Text className="text-danger d-block mt-1" style={{ fontSize: '0.85rem' }}>
+                            × Must be at least 6 characters and include a letter + number
+                          </Form.Text>
+                        )
                       )}
 
                       <div className="invalid-feedback">{errors.password?.message}</div>
@@ -263,10 +267,17 @@ const SignUp = () => {
                       </InputGroup>
 
                       {/* ✅ Confirm password match check */}
-                      {doPasswordsMatch && !errors.confirmPassword && (
-                        <Form.Text className="text-success d-block mt-1" style={{ fontSize: '0.85rem' }}>
-                          ✔ Passwords match!
-                        </Form.Text>
+
+                      {confirmPasswordValue && confirmPasswordValue.length > 0 && (
+                        doPasswordsMatch ? (
+                          <Form.Text className="text-success d-block mt-1" style={{ fontSize: '0.85rem' }}>
+                            ✔ Passwords match!
+                          </Form.Text>
+                        ) : (
+                          <Form.Text className="text-danger d-block mt-1" style={{ fontSize: '0.85rem' }}>
+                            × Passwords do not match
+                          </Form.Text>
+                        )
                       )}
 
                       <div className="invalid-feedback">{errors.confirmPassword?.message}</div>
