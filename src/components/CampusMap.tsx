@@ -87,7 +87,7 @@ const studySpots = [
     icon: '⛱️',
   },
   {
-    name: 'Art Building',
+    name: 'Art Building Tables',
     lat: 21.299373557596333,
     lng: -157.81750741813104,
     desc: ' Outdoor tables near art studios, peaceful and green.',

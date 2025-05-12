@@ -39,22 +39,34 @@ const LocationsPage = () => {
       </div>
 
       <div className="text-center mb-3">
-        <button type="button" className="btn btn-outline-dark mx-2" onClick={() => setFilter('all')}>All</button>
         <button
           type="button"
-          className="btn btn-outline-primary mx-2"
+          className="custom-button-3 mx-3 p-2"
+          onClick={() => setFilter('all')}
+        >
+          <em>All Spots</em>
+        </button>
+        <button
+          type="button"
+          className="custom-button-2 mx-3 p-2"
           onClick={() => setFilter('indoor')}
         >
-          Indoor 📚
+          <em>Indoor</em>
         </button>
         <button
           type="button"
-          className="btn btn-outline-success mx-2"
+          className="custom-button-4 mx-3 p-2"
           onClick={() => setFilter('outdoor')}
         >
-          Outdoor 🌳
+          <em>Outdoor</em>
         </button>
-        <button type="button" className="btn btn-outline-danger mx-2" onClick={() => setFilter('food')}>Food ☕</button>
+        <button
+          type="button"
+          className="custom-button-1 mx-3 p-2"
+          onClick={() => setFilter('food')}
+        >
+          <em>Food Hub</em>
+        </button>
       </div>
 
       <div className="d-flex flex-column flex-lg-row align-items-center justify-content-between gap-4">
@@ -73,8 +85,7 @@ const LocationsPage = () => {
             overflowY: 'auto',
           }}
         >
-
-          <h4 className="text-center mb-4">Top 10 Study Spots</h4>
+          <h4 className="text-center mb-4">Popular Study Spots</h4>
           <ul className="list-unstyled">
             {filteredSpots.map((spot) => (
               // eslint-disable-next-line jsx-a11y/click-events-have-key-events
