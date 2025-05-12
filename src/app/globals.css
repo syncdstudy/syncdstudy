@@ -379,6 +379,79 @@ body {
 }
 .contact-button:focus {
   outline: none !important;
-  box-shadow: 0 0 0 3px rgba(156, 136, 255, 0.5); /* Soft purple glow */
+  box-shadow: 0 0 0 3px rgba(156, 136, 255, 0.5); 
 }
 
+/* Center the content */
+.leaderboard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 60px;
+}
+
+/* Match the announcement and leaderboard width */
+.info-box {
+  width: 80%;
+  max-width: 800px;
+  margin-bottom: 20px;
+  background-color: rgba(228, 215, 247, 0.9);
+  border: 3px solid rgb(235, 227, 227);
+  border-radius: 20px;
+  padding: 20px 30px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Make the leaderboard scroll independently */
+.leaderboard {
+  width: 80%;
+  max-width: 800px;
+  overflow-y: auto;
+  max-height: 500px;
+  background-color: rgba(228, 215, 247, 0.9);
+  border: 3px solid rgb(235, 227, 227);
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Fixed leaderboard title */
+.leaderboard-title {
+  background-color: rgba(228, 215, 247);
+  padding: 15px 30px;
+  border-bottom: 3px solid rgb(235, 227, 227);
+  border-radius: 20px 20px 0 0;
+  z-index: 2;
+  position: sticky;
+  top: 0;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Style the leaderboard items */
+.leaderboard-list {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+.leaderboard-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 30px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Scrollbar styles */
+.leaderboard::-webkit-scrollbar {
+  width: 8px;
+}
+
+.leaderboard::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
+.leaderboard::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
