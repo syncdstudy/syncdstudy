@@ -53,8 +53,8 @@ const NavBar: React.FC = () => {
                 <Nav.Link href="/leaderboard" active={pathname === '/leaderboard'}>
                   <ins><em>Leaderboard</em></ins>
                 </Nav.Link>
-                <Nav.Link href="/courses" active={pathname === '/courses'}>
-                  <ins><em>My Courses</em></ins>
+                <Nav.Link href="/locations" active={pathname === '/locations'}>
+                  <ins><em>Study Spots</em></ins>
                 </Nav.Link>
                 <Nav.Link href="/profile" active={pathname === '/profile'}>
                   <ins><em>My Profile</em></ins>
