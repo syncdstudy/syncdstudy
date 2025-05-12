@@ -79,7 +79,7 @@ const StudySessionPage = () => {
               <form ref={formRef} onSubmit={handleSubmit}>
                 <div className="d-flex gap-2">
                   <input name="subject" type="text" className="form-control mb-3" placeholder="Subject (e.g. ICS 314)" />
-                  <input name="course" type="text" className="form-control mb-3" placeholder="Course (e.g. Software Engineering" />
+                  <input name="course" type="text" className="form-control mb-3" placeholder="Course (e.g. Software Engineering)" />
                 </div>
                 <div className="d-flex gap-2 mb-3">
                   <input
