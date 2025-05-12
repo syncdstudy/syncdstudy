@@ -73,13 +73,21 @@ const MyProfilePage = () => {
         body: JSON.stringify({ userId }),
       });
 
-      const data = await res.json();
-      if (res.ok) {
+      let data = null;
+      try {
+        data = await res.json();
+      } catch (err) {
+        console.error('Failed to parse JSON:', err);
+      }
+
+      if (res.ok && data) {
         setUserData(data);
         setMinor(data.minor || '');
         setMajor(data.major || '');
         setInterests((data.interests || []).join(', '));
         setYear(data.year || '');
+      } else {
+        console.error('Error fetching user:', res.status, data);
       }
     };
 
