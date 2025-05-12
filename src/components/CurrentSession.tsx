@@ -1,7 +1,8 @@
-/* eslint-disable no-alert */
 /* eslint-disable react/button-has-type */
 /* eslint-disable max-len */
-/* eslint-disable import/no-extraneous-dependencies */
+
+'use client';
+
 import React, { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import supabase from '@/lib/supabaseClient';
@@ -13,6 +14,41 @@ const CurrentSessions = () => {
   const [showModal, setShowModal] = useState(false);
   const [editData, setEditData] = useState<any>(null);
 
+  const getHSTNow = () => new Date(new Date().toLocaleString('en-US', { timeZone: 'Pacific/Honolulu' }));
+
+  const getStatus = (session: any) => {
+    // Force current time to HST
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'Pacific/Honolulu' }));
+
+    // Parse the session date into a real date object
+    const sessionDate = new Date(session.date); // stored in UTC
+    const sessionDateStr = sessionDate.toISOString().split('T')[0]; // "YYYY-MM-DD"
+
+    const [startStr, endStr] = session.time.split('–');
+
+    // Build full DateTime strings with explicit HST offset
+    const start = new Date(`${sessionDateStr}T${startStr}:00-10:00`);
+    const end = new Date(`${sessionDateStr}T${endStr}:00-10:00`);
+
+    if (now >= start && now <= end) return 'Happening Now!';
+    if (now < start) return 'Later Today';
+    return 'Already Happened';
+  };
+
+  const formatTimeRange = (range: string) => {
+    const [startStr, endStr] = range.split('–');
+
+    const to12hr = (time: string) => {
+      const [hour, minute] = time.split(':');
+      const h = parseInt(hour, 10);
+      const suffix = h >= 12 ? 'PM' : 'AM';
+      const hour12 = h % 12 === 0 ? 12 : h % 12;
+      return `${hour12}:${minute} ${suffix}`;
+    };
+
+    return `${to12hr(startStr)} – ${to12hr(endStr)}`;
+  };
+
   useEffect(() => {
     const fetchSessions = async () => {
       const { data, error } = await supabase
@@ -22,10 +58,19 @@ const CurrentSessions = () => {
 
       if (error) {
         console.error('Error fetching sessions:', error);
-      } else {
-        setSessions(data || []);
-        setCurrentIndex(0);
+        return;
       }
+
+      const today = getHSTNow();
+      const todayStr = today.toISOString().split('T')[0];
+
+      const todaySessions = (data || []).filter((session) => {
+        const sessionDate = new Date(session.date).toISOString().split('T')[0];
+        return sessionDate === todayStr;
+      });
+
+      setSessions(todaySessions);
+      setCurrentIndex(0);
     };
 
     fetchSessions();
@@ -42,6 +87,7 @@ const CurrentSessions = () => {
   const handleDelete = async (id: string) => {
     const { error } = await supabase.from('StudySession').delete().eq('id', id);
     if (error) {
+      // eslint-disable-next-line no-alert
       alert('Failed to delete session.');
       return;
     }
@@ -74,21 +120,22 @@ const CurrentSessions = () => {
       .eq('id', editData.id);
 
     if (error) {
+      // eslint-disable-next-line no-alert
       alert('Failed to update session.');
       return;
     }
 
     const updatedSessions = sessions.map((s) => (s.id === editData.id ? { ...s, ...editData } : s));
-
     setSessions(updatedSessions);
     setShowModal(false);
   };
 
   if (sessions.length === 0) {
     return (
-      <div className="border border-dark p-4 rounded shadow" style={{ backgroundColor: '#e5d8f6', borderRadius: '15px' }}>
-        <h4 className="text-center mb-3">Current Sessions</h4>
-        <p className="text-center">No study sessions available.</p>
+      <div className="border border-dark p-4 rounded shadow" style={{ backgroundColor: '#e5d8f6' }}>
+
+        <h5 className="text-center mb-2">Today&apos;s Sessions</h5>
+        <p className="text-center">No study sessions scheduled for today.</p>
       </div>
     );
   }
@@ -97,57 +144,74 @@ const CurrentSessions = () => {
 
   return (
     <>
-      <div className="border border-dark p-4 rounded shadow" style={{ backgroundColor: '#e5d8f6', borderRadius: '15px' }}>
-        <h4 className="text-center mb-3">Current Sessions</h4>
+      <div className="border border-dark p-4 rounded shadow" style={{ backgroundColor: '#e5d8f6' }}>
+        <h4 className="text-center mb-3">Today&apos;s Sessions</h4>
         <div className="d-flex align-items-center justify-content-between" style={{ minHeight: '100px' }}>
-          <button type="button" onClick={handlePrevious} className="custom-button-3 btn-sm">
-            <ChevronLeft size={18} />
+          <button type="button" onClick={handlePrevious} className="btn btn-outline-secondary btn-sm">
+            <ChevronLeft size={16} />
           </button>
 
           <div
-            className="flex-grow-1 mx-3 border rounded p-4"
-            style={{ backgroundColor: '#ffffff', borderRadius: '8px', minWidth: '250px' }}
+            className="flex-grow-1 mx-2 border rounded p-3"
+            style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '6px',
+              lineHeight: '1.1', // 🔽 tighter vertical spacing
+              fontSize: 'inherit', // ✅ keep original font
+            }}
           >
-            <p className="mb-1" style={{ fontWeight: 'bold' }}>
-              {new Date(current.date).toLocaleDateString()}
-              {' '}
-              :
+            <p className="mb-1">
+              <strong>Course:</strong>
               {' '}
               {current.name}
-              {' '}
-              at
-              {' '}
-              {current.time}
             </p>
-            <p className="mb-1">{current.location}</p>
-            <button type="button" className="custom-button btn-sm">{current.mode}</button>
+            <p className="mb-1">
+              <strong>Date:</strong>
+              {' '}
+              {new Date(current.date).toLocaleDateString()}
+            </p>
+            <p className="mb-1">
+              <strong>Time:</strong>
+              {' '}
+              {formatTimeRange(current.time)}
+            </p>
+            <p className="mb-1">
+              <strong>Location:</strong>
+              {' '}
+              {current.location || 'TBA'}
+            </p>
+            <p className="mb-1">
+              <strong>Status:</strong>
+              {' '}
+              {getStatus(current)}
+            </p>
 
             {current.creator_id === localStorage.getItem('userId') && (
-              <div className="mt-2 d-flex gap-2">
-                <button className="btn btn-outline-danger btn-sm" onClick={() => handleDelete(current.id)}>
-                  Delete
-                </button>
-                <button className="btn btn-outline-secondary btn-sm" onClick={() => handleEdit(current)}>
-                  Edit
-                </button>
-              </div>
+            <div className="mt-2 d-flex gap-2 justify-content-start">
+              <button className="btn btn-outline-danger btn-sm" onClick={() => handleDelete(current.id)}>
+                Delete
+              </button>
+              <button className="btn btn-outline-secondary btn-sm" onClick={() => handleEdit(current)}>
+                Edit
+              </button>
+            </div>
             )}
           </div>
 
-          <button type="button" onClick={handleNext} className="custom-button-3 btn-sm">
-            <ChevronRight size={18} />
+          <button type="button" onClick={handleNext} className="btn btn-outline-secondary btn-sm">
+            <ChevronRight size={16} />
           </button>
         </div>
       </div>
 
-      {/* ✅ Edit Modal */}
+      {/* Modal remains unchanged */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Edit Study Session</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="editName" className="mb-3">
+            <Form.Group className="mb-2">
               <Form.Label>Session Name</Form.Label>
               <Form.Control
                 type="text"
@@ -156,7 +220,7 @@ const CurrentSessions = () => {
               />
             </Form.Group>
 
-            <Form.Group controlId="editDate" className="mb-3">
+            <Form.Group className="mb-2">
               <Form.Label>Date</Form.Label>
               <Form.Control
                 type="date"
@@ -165,7 +229,7 @@ const CurrentSessions = () => {
               />
             </Form.Group>
 
-            <Form.Group controlId="editTime" className="mb-3">
+            <Form.Group className="mb-2">
               <Form.Label>Time</Form.Label>
               <Form.Control
                 type="text"
@@ -174,7 +238,7 @@ const CurrentSessions = () => {
               />
             </Form.Group>
 
-            <Form.Group controlId="editLocation" className="mb-3">
+            <Form.Group className="mb-2">
               <Form.Label>Location</Form.Label>
               <Form.Control
                 type="text"
@@ -183,7 +247,7 @@ const CurrentSessions = () => {
               />
             </Form.Group>
 
-            <Form.Group controlId="editMode" className="mb-3">
+            <Form.Group className="mb-2">
               <Form.Label>Mode</Form.Label>
               <Form.Select
                 value={editData?.mode || ''}
@@ -194,7 +258,7 @@ const CurrentSessions = () => {
               </Form.Select>
             </Form.Group>
 
-            <Form.Group controlId="editDescription" className="mb-3">
+            <Form.Group className="mb-2">
               <Form.Label>Description</Form.Label>
               <Form.Control
                 as="textarea"

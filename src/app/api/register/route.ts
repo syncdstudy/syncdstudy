@@ -11,17 +11,18 @@ const supabase = createClient(
 );
 
 export async function POST(req: Request) {
-  const { id, email, password, firstName, lastName, year, major } = await req.json();
+  const { id, email, password, firstName, lastName, year, major, username } = await req.json();
 
   console.log('📦 Received body:', {
-    id, email, password, firstName, lastName, year, major,
+    id, email, firstName, lastName, year, major, username
+    // 🔐 Don't log raw password
   });
 
-  if (!id || !email || !password || !firstName || !lastName || !year) {
+  if (!id || !email || !password || !firstName || !lastName || !year || !username) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
-  const hashedPassword = await hash(password, 10); // ✅ Move this up!
+  const hashedPassword = await hash(password, 10);
 
   console.log('🔍 Checking for existing user with:', { id, email });
 
@@ -31,17 +32,17 @@ export async function POST(req: Request) {
     .or(`id.eq.${id},email.eq.${email}`)
     .maybeSingle();
 
-  console.log('👀 existingUser =', existingUser);
-
   if (existingUser) {
-    console.log('✏️ User exists — updating missing fields');
-    const { error: updateError } = await supabase.from('app_users')
+    console.log('✏️ User exists — updating fields');
+    const { error: updateError } = await supabase
+      .from('app_users')
       .update({
         first_name: firstName,
         last_name: lastName,
         year,
         major,
         password: hashedPassword,
+        username,
       })
       .eq('id', id);
 
@@ -49,29 +50,37 @@ export async function POST(req: Request) {
       console.error('❌ Update error:', updateError);
       return NextResponse.json({ error: updateError.message }, { status: 500 });
     }
+  } else {
+    console.log('📤 Inserting new user row...');
+    const { error: insertError } = await supabase.from('app_users').insert([
+      {
+        id,
+        email,
+        password: hashedPassword,
+        first_name: firstName,
+        last_name: lastName,
+        year,
+        major,
+        username,
+      },
+    ]);
 
-    return NextResponse.json({ id });
+    if (insertError) {
+      console.error('❌ Insert error:', insertError);
+      return NextResponse.json({ error: insertError.message }, { status: 500 });
+    }
   }
 
-  const { error: insertError } = await supabase.from('app_users').insert([
+  // ✏️ Log signup action
+  const { error: logError } = await supabase.from('activitylog').insert([
     {
-      id,
-      email,
-      password: hashedPassword,
-      first_name: firstName,
-      last_name: lastName,
-      year,
-      major,
+      type: 'user_signup',
+      message: `New user: ${email}`,
     },
   ]);
 
-  console.log('📤 Inserting row:', {
-    id, email, password: hashedPassword, first_name: firstName, last_name: lastName, year, major,
-  });
-
-  if (insertError) {
-    console.error('❌ Insert error:', insertError);
-    return NextResponse.json({ error: insertError.message }, { status: 500 });
+  if (logError) {
+    console.error('⚠️ Activity logging failed:', logError);
   }
 
   return NextResponse.json({ id });
