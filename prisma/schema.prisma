@@ -4,8 +4,8 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  url       = env("PRISMA_DATABASE_URL")
+  directUrl = env("POSTGRES_URL")
 }
 
 model User {
@@ -57,7 +57,7 @@ model StudySession {
   id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   location     String?
   user_id      String?        @db.Uuid
-  user         app_users?         @relation(fields: [creator_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "StudySession_creator_id_fkey1")
+  user         AppUser?         @relation(fields: [creator_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "StudySession_creator_id_fkey1")
   participants participants[]
 }
 
@@ -100,7 +100,7 @@ model participants {
   session_id   String?       @db.Uuid
   created_at   DateTime?     @default(now()) @db.Timestamptz(6)
   StudySession StudySession? @relation(fields: [session_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  user         app_users         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user         AppUser         @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model announcement {
