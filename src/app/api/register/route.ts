@@ -13,12 +13,13 @@ const supabase = createClient(
 export async function POST(req: Request) {
   const { id, email, password, firstName, lastName, year, major, username } = await req.json();
 
+  const usernameFinal = username || `${firstName} ${lastName}`.trim();// ✅ Add this here
+
   console.log('📦 Received body:', {
-    id, email, firstName, lastName, year, major, username
-    // 🔐 Don't log raw password
+    id, email, firstName, lastName, year, major, usernameFinal
   });
 
-  if (!id || !email || !password || !firstName || !lastName || !year || !username) {
+  if (!id || !email || !password || !firstName || !lastName || !year) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
@@ -42,7 +43,7 @@ export async function POST(req: Request) {
         year,
         major,
         password: hashedPassword,
-        username,
+        username: usernameFinal,
       })
       .eq('id', id);
 
@@ -61,7 +62,7 @@ export async function POST(req: Request) {
         last_name: lastName,
         year,
         major,
-        username,
+        username: usernameFinal,
       },
     ]);
 
