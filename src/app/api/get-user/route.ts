@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable import/prefer-default-export */
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
@@ -6,18 +5,18 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
-  const { userId } = await req.json();
+  const { id } = await req.json();
 
-  const user = await prisma.users.findUnique({
-    where: { id: userId },
+  const user = await prisma.appUser.findUnique({
+    where: { id },
     select: {
       email: true,
       first_name: true,
       last_name: true,
       year: true,
       major: true,
-      minor: true, // ✅ add this
-      interests: true, // ✅ add this
+      minor: true,
+      interests: true,
       created_at: true,
     },
   });

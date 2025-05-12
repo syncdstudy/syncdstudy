@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable react/jsx-one-expression-per-line */
 
 'use client';
@@ -15,6 +17,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Eye, EyeSlash } from 'react-bootstrap-icons';
+import supabase from '@/lib/supabaseClient';
 
 const SignIn = () => {
   const router = useRouter();
@@ -33,31 +36,23 @@ const SignIn = () => {
     const email = `${target.email.value}@hawaii.edu`;
     const password = target.password.value;
 
-    try {
-      const res = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-      const result = await res.json();
-
-      if (!res.ok) {
-        setError(result.error || 'Invalid username or password.');
-      } else {
-        localStorage.setItem('loggedIn', 'true');
-        localStorage.setItem('userEmail', email);
-        localStorage.setItem('userId', result.userId);
-        router.push('/calendar');
-      }
-    } catch (err) {
-      console.error('Login error:', err);
-      setError('Something went wrong. Please try again later.');
+    if (error) {
+      setError(error.message || 'Invalid credentials');
+      return;
     }
-  };
 
+    setError('');
+    localStorage.setItem('loggedIn', 'true');
+    localStorage.setItem('userEmail', email);
+    localStorage.setItem('userId', data.user.id);
+    localStorage.setItem('username', email.split('@')[0]);
+    window.location.href = '/calendar';
+  };
   return (
     <main
       style={{

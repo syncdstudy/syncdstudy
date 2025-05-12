@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react/jsx-one-expression-per-line */
 
 'use client';
@@ -12,12 +13,16 @@ const NavBar: React.FC = () => {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState('');
+  const [username, setUsername] = useState('');
 
   useEffect(() => {
     const loggedIn = localStorage.getItem('loggedIn') === 'true';
     const email = localStorage.getItem('userEmail') || '';
+    const name = localStorage.getItem('username') || ''; // <- from signup/signin
+
     setIsLoggedIn(loggedIn);
     setUserEmail(email);
+    setUsername(name);
   }, [pathname]);
 
   const handleLogout = () => {
@@ -80,7 +85,7 @@ const NavBar: React.FC = () => {
           {isLoggedIn ? (
             <NavDropdown
               id="login-dropdown"
-              title={userEmail.split('@')[0] || 'User'}
+              title={username || 'User'}
               className="custom-button px-3 mx-1"
             >
               <NavDropdown.Item onClick={handleLogout}>
