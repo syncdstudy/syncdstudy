@@ -24,7 +24,7 @@ export default function ManageUsersPage() {
                     overflowY: 'auto',
                   }}
                 >
-                  <h3 className="text-center mb-4">Manage Users</h3>
+                  <h3 className="text-center mb-4">Manage Users!</h3>
                   <UserTableClient />
                 </Card>
               </Col>
