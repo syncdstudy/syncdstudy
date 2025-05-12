@@ -340,3 +340,7 @@ body {
 
 @import 'leaflet/dist/leaflet.css';
 
+/* Hide horizontal scrollbars */
+::-webkit-scrollbar {
+  display: none;
+}
