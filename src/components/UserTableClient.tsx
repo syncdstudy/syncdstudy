@@ -57,6 +57,9 @@ export default function UserTableClient() {
               <tr>
                 <th>Email</th>
                 <th>Created</th>
+                <th>Actions</th>
+                {' '}
+                {/* ✅ Add column header */}
               </tr>
             </thead>
             <tbody>
@@ -64,6 +67,36 @@ export default function UserTableClient() {
                 <tr key={user.id}>
                   <td>{user.email}</td>
                   <td>{new Date(user.created_at).toLocaleString()}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="btn btn-danger btn-sm"
+                      onClick={async () => {
+                        console.log('Deleting user ID:', user.id);
+
+                        // eslint-disable-next-line no-restricted-globals, no-alert
+                        const confirmed = confirm(`Delete user ${user.email}?`);
+                        if (!confirmed) return;
+
+                        const res = await fetch('/api/delete-user', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ id: user.id }),
+                        });
+
+                        if (res.ok) {
+                          setUsers((prev) => prev.filter((u) => u.id !== user.id));
+                        } else {
+                          const data = await res.json();
+                          // eslint-disable-next-line no-alert
+                          alert(`Error: ${data.error}`);
+                        }
+                      }}
+                    >
+                      Delete
+                    </button>
+
+                  </td>
                 </tr>
               ))}
             </tbody>

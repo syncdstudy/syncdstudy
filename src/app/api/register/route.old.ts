@@ -16,7 +16,7 @@ export async function POST(req: Request) {
   }
 
   const { data: existingUser } = await supabase
-    .from('users')
+    .from('app_users')
     .select('id')
     .eq('email', email)
     .single();
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
 
   const hashedPassword = await hash(password, 10);
 
-  const { error: insertError } = await supabase.from('users').insert([
+  const { error: insertError } = await supabase.from('app_users').insert([
     {
       email,
       password: hashedPassword,
