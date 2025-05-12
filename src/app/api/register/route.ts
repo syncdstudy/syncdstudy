@@ -39,6 +39,7 @@ export async function POST(req: Request) {
   ]);
 
   if (insertError) {
+    console.error('Insert error:', insertError); // 👈 Add this
     return NextResponse.json({ error: insertError.message }, { status: 500 });
   }
 
@@ -54,5 +55,17 @@ export async function POST(req: Request) {
     console.error('Activity logging failed:', logError);
   }
 
-  return NextResponse.json({ message: 'User registered successfully' });
+  // return NextResponse.json({ message: 'User registered successfully' });
+  const { data: newUser, error: fetchError } = await supabase
+    .from('app_users')
+    .select('id')
+    .eq('email', email)
+    .single();
+
+  if (fetchError) {
+    console.error('Failed to fetch new user ID:', fetchError);
+    return NextResponse.json({ error: fetchError.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ id: newUser.id });
 }

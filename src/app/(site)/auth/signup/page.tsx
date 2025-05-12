@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable max-len */
 
 'use client';
@@ -20,12 +20,7 @@ import {
 import { motion } from 'framer-motion';
 import { Eye, EyeSlash } from 'react-bootstrap-icons';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-);
+import supabase from '@/lib/supabaseClient';
 
 type SignUpForm = {
   firstName: string;
@@ -52,15 +47,15 @@ const SignUp = () => {
       .matches(/^[a-zA-Z0-9._-]+$/, 'Invalid UH username'),
     password: Yup.string()
       .required('Password is required')
-      .min(6, 'Password must be at least 6 characters')
-      .max(40, 'Password must not exceed 40 characters')
+      .min(6)
+      .max(40)
       .matches(
         /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&^_-]+$/,
-        'Password must include at least one letter and one number',
+        'Must include at least one letter and one number',
       ),
     confirmPassword: Yup.string()
       .required('Confirm Password is required')
-      .oneOf([Yup.ref('password'), ''], 'Confirm Password does not match'),
+      .oneOf([Yup.ref('password')], 'Passwords do not match'),
     year: Yup.string().required('Year is required'),
     major: Yup.string(),
   });
@@ -80,14 +75,16 @@ const SignUp = () => {
 
   const passwordValue = watch('password');
   const confirmPasswordValue = watch('confirmPassword');
+
   const isPasswordValid = (password: string): boolean => /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&^_-]{6,40}$/.test(password);
+
   const doPasswordsMatch = passwordValue === confirmPasswordValue && isPasswordValid(passwordValue);
 
   const onSubmit = async (formData: SignUpForm) => {
     const fullEmail = `${formData.email}@hawaii.edu`;
 
     try {
-      const { error: signUpError } = await supabase.auth.signUp({
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: fullEmail,
         password: formData.password,
       });
@@ -97,11 +94,19 @@ const SignUp = () => {
         return;
       }
 
-      const res = await fetch('/api/log-signup', {
+      const userId = signUpData?.user?.id;
+      if (!userId) {
+        setError('Could not get user ID');
+        return;
+      }
+
+      // ✅ NEW: Call your register API
+      const res = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: fullEmail,
+          password: formData.password,
           firstName: formData.firstName,
           lastName: formData.lastName,
           year: formData.year,
@@ -111,15 +116,17 @@ const SignUp = () => {
 
       const result = await res.json();
 
-      if (!res.ok) {
-        setError(result.error || 'Something went wrong');
-        return;
-      }
+      if (res.ok) {
+        localStorage.setItem('loggedIn', 'true');
+        localStorage.setItem('userId', result.id);
+        localStorage.setItem('userEmail', fullEmail);
+        localStorage.setItem('username', formData.email); // ✅ move this UP and make sure it's only once
 
-      setSuccess('🎉 Account created successfully! Redirecting...');
-      localStorage.setItem('loggedIn', 'true');
-      localStorage.setItem('userEmail', fullEmail);
-      setTimeout(() => router.push('/profile'), 1500);
+        setSuccess('🎉 Account created successfully! Redirecting...');
+        setTimeout(() => router.push('/profile'), 1500);
+      } else {
+        setError(result.error || 'Registration failed');
+      }
     } catch (err) {
       console.error('Registration error:', err);
       setError('Failed to register. Please try again later.');
@@ -221,11 +228,20 @@ const SignUp = () => {
                           {showPassword ? <EyeSlash /> : <Eye />}
                         </Button>
                       </InputGroup>
+
+                      {/* ✅ Password validation hint */}
                       {isPasswordValid(passwordValue) && !errors.password && (
                         <Form.Text className="text-success d-block mt-1" style={{ fontSize: '0.85rem' }}>
                           ✔ Password looks good!
                         </Form.Text>
                       )}
+
+                      {!isPasswordValid(passwordValue) && !errors.password && (
+                        <Form.Text className="text-muted d-block mt-1" style={{ fontSize: '0.85rem' }}>
+                          Password must include a letter and a number.
+                        </Form.Text>
+                      )}
+
                       <div className="invalid-feedback">{errors.password?.message}</div>
                     </Form.Group>
 
@@ -245,11 +261,14 @@ const SignUp = () => {
                           {showConfirm ? <EyeSlash /> : <Eye />}
                         </Button>
                       </InputGroup>
+
+                      {/* ✅ Confirm password match check */}
                       {doPasswordsMatch && !errors.confirmPassword && (
                         <Form.Text className="text-success d-block mt-1" style={{ fontSize: '0.85rem' }}>
                           ✔ Passwords match!
                         </Form.Text>
                       )}
+
                       <div className="invalid-feedback">{errors.confirmPassword?.message}</div>
                     </Form.Group>
 

@@ -55,6 +55,7 @@ model StudySession {
   creator_id   String?        @db.Uuid
   id           String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   location     String?
+  user_id      String?        @db.Uuid
   user         AppUser?       @relation(fields: [creator_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "StudySession_creator_id_fkey1")
   participants participants[]
 }
