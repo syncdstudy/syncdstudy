@@ -1,17 +1,12 @@
-import { User } from '@prisma/client';
+'use client';
+
 import { Card, Container, Row, Col } from 'react-bootstrap';
-// eslint-disable-next-line import/extensions
-import { prisma } from '@/lib/prisma';
 // eslint-disable-next-line import/extensions
 import UserTableClient from '@/components/UserTableClient';
 // eslint-disable-next-line import/extensions
 import ReportTable from '@/components/ReportTable';
 
-export const dynamic = 'force-dynamic';
-
-export default async function ManageUsersPage() {
-  const users: User[] = await prisma.user.findMany();
-
+export default function ManageUsersPage() {
   return (
     <main className="p-4">
       <Container fluid>
@@ -20,7 +15,7 @@ export default async function ManageUsersPage() {
           <Col lg={5}>
             <Card style={{ backgroundColor: '#ffffffcc', borderRadius: '1rem', padding: '2rem' }}>
               <h3 className="text-center mb-4">Manage Users</h3>
-              <UserTableClient initialUsers={users} />
+              <UserTableClient />
             </Card>
           </Col>
 

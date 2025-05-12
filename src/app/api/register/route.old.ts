@@ -15,9 +15,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
-  // Check if user already exists
   const { data: existingUser } = await supabase
-    .from('users')
+    .from('app_users')
     .select('id')
     .eq('email', email)
     .single();
@@ -26,11 +25,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Email already exists' }, { status: 409 });
   }
 
-  // Hash password
   const hashedPassword = await hash(password, 10);
 
-  // Insert user into Supabase
-  const { error } = await supabase.from('users').insert([
+  const { error: insertError } = await supabase.from('app_users').insert([
     {
       email,
       password: hashedPassword,
@@ -41,8 +38,20 @@ export async function POST(req: Request) {
     },
   ]);
 
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  if (insertError) {
+    return NextResponse.json({ error: insertError.message }, { status: 500 });
+  }
+
+  // ✅ Insert into activitylog table
+  const { error: logError } = await supabase.from('activitylog').insert([
+    {
+      type: 'user_signup',
+      message: `New user: ${email}`,
+    },
+  ]);
+
+  if (logError) {
+    console.error('Activity logging failed:', logError);
   }
 
   return NextResponse.json({ message: 'User registered successfully' });

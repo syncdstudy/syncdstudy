@@ -1,14 +1,23 @@
 'use client';
 
-import { useState, SetStateAction } from 'react';
+import { useState, useEffect } from 'react';
 import { Calendar, dateFnsLocalizer, Views, Event } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-// eslint-disable-next-line max-len
-import { format, addMonths, subMonths, addWeeks, subWeeks, addDays, subDays, startOfWeek, parse, getDay } from 'date-fns';
+import {
+  format,
+  addMonths,
+  subMonths,
+  addWeeks,
+  subWeeks,
+  addDays,
+  subDays,
+  startOfWeek,
+  parse,
+  getDay,
+} from 'date-fns';
 import { enUS } from 'date-fns/locale';
 import { Container, Row, Col, Card, Button, Form } from 'react-bootstrap';
 
-// Define custom event interface
 interface CustomEvent extends Event {
   id: string;
   title: string;
@@ -30,7 +39,6 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-// initial events
 const initialEvents: CustomEvent[] = [
   {
     id: '1',
@@ -62,19 +70,22 @@ const AdminPage = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [currentView, setCurrentView] = useState<string>(Views.MONTH);
   const [events] = useState<CustomEvent[]>(initialEvents);
-  const [todos, setTodos] = useState(
-    [
-      { id: '1', text: 'Review notes', completed: false },
-      { id: '2', text: 'Watch lecture', completed: false },
-      { id: '3', text: 'Email TA', completed: false },
-    ],
-  );
-  const [newTodo, setNewTodo] = useState('');
-  const [activityFeed] = useState<string[]>([
-    'User 12345 joined the app',
-    'User 23423 joined the app',
-    'User 56789 started a new study session',
+  const [todos, setTodos] = useState([
+    { id: '1', text: 'Review notes', completed: false },
+    { id: '2', text: 'Watch lecture', completed: false },
+    { id: '3', text: 'Email TA', completed: false },
   ]);
+  const [newTodo, setNewTodo] = useState('');
+  const [activityFeed, setActivityFeed] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchActivity = async () => {
+      const res = await fetch('/api/activitylog');
+      const data = await res.json();
+      setActivityFeed(data.map((item: any) => item.message));
+    };
+    fetchActivity();
+  }, []);
 
   const addTodo = () => {
     if (newTodo.trim()) {
@@ -122,13 +133,25 @@ const AdminPage = () => {
 
               <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                 <div className="d-flex flex-wrap gap-2">
-                  <Button variant="outline-secondary" onClick={() => moveDate('PREV')}>Back</Button>
-                  <Button variant="outline-secondary" onClick={() => moveDate('NEXT')}>Next</Button>
+                  <Button variant="outline-secondary" onClick={() => moveDate('PREV')}>
+                    Back
+                  </Button>
+                  <Button variant="outline-secondary" onClick={() => moveDate('NEXT')}>
+                    Next
+                  </Button>
                 </div>
-                <Button variant="outline-primary" onClick={() => setCurrentView(Views.MONTH)}>Month</Button>
-                <Button variant="outline-primary" onClick={() => setCurrentView(Views.WEEK)}>Week</Button>
-                <Button variant="outline-primary" onClick={() => setCurrentView(Views.DAY)}>Day</Button>
-                <Button variant="outline-primary" onClick={() => setCurrentView(Views.AGENDA)}>Agenda</Button>
+                <Button variant="outline-primary" onClick={() => setCurrentView(Views.MONTH)}>
+                  Month
+                </Button>
+                <Button variant="outline-primary" onClick={() => setCurrentView(Views.WEEK)}>
+                  Week
+                </Button>
+                <Button variant="outline-primary" onClick={() => setCurrentView(Views.DAY)}>
+                  Day
+                </Button>
+                <Button variant="outline-primary" onClick={() => setCurrentView(Views.AGENDA)}>
+                  Agenda
+                </Button>
               </div>
 
               <Calendar
@@ -145,13 +168,13 @@ const AdminPage = () => {
                   agenda: true,
                 }}
                 view={currentView as any}
-                onView={(v: SetStateAction<string>) => setCurrentView(v)}
+                onView={v => setCurrentView(v)}
                 date={currentDate}
-                onNavigate={(date: SetStateAction<Date>) => setCurrentDate(date)}
+                onNavigate={date => setCurrentDate(date)}
                 toolbar={false}
                 eventPropGetter={(event: CustomEvent) => ({
                   style: {
-                    backgroundColor: (event as CustomEvent).color,
+                    backgroundColor: event.color,
                     borderRadius: '8px',
                     color: '#000',
                     padding: '4px 8px',
@@ -162,9 +185,9 @@ const AdminPage = () => {
             </Card>
           </Col>
 
-          {/* To-Do List Section */}
-          <Col lg={4}>
-            <Card className="p-3" style={{ backgroundColor: '#e0d7f3', borderRadius: '1rem' }}>
+          <Col lg={4} className="d-flex flex-column" style={{ height: '700px' }}>
+            {/* To-Do List */}
+            <Card className="p-3 mb-3" style={{ backgroundColor: '#e0d7f3', borderRadius: '1rem' }}>
               <h5 className="text-center">To-Do List</h5>
               <ul className="list-unstyled">
                 {todos.map(todo => (
@@ -178,7 +201,9 @@ const AdminPage = () => {
                       />
                       <span style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>{todo.text}</span>
                     </div>
-                    <Button size="sm" variant="outline-danger" onClick={() => removeTodo(todo.id)}>✕</Button>
+                    <Button size="sm" variant="outline-danger" onClick={() => removeTodo(todo.id)}>
+                      ✕
+                    </Button>
                   </li>
                 ))}
               </ul>
@@ -193,17 +218,43 @@ const AdminPage = () => {
               </Form>
             </Card>
 
-            {/* Recent Activity Section */}
-            <Card className="mt-4 p-3" style={{ backgroundColor: '#f7f7f7', borderRadius: '1rem' }}>
+            {/* Recent Activity */}
+            <Card
+              className="p-3 flex-grow-1"
+              style={{
+                backgroundColor: '#f7f7f7',
+                borderRadius: '1rem',
+                overflowY: 'auto',
+                maxHeight: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
               <h5 className="text-center">Recent Activity</h5>
-              <ul className="list-unstyled">
-                {activityFeed.map((activity, index) => (
-                  // eslint-disable-next-line react/no-array-index-key
-                  <li key={index} className="mb-2">{activity}</li>
-                ))}
+              <ul className="list-unstyled mb-0" style={{ overflowY: 'auto' }}>
+                {activityFeed.map((activity, index) => {
+                  const match = activity.match(/^New user:\s*(.+)$/i); // case-insensitive match
+                  return (
+                    // eslint-disable-next-line react/no-array-index-key
+                    <li key={index} className="mb-2">
+                      {match ? (
+                        <>
+                          <strong>New user:</strong>
+                          {' '}
+                          {match[1]}
+                        </>
+                      ) : (
+                        <span>{activity}</span>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
+
             </Card>
+
           </Col>
+
         </Row>
       </Container>
     </main>
