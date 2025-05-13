@@ -20,6 +20,7 @@ import {
 } from 'date-fns';
 import { enUS } from 'date-fns/locale';
 import { Container, Row, Col, Card, Button, Form } from 'react-bootstrap';
+import supabase from '@/lib/supabaseClient';
 
 interface CustomEvent extends Event {
   id: string;
@@ -27,13 +28,12 @@ interface CustomEvent extends Event {
   start: Date;
   end: Date;
   color: string;
-  description: string;
+  description?: string;
+  location?: string;
+  mode?: string;
 }
 
-const locales = {
-  'en-US': enUS,
-};
-
+const locales = { 'en-US': enUS };
 const localizer = dateFnsLocalizer({
   format,
   parse,
@@ -42,38 +42,16 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-const initialEvents: CustomEvent[] = [
-  {
-    id: '1',
-    title: 'ICS 314 Study Group',
-    start: new Date(2025, 3, 23, 14, 0),
-    end: new Date(2025, 3, 23, 15, 30),
-    color: '#b3e5b9',
-    description: 'Chapter 5 Review + Homework Help',
-  },
-  {
-    id: '2',
-    title: 'MATH 307 Review',
-    start: new Date(2025, 3, 25, 10, 0),
-    end: new Date(2025, 3, 25, 11, 0),
-    color: '#f7c6c7',
-    description: 'Exam Prep for Linear Algebra',
-  },
-  {
-    id: '3',
-    title: 'ENG 100 Session',
-    start: new Date(2025, 3, 26, 9, 0),
-    end: new Date(2025, 3, 26, 10, 0),
-    color: '#ffe79e',
-    description: 'Peer review workshop in writing center',
-  },
-];
-
 const AdminPage = () => {
+  // block non-admins
   const checking = useRedirectIfUnauthorized(true);
+
+  // state for all sessions
+  const [events, setEvents] = useState<CustomEvent[]>([]);
+
+  // other UI state
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [currentView, setCurrentView] = useState<string>(Views.MONTH);
-  const [events] = useState<CustomEvent[]>(initialEvents);
   const [todos, setTodos] = useState([
     { id: '1', text: 'Review notes', completed: false },
     { id: '2', text: 'Watch lecture', completed: false },
@@ -82,12 +60,41 @@ const AdminPage = () => {
   const [newTodo, setNewTodo] = useState('');
   const [activityFeed, setActivityFeed] = useState<string[]>([]);
 
+  // load all sessions on mount
   useEffect(() => {
-    const fetchActivity = async () => {
+    async function loadAllSessions() {
+      const { data, error } = await supabase
+        .from('calendar_events')
+        .select('*');
+
+      if (error) {
+        console.error('Error loading admin events:', error);
+        return;
+      }
+
+      const parsed = data.map((e: any) => ({
+        id: e.id,
+        title: e.title,
+        start: new Date(e.start),
+        end: new Date(e.end),
+        color: e.color || '#d0e8ff',
+        description: e.description || '',
+        location: e.location || '',
+        mode: e.mode || '',
+      }));
+
+      setEvents(parsed);
+    }
+    loadAllSessions();
+  }, []);
+
+  // load activity feed
+  useEffect(() => {
+    async function fetchActivity() {
       const res = await fetch('/api/activitylog');
       const data = await res.json();
       setActivityFeed(data.map((item: any) => item.message));
-    };
+    }
     fetchActivity();
   }, []);
 
@@ -107,6 +114,7 @@ const AdminPage = () => {
 
   // eslint-disable-next-line max-len
   const toggleTodoComplete = (id: string) => setTodos(todos.map(t => (t.id === id ? { ...t, completed: !t.completed } : t)));
+
   const removeTodo = (id: string) => setTodos(todos.filter(t => t.id !== id));
 
   const moveDate = (dir: 'NEXT' | 'PREV') => {
@@ -133,10 +141,11 @@ const AdminPage = () => {
     <main className="p-4">
       <Container fluid>
         <Row className="justify-content-center mt-5">
+
           {/* Calendar Section */}
           <Col lg={8}>
             <Card style={{ backgroundColor: '#fff', borderRadius: '1rem', padding: '2rem' }}>
-              <h3 className="text-center mb-2">Calendar</h3>
+              <h3 className="text-center mb-2">Admin Calendar</h3>
               <h5 className="text-center mb-3">{format(currentDate, 'MMMM yyyy')}</h5>
 
               <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
@@ -148,18 +157,15 @@ const AdminPage = () => {
                     Next
                   </Button>
                 </div>
-                <Button variant="outline-primary" onClick={() => setCurrentView(Views.MONTH)}>
-                  Month
-                </Button>
-                <Button variant="outline-primary" onClick={() => setCurrentView(Views.WEEK)}>
-                  Week
-                </Button>
-                <Button variant="outline-primary" onClick={() => setCurrentView(Views.DAY)}>
-                  Day
-                </Button>
-                <Button variant="outline-primary" onClick={() => setCurrentView(Views.AGENDA)}>
-                  Agenda
-                </Button>
+                { [Views.MONTH, Views.WEEK, Views.DAY, Views.AGENDA].map(view => (
+                  <Button
+                    key={view}
+                    variant={currentView === view ? 'primary' : 'outline-primary'}
+                    onClick={() => setCurrentView(view)}
+                  >
+                    {view}
+                  </Button>
+                )) }
               </div>
 
               <Calendar
@@ -169,12 +175,6 @@ const AdminPage = () => {
                 endAccessor="end"
                 selectable
                 style={{ height: 500 }}
-                views={{
-                  month: true,
-                  week: true,
-                  day: true,
-                  agenda: true,
-                }}
                 view={currentView as any}
                 onView={v => setCurrentView(v)}
                 date={currentDate}
@@ -193,8 +193,9 @@ const AdminPage = () => {
             </Card>
           </Col>
 
+          {/* Sidebar */}
           <Col lg={4} className="d-flex flex-column" style={{ height: '700px' }}>
-            {/* To-Do List */}
+            {/* To‑Do List */}
             <Card className="p-3 mb-3" style={{ backgroundColor: '#e0d7f3', borderRadius: '1rem' }}>
               <h5 className="text-center">To-Do List</h5>
               <ul className="list-unstyled">
@@ -207,7 +208,9 @@ const AdminPage = () => {
                         checked={todo.completed}
                         onChange={() => toggleTodoComplete(todo.id)}
                       />
-                      <span style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>{todo.text}</span>
+                      <span style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
+                        {todo.text}
+                      </span>
                     </div>
                     <Button size="sm" variant="outline-danger" onClick={() => removeTodo(todo.id)}>
                       ✕
@@ -233,20 +236,16 @@ const AdminPage = () => {
                 backgroundColor: '#f7f7f7',
                 borderRadius: '1rem',
                 overflowY: 'auto',
-                maxHeight: '100%',
-                display: 'flex',
-                flexDirection: 'column',
               }}
             >
               <h5 className="text-center">Recent Activity</h5>
-              <ul className="list-unstyled mb-0" style={{ overflowY: 'auto' }}>
-                {activityFeed.map((activity, index) => {
+              <ul className="list-unstyled mb-0">
+                {activityFeed.map((activity, idx) => {
                   const newUserMatch = activity.match(/^New user:\s*(.+)$/i);
                   const reportMatch = activity.match(/^New report from:\s*(.+)$/i);
-
                   return (
                     // eslint-disable-next-line react/no-array-index-key
-                    <li key={index} className="mb-2">
+                    <li key={idx} className="mb-2">
                       {newUserMatch ? (
                         <>
                           <strong>New user:</strong>
@@ -255,7 +254,9 @@ const AdminPage = () => {
                         </>
                       ) : reportMatch ? (
                         <>
-                          <strong style={{ color: 'rgb(115, 18, 119)' }}>New report from:</strong>
+                          <strong style={{ color: 'rgb(115, 18, 119)' }}>
+                            New report from:
+                          </strong>
                           {' '}
                           {reportMatch[1]}
                         </>
@@ -265,11 +266,8 @@ const AdminPage = () => {
                     </li>
                   );
                 })}
-
               </ul>
-
             </Card>
-
           </Col>
 
         </Row>
