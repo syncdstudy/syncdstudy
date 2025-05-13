@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable no-alert */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 
@@ -35,7 +36,17 @@ const StudySessionPage = () => {
     const endTime = formData.get('endTime')?.toString() || '';
     const location = formData.get('location')?.toString().trim() || '';
     const description = formData.get('description')?.toString().trim() || '';
-    const mode = formData.get('mode')?.toString() || '';
+    const mode = formData.get('mode')?.toString().trim() || '';
+
+    console.log('🚀 Submitted values:');
+    console.log('Subject:', subject);
+    console.log('Course:', course);
+    console.log('Date:', date);
+    console.log('Start Time:', startTime);
+    console.log('End Time:', endTime);
+    console.log('Location:', location);
+    console.log('Mode:', mode);
+    console.log('Description:', description);
 
     if (!subject || !course || !date || !startTime || !endTime || !mode) {
       alert('Please fill out all required fields.');
@@ -73,12 +84,17 @@ const StudySessionPage = () => {
         <div className="row justify-content-center g-4 align-items-stretch">
           {/* Create a Study Session */}
           <div className="col-lg-7">
-            <div className="border border-dark p-4 rounded shadow" style={{ backgroundColor: '#e5d8f6' }}>
-              <h4 className="text-center mb-4">Create a Study Session</h4>
+            <div className="border border-dark p-5 rounded shadow" style={{ backgroundColor: '#e5d8f6' }}>
+              <h4 className="text-center mb-3" style={{ fontSize: '33px' }}>
+                Create a Study Session
+              </h4>
+              <p className="text-center text-muted mb-3" style={{ fontSize: '0.95rem' }}>
+                Fill out the form below to share your study session with others!
+              </p>
               <form ref={formRef} onSubmit={handleSubmit}>
-                <div className="d-flex gap-2">
-                  <input name="subject" type="text" className="form-control mb-3" placeholder="Subject Name" />
-                  <input name="course" type="text" className="form-control mb-3" placeholder="Course Name" />
+                <div className="d-flex gap-3">
+                  <input name="subject" type="text" className="form-control mb-3" placeholder="Subject (e.g. ICS 314)" required />
+                  <input name="course" type="text" className="form-control mb-3" placeholder="Course (e.g. Software Engineering)" required />
                 </div>
                 <div className="d-flex gap-2 mb-3">
                   <input
@@ -89,6 +105,7 @@ const StudySessionPage = () => {
                     onFocus={(e) => (e.target.type = 'date')}
                     onBlur={(e) => (e.target.type = e.target.value ? 'date' : 'text')}
                     style={{ minWidth: '180px', color: '#888' }}
+                    required
                   />
                   <input
                     name="startTime"
@@ -98,6 +115,7 @@ const StudySessionPage = () => {
                     onFocus={(e) => (e.target.type = 'time')}
                     onBlur={(e) => (e.target.type = e.target.value ? 'time' : 'text')}
                     style={{ minWidth: '180px', color: '#888' }}
+                    required
                   />
                   <input
                     name="endTime"
@@ -107,6 +125,7 @@ const StudySessionPage = () => {
                     onFocus={(e) => (e.target.type = 'time')}
                     onBlur={(e) => (e.target.type = e.target.value ? 'time' : 'text')}
                     style={{ minWidth: '180px', color: '#888' }}
+                    required
                   />
                 </div>
                 <div className="d-flex align-items-center gap-3 mb-3">
@@ -119,6 +138,7 @@ const StudySessionPage = () => {
                       name="mode"
                       id="mode-online"
                       value="Online"
+                      required
                     />
                     <label htmlFor="mode-online" className="form-check-label">
                       Online via Zoom
@@ -131,6 +151,7 @@ const StudySessionPage = () => {
                       name="mode"
                       id="mode-inperson"
                       value="In-person"
+                      required
                     />
                     <label htmlFor="mode-inperson" className="form-check-label">
                       In Person
@@ -142,7 +163,7 @@ const StudySessionPage = () => {
                   className="form-control mb-3"
                   placeholder="Description"
                   rows={9}
-                  style={{ resize: 'vertical', minHeight: '290px' }}
+                  style={{ resize: 'vertical', minHeight: '310px' }}
                 />
                 <div className="d-flex gap-3 justify-content-start">
                   <button type="submit" className="custom-button-4 px-4">Submit</button>

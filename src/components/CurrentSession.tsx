@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/indent */
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable react/jsx-indent */
 /* eslint-disable react/button-has-type */
 /* eslint-disable max-len */
 
@@ -49,29 +53,43 @@ const CurrentSessions = () => {
     return `${to12hr(startStr)} – ${to12hr(endStr)}`;
   };
 
+  const userId = typeof window !== 'undefined' ? localStorage.getItem('userId') : null;
+
   useEffect(() => {
-    const fetchSessions = async () => {
+    async function fetchSessions() {
+      if (!userId) return;
+
       const { data, error } = await supabase
         .from('StudySession')
         .select('*')
+        .eq('creator_id', userId)
         .order('date', { ascending: true });
+
+      console.log('📥 Raw sessions from Supabase:', data);
+      console.log('🧠 Current userId:', userId);
 
       if (error) {
         console.error('Error fetching sessions:', error);
         return;
       }
 
-      const today = getHSTNow();
-      const todayStr = today.toISOString().split('T')[0];
+      const now = new Date();
+      const nowHST = new Date(new Date().toLocaleString('en-US', { timeZone: 'Pacific/Honolulu' }));
 
-      const todaySessions = (data || []).filter((session) => {
-        const sessionDate = new Date(session.date).toISOString().split('T')[0];
-        return sessionDate === todayStr;
-      });
+const futureSessions = data.filter((s) => {
+  if (!s.date || !s.time || !s.time.includes('–')) return false;
 
-      setSessions(todaySessions);
-      setCurrentIndex(0);
-    };
+  const sessionDateStr = new Date(s.date).toISOString().split('T')[0];
+  const [startStr] = s.time.split('–');
+  const sessionStart = new Date(`${sessionDateStr}T${startStr}:00-10:00`);
+
+  return sessionStart > nowHST;
+});
+
+console.log('✅ Filtered future sessions:', futureSessions);
+
+      setSessions(futureSessions);
+    }
 
     fetchSessions();
   }, []);
@@ -134,8 +152,8 @@ const CurrentSessions = () => {
     return (
       <div className="border border-dark p-4 rounded shadow" style={{ backgroundColor: '#e5d8f6' }}>
 
-        <h5 className="text-center mb-2">Today&apos;s Sessions</h5>
-        <p className="text-center">No study sessions scheduled for today.</p>
+        <h4 className="text-center mb-3">My Sessions</h4>
+        <p className="text-center">You haven’t created any upcoming study sessions yet.</p>
       </div>
     );
   }
@@ -145,7 +163,7 @@ const CurrentSessions = () => {
   return (
     <>
       <div className="border border-dark p-4 rounded shadow" style={{ backgroundColor: '#e5d8f6' }}>
-        <h4 className="text-center mb-3">Today&apos;s Sessions</h4>
+      <h4 className="text-center mb-3">My Sessions</h4>
         <div className="d-flex align-items-center justify-content-between" style={{ minHeight: '100px' }}>
           <button type="button" onClick={handlePrevious} className="btn btn-outline-secondary btn-sm">
             <ChevronLeft size={16} />

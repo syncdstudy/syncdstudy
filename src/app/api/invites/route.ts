@@ -58,14 +58,20 @@ export async function GET(req: Request) {
   }, {});
 
   // 5) Build final payload
-  const invites = filteredSessions.map((s) => ({
-    id: s.id,
-    name: s.name,
-    date: s.date,
-    time: s.time,
-    description: s.description,
-    creatorUsername: userMap[s.creator_id] || 'Someone',
-  }));
+  const invites = filteredSessions.map((s) => {
+    const fullName = userMap[s.creator_id] || 'Someone';
+    const [first, last] = fullName.trim().split(' ');
+    const shortName = last ? `${first} ${last[0].toUpperCase()}.` : first;
+
+    return {
+      id: s.id,
+      name: s.name,
+      date: s.date,
+      time: s.time,
+      description: s.description,
+      creatorUsername: shortName,
+    };
+  });
 
   return NextResponse.json(invites);
 }

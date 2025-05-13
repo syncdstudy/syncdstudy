@@ -82,6 +82,7 @@ const SignUp = () => {
 
   const onSubmit = async (formData: SignUpForm) => {
     const fullEmail = `${formData.email}@hawaii.edu`;
+    const username = formData.email; // ✅ Add this
 
     try {
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
@@ -102,7 +103,6 @@ const SignUp = () => {
         return;
       }
 
-      // ✅ NEW: Call your register API
       const res = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -114,6 +114,7 @@ const SignUp = () => {
           lastName: formData.lastName,
           year: formData.year,
           major: formData.major || '',
+          username, // ✅ Pass the username here
         }),
       });
 
@@ -123,7 +124,7 @@ const SignUp = () => {
         localStorage.setItem('loggedIn', 'true');
         localStorage.setItem('userId', result.id);
         localStorage.setItem('userEmail', fullEmail);
-        localStorage.setItem('username', formData.email); // ✅ move this UP and make sure it's only once
+        localStorage.setItem('username', username); // ✅ Store for use in app
 
         setSuccess('🎉 Account created successfully! Redirecting...');
         setTimeout(() => router.push('/profile'), 1500);
