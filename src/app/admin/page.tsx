@@ -3,6 +3,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRedirectIfUnauthorized } from '@/lib/useRedirectIfUnauthorized';
 import { Calendar, dateFnsLocalizer, Views, Event } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import {
@@ -69,6 +70,7 @@ const initialEvents: CustomEvent[] = [
 ];
 
 const AdminPage = () => {
+  const checking = useRedirectIfUnauthorized(true);
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [currentView, setCurrentView] = useState<string>(Views.MONTH);
   const [events] = useState<CustomEvent[]>(initialEvents);
@@ -88,6 +90,10 @@ const AdminPage = () => {
     };
     fetchActivity();
   }, []);
+
+  if (checking) {
+    return <div className="text-center mt-5">Loading...</div>;
+  }
 
   const addTodo = () => {
     if (newTodo.trim()) {

@@ -1,3 +1,6 @@
+/* eslint-disable max-len */
+/* eslint-disable react-hooks/rules-of-hooks */
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -28,6 +31,8 @@ import {
 } from 'react-bootstrap';
 import supabase from '@/lib/supabaseClient';
 
+import { useRequireAuth } from '@/hooks/useRequireAuth';
+
 interface CustomEvent extends Event {
   id: string;
   title: string;
@@ -54,6 +59,8 @@ const COLOR_OPTIONS = [
 ];
 
 export default function CalendarPage() {
+  const checkingAuth = useRequireAuth();
+
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [currentView, setCurrentView] = useState<string>(Views.MONTH);
   const [events, setEvents] = useState<CustomEvent[]>([]);
@@ -68,7 +75,6 @@ export default function CalendarPage() {
   ]);
   const [newTodo, setNewTodo] = useState('');
 
-  // Load events from localStorage
   useEffect(() => {
     async function loadEvents() {
       const userId = localStorage.getItem('userId');
@@ -101,12 +107,15 @@ export default function CalendarPage() {
     loadEvents();
   }, []);
 
-  // Clock timer
   useEffect(() => {
     setHydrated(true);
     const iv = setInterval(() => setClock(new Date()), 1000);
     return () => clearInterval(iv);
   }, []);
+
+  if (checkingAuth) {
+    return <div className="text-center mt-5">Loading...</div>;
+  }
 
   const moveDate = (dir: 'NEXT' | 'PREV') => {
     let next: Date;
@@ -180,7 +189,7 @@ export default function CalendarPage() {
       setNewTodo('');
     }
   };
-  // eslint-disable-next-line max-len
+
   const toggleTodoComplete = (id: string) => setTodos(prev => prev.map(t => (t.id === id ? { ...t, completed: !t.completed } : t)));
   const removeTodo = (id: string) => setTodos(prev => prev.filter(t => t.id !== id));
 

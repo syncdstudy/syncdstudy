@@ -1,12 +1,17 @@
 'use client';
 
 import { Card, Container, Row, Col } from 'react-bootstrap';
-// eslint-disable-next-line import/extensions
 import UserTableClient from '@/components/UserTableClient';
-// eslint-disable-next-line import/extensions
 import ReportTable from '@/components/ReportTable';
+import { useRedirectIfUnauthorized } from '@/lib/useRedirectIfUnauthorized';
 
 export default function ManageUsersPage() {
+  const checking = useRedirectIfUnauthorized(true);
+
+  if (checking) {
+    return <div className="text-center mt-5">Loading...</div>; // ⏳ wait until redirect or pass
+  }
+
   return (
     <main className="p-4">
       <Container fluid>

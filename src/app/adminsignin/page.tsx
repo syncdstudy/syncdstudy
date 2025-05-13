@@ -4,25 +4,43 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, Button, Form, Alert } from 'react-bootstrap';
 import { motion } from 'framer-motion';
+import supabase from '@/lib/supabaseClient';
 
 export default function AdminSignInPage() {
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [userPassword, setUserPassword] = useState('');
+  const [adminPassword, setAdminPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const handleSubmit = () => {
-    if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
-      router.push('/admin'); // or your actual admin dashboard route
-    } else {
+  const handleSubmit = async () => {
+    setError('');
+
+    if (adminPassword !== process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
       setError('Invalid admin password.');
+      return;
     }
+
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password: userPassword,
+    });
+
+    if (signInError) {
+      console.error('❌ Supabase login failed:', signInError.message);
+      setError('Invalid email or password.');
+      return;
+    }
+
+    localStorage.setItem('isAdmin', 'true');
+    setTimeout(() => router.push('/admin'), 100);
   };
 
   return (
     <div
       className="d-flex justify-content-center align-items-center vh-100"
       style={{
-        backgroundImage: "url('/images/uhm-study-group.jpg')", // use your actual image path
+        backgroundImage: "url('/images/uhm-study-group.jpg')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}
@@ -41,21 +59,37 @@ export default function AdminSignInPage() {
             backdropFilter: 'blur(8px)',
           }}
         >
-          <h4 className="text-center mb-2">🔒 Admin Portal</h4>
+          <h4 className="text-center mb-2">🔐 Admin Login</h4>
           <p className="text-muted text-center mb-3" style={{ fontSize: '0.9rem' }}>
-            Restricted access for authorized personnel only.
+            Sign in with your email and the admin password.
           </p>
           {error && <Alert variant="danger">{error}</Alert>}
-          <Form.Group controlId="adminPassword">
+          <Form.Group className="mb-2">
+            <Form.Control
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </Form.Group>
+          <Form.Group className="mb-2">
             <Form.Control
               type="password"
-              placeholder="Enter admin password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Your password"
+              value={userPassword}
+              onChange={(e) => setUserPassword(e.target.value)}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Control
+              type="password"
+              placeholder="Admin password"
+              value={adminPassword}
+              onChange={(e) => setAdminPassword(e.target.value)}
             />
           </Form.Group>
           <Button
-            className="w-100 mt-3"
+            className="w-100"
             style={{ backgroundColor: '#c9a0ff', border: 'none' }}
             onClick={handleSubmit}
           >
