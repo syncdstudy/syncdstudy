@@ -45,6 +45,12 @@ interface CustomEvent extends Event {
   mode?: string;
 }
 
+interface Todo {
+  id: string;
+  text: string;
+  completed: boolean;
+}
+
 const locales = { 'en-US': enUS };
 const localizer = dateFnsLocalizer({
   format,
@@ -69,11 +75,15 @@ export default function CalendarClient() {
   const [selectedEvent, setSelectedEvent] = useState<CustomEvent | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [clock, setClock] = useState(new Date());
-  const [todos, setTodos] = useState([
-    { id: '1', text: 'Review notes', completed: false },
-    { id: '2', text: 'Watch lecture', completed: false },
-    { id: '3', text: 'Email TA', completed: false },
-  ]);
+  // ─── TODO STATE WITH LOCAL STORAGE ─────────────────────────────────────
+  const [todos, setTodos] = useState(() => {
+    const storedTodos = localStorage.getItem('todos');
+    return storedTodos ? JSON.parse(storedTodos) : [
+      { id: '1', text: 'Review notes', completed: false },
+      { id: '2', text: 'Watch lecture', completed: false },
+      { id: '3', text: 'Email TA', completed: false },
+    ];
+  });
   const [newTodo, setNewTodo] = useState('');
 
   // ─── LOAD EVENTS ─────────────────────────────────────────────────────────
@@ -142,6 +152,11 @@ export default function CalendarClient() {
     setShowModal(true);
   };
 
+  // ─── SAVE TODOS TO LOCALSTORAGE ─────────────────────────────────────────
+  useEffect(() => {
+    localStorage.setItem('todos', JSON.stringify(todos));
+  }, [todos]);
+
   const handleUpcomingClick = (evt: CustomEvent) => {
     setCurrentDate(evt.start);
     setCurrentView(Views.WEEK);
@@ -163,7 +178,7 @@ export default function CalendarClient() {
       .update({ color })
       .eq('id', selectedEvent.id);
     if (!error) {
-      setEvents(prev => prev.map(e => (e.id === selectedEvent.id ? { ...e, color } : e)));
+      setEvents((prev: CustomEvent[]) => prev.map((e: CustomEvent) => (e.id === selectedEvent.id ? { ...e, color } : e)));
       setSelectedEvent({ ...selectedEvent, color });
     }
   };
@@ -183,13 +198,13 @@ export default function CalendarClient() {
 
   const addTodo = () => {
     if (newTodo.trim()) {
-      setTodos(prev => [...prev, { id: Date.now().toString(), text: newTodo.trim(), completed: false }]);
+      setTodos((prev: Todo[]) => [...prev, { id: Date.now().toString(), text: newTodo.trim(), completed: false }]);
       setNewTodo('');
     }
   };
 
-  const toggleTodoComplete = (id: string) => setTodos(prev => prev.map(t => (t.id === id ? { ...t, completed: !t.completed } : t)));
-  const removeTodo = (id: string) => setTodos(prev => prev.filter(t => t.id !== id));
+  const toggleTodoComplete = (id: string) => setTodos((prev: Todo[]) => prev.map((t: Todo) => (t.id === id ? { ...t, completed: !t.completed } : t)));
+  const removeTodo = (id: string) => setTodos((prev: Todo[]) => prev.filter((t: Todo) => t.id !== id));
 
   // ─── RENDER ──────────────────────────────────────────────────────────────
   return (
@@ -285,7 +300,7 @@ export default function CalendarClient() {
               <div className="p-3 border-bottom text-center"><h5 className="fw-bold">📝 To-Do List</h5></div>
               <div style={{ overflowY: 'auto', padding: '1rem', flex: 1 }}>
                 <AnimatePresence mode="popLayout">
-                  {todos.map(todo => (
+                  {todos.map((todo: Todo) => (
                     <motion.li
                       key={todo.id}
                       initial={{ opacity: 0, y: 10 }}
