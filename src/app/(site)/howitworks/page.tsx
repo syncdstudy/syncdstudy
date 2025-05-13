@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { CheckCircle, JournalBookmark, CalendarRange, Trophy, People, EmojiSunglasses } from 'react-bootstrap-icons';
+import { CheckCircle, JournalBookmark, CalendarRange, People, EmojiSunglasses } from 'react-bootstrap-icons';
 
 const HowItWorks = () => (
   <main className="container py-5">
@@ -46,20 +46,6 @@ const HowItWorks = () => (
           specific topic (e.g., “Write my essay on configuration management”) and set a meeting time and place
           (like 10:30-11:30 AM at Campus Center), either by planning ahead or requesting help immediately through
           the Right Now option that notifies others in real time.
-        </p>
-      </section>
-      <section className="mb-5">
-        <h3>
-          <Trophy className="ms-2" />
-          {'\u00A0'}
-          Study and Score
-        </h3>
-        <p>
-          To encourage active participation, the application uses a point-based system where students can earn points by
-          attending or leading study sessions. As they accumulate points, they level up and climb the leaderboard,
-          showcasing top-performing senseis and grasshoppers. To further motivate users, rewards such as gift cards
-          are offered to high scorers. Anti-cheating measures are also being discussed to ensure that all points
-          reflect genuine, meaningful interaction within the platform.
         </p>
       </section>
       <section className="mb-5">
