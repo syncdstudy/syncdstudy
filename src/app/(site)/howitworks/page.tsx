@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { CheckCircle, JournalBookmark, CalendarRange, People, EmojiSunglasses } from 'react-bootstrap-icons';
+import { CheckCircle, CalendarRange, People, EmojiSunglasses } from 'react-bootstrap-icons';
 
 const HowItWorks = () => (
   <main className="container py-5">
@@ -16,22 +16,9 @@ const HowItWorks = () => (
           Log In to Get Started
         </h3>
         <p>
-          To keep things safe and organized, students must log in to join or create a study session,
-          and set up a profile that includes a headshot and two course lists: one for courses
-          they&apos;ve taken and can help with (Sensei), and one for courses they&apos;re currently
-          taking and need help with (Grasshopper). Each student can be both a sensei and a
-          grasshopper depending on the course.
-        </p>
-      </section>
-      <section className="mb-5">
-        <h3>
-          <JournalBookmark className="ms-2" />
-          {'\u00A0'}
-          Course Directory
-        </h3>
-        <p>
-          All courses are listed on the site and can be accessed under the My Courses section. There, students can
-          browse a list of their enrolled courses and view the senseis and grasshoppers associated with each one.
+          Create a personalized profile with your name, major, minor (if applicable), and interests.
+          Once logged in, you&apos;ll have access to your dashboard, which shows your upcoming study sessions,
+          to-do lists, and profile settings.
         </p>
       </section>
       <section className="mb-5">
@@ -41,11 +28,10 @@ const HowItWorks = () => (
           Join or Create Study Sessions
         </h3>
         <p>
-          Students can choose to join an existing study session or create a new one with just a few clicks by selecting
-          a location, subject, and brief description. Grasshoppers can propose face-to-face sessions focused on a
-          specific topic (e.g., “Write my essay on configuration management”) and set a meeting time and place
-          (like 10:30-11:30 AM at Campus Center), either by planning ahead or requesting help immediately through
-          the Right Now option that notifies others in real time.
+          Start or join study sessions with just a few clicks. Set the subject, course, time, date, and
+          preferred format (in-person or online). You can even choose a location if the session is in person.
+          Get notifications when new sessions are created for courses you&apos;re interested in, so you never
+          miss an opportunity to study together.
         </p>
       </section>
       <section className="mb-5">

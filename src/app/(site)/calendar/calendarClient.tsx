@@ -76,14 +76,18 @@ export default function CalendarClient() {
   const [hydrated, setHydrated] = useState(false);
   const [clock, setClock] = useState(new Date());
   // ─── TODO STATE WITH LOCAL STORAGE ─────────────────────────────────────
-  const [todos, setTodos] = useState(() => {
-    const storedTodos = localStorage.getItem('todos');
-    return storedTodos ? JSON.parse(storedTodos) : [
-      { id: '1', text: 'Review notes', completed: false },
-      { id: '2', text: 'Watch lecture', completed: false },
-      { id: '3', text: 'Email TA', completed: false },
-    ];
+  const [todos, setTodos] = useState<Todo[]>(() => {
+    if (typeof window !== 'undefined') {
+      const storedTodos = localStorage.getItem('todos');
+      return storedTodos ? JSON.parse(storedTodos) : [
+        { id: '1', text: 'Review notes', completed: false },
+        { id: '2', text: 'Watch lecture', completed: false },
+        { id: '3', text: 'Email TA', completed: false },
+      ];
+    }
+    return [];
   });
+
   const [newTodo, setNewTodo] = useState('');
 
   // ─── LOAD EVENTS ─────────────────────────────────────────────────────────
