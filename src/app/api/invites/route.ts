@@ -1,7 +1,7 @@
+/* eslint-disable prefer-template */
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-// Use the service‑role key so RLS is bypassed
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -15,11 +15,14 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
   }
 
-  // 1) Fetch sessions not created by this user
+  const today = new Date().toISOString().split('T')[0]; // format: YYYY-MM-DD
+
+  // 1) Fetch sessions not created by this user and not in the past
   const { data: sessions, error: sessionError } = await supabaseAdmin
     .from('StudySession')
-    .select('id, name, creator_id, date, time, description')
-    .neq('creator_id', userId);
+    .select('id, name, creator_id, date, time, description, location, mode')
+    .neq('creator_id', userId)
+    .gte('date', today); // only today or future sessions
 
   if (sessionError || !sessions) {
     return NextResponse.json({ error: 'Failed to fetch sessions' }, { status: 500 });
@@ -45,7 +48,7 @@ export async function GET(req: Request) {
   const creatorIds = Array.from(new Set(filteredSessions.map((s) => s.creator_id)));
   const { data: users, error: userError } = await supabaseAdmin
     .from('app_users')
-    .select('id, username')
+    .select('id, first_name, last_name')
     .in('id', creatorIds);
 
   if (userError || !users) {
@@ -53,15 +56,15 @@ export async function GET(req: Request) {
   }
 
   const userMap = users.reduce<Record<string, string>>((acc, u) => {
-    if (u.id && u.username) acc[u.id] = u.username;
+    const first = u.first_name?.trim() || '';
+    const lastInitial = u.last_name?.trim()?.[0]?.toUpperCase() || '';
+    acc[u.id] = `${first} ${lastInitial ? lastInitial + '.' : ''}`.trim();
     return acc;
   }, {});
 
-  // 5) Build final payload
+  // ✅ 5) Build final payload with NO date conversion
   const invites = filteredSessions.map((s) => {
-    const fullName = userMap[s.creator_id] || 'Someone';
-    const [first, last] = fullName.trim().split(' ');
-    const shortName = last ? `${first} ${last[0].toUpperCase()}.` : first;
+    const shortName = userMap[s.creator_id] || 'Someone';
 
     return {
       id: s.id,
@@ -69,6 +72,8 @@ export async function GET(req: Request) {
       date: s.date,
       time: s.time,
       description: s.description,
+      location: s.location,
+      mode: s.mode,
       creatorUsername: shortName,
     };
   });

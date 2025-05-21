@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable react/no-array-index-key */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable react/jsx-one-expression-per-line */
 
 'use client';
 
 import { useEffect, useState } from 'react';
+import supabase from '@/lib/supabaseClient';
 
 type Session = {
   subject: string;
@@ -16,7 +16,50 @@ type Session = {
 const UpcomingSessions = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
 
-  // Step 5 will fill in this useEffect later
+  useEffect(() => {
+    const fetchJoinedSessions = async () => {
+      const userId = localStorage.getItem('userId');
+      console.log('USER ID:', userId); // ✅ LOG userId to verify
+
+      if (!userId) return;
+
+      const { data, error } = await supabase
+        .from('participants')
+        .select(`
+    StudySession:StudySession (
+      name,
+      date,
+      time,
+      description
+    )
+  `)
+        .eq('user_id', userId);
+
+      if (error) {
+        console.error('❌ Supabase error:', error);
+        return;
+      }
+
+      console.log('✅ RAW data from Supabase:', data); // ✅ LOG raw result
+
+      const sessions = data
+        .map((entry: any) => entry.StudySession)
+        .filter((s: any) => !!s && !!s.date); // ignore null or bad entries
+
+      console.log('🎯 Filtered sessions:', sessions); // ✅ LOG filtered sessions
+
+      const formatted = sessions.map((s: any) => ({
+        subject: s.name,
+        date: new Date(s.date).toLocaleDateString(),
+        time: s.time,
+        description: s.description ?? '',
+      }));
+
+      setSessions(formatted);
+    };
+
+    fetchJoinedSessions();
+  }, []);
 
   return (
     <div
@@ -44,7 +87,10 @@ const UpcomingSessions = () => {
             >
               <strong>{session.subject}</strong>
               <div className="text-muted" style={{ fontSize: '0.85rem' }}>
-                {session.date} @ {session.time}
+                {session.date}
+                {' '}
+                @
+                {session.time}
               </div>
               <div style={{ fontSize: '0.85rem', marginTop: '0.5rem' }}>
                 {session.description}

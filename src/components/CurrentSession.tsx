@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable consistent-return */
 /* eslint-disable no-alert */
 /* eslint-disable max-len */
@@ -6,9 +7,20 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { ChevronLeft, ChevronRight, Users } from 'lucide-react';
+import { Modal, Button, Form, Badge } from 'react-bootstrap';
 import supabase from '@/lib/supabaseClient';
+
+function formatDateHST(dateStr: string) {
+  if (!dateStr) return 'Invalid Date';
+  const adjusted = new Date(new Date(dateStr).getTime() + 10 * 60 * 60 * 1000); // +10 hours
+  return adjusted.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    timeZone: 'Pacific/Honolulu',
+  });
+}
 
 interface StudySession {
   id: string;
@@ -21,8 +33,13 @@ interface StudySession {
   creator_id: string;
 }
 
+const MAX_PARTICIPANTS = 5;
+
 export default function CurrentSessions() {
   const [sessions, setSessions] = useState<StudySession[]>([]);
+  const [participantCounts, setParticipantCounts] = useState<Record<string, number>>({});
+  const [participantNames, setParticipantNames] = useState<string[]>([]);
+  const [showParticipantsModal, setShowParticipantsModal] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [editData, setEditData] = useState<StudySession | null>(null);
@@ -40,70 +57,42 @@ export default function CurrentSessions() {
   const getStatus = (session: StudySession) => {
     const now = getHSTNow();
     const [startStr, endStr] = session.time.split('–');
-    const dateOnly = session.date.split('T')[0]; // grabs "2025-05-12" from full ISO
+    const dateOnly = session.date.split('T')[0];
     const start = new Date(`${dateOnly}T${startStr}:00-10:00`);
     const end = new Date(`${dateOnly}T${endStr}:00-10:00`);
-    if (now >= start && now <= end) return 'Happening now :D';
-    if (now < start) return 'At a later time :)';
-    return 'Already over :(';
+    if (now >= start && now <= end) return 'Happening now!';
+    if (start.toDateString() === now.toDateString() && now < start) return 'Later today!';
+    if (start > now) return 'Upcoming session';
+    return '';
   };
 
   useEffect(() => {
     async function fetchSessions() {
       if (!userId) return;
 
-      // 1. Fetch invited session IDs
-      const { data: invites, error: invErr } = await supabase
-        .from('participants')
-        .select('session_id')
-        .eq('user_id', userId); // ✅ FIXED: matches your actual table column
-
-      if (invErr) console.error('❌ Invite error:', invErr);
-
-      const invitedIds = invites?.map(i => i.session_id) ?? [];
-
-      // 2. Fetch those invited sessions
-      const { data: invitedRaw, error: invitedErr } = invitedIds.length
-        ? await supabase
-          .from('StudySession') // ✅ no generic here
-          .select('*') // ✅ no generic here
-          .in('id', invitedIds)
-        : { data: [], error: null };
-
-      const invited = (invitedRaw ?? []) as StudySession[];
-
-      if (invitedErr) console.error('❌ Invited session fetch error:', invitedErr);
-
-      // 3. Fetch sessions the user created
       const { data: createdRaw, error: createdErr } = await supabase
-        .from('StudySession') // ✅ no generic here
+        .from('StudySession')
         .select('*')
-        .eq('user_id', userId);
+        .eq('creator_id', userId);
 
       const created = (createdRaw ?? []) as StudySession[];
 
       if (createdErr) console.error('❌ Created session fetch error:', createdErr);
 
-      // 4. Merge and dedupe
-      const combined = [...invited, ...created];
-      const uniq = Array.from(new Map(combined.map(s => [s.id, s])).values());
-
-      // 5. Filter future sessions (based on HST)
       const now = getHSTNow();
-      const future = uniq.filter(s => {
+      const future = created.filter(s => {
         if (!s.date || !s.time.includes('–')) return false;
-        const [start] = s.time.split('–');
-        console.log('🔍 Raw session:', s);
-        console.log('🔍 Date:', s.date, '| Time:', s.time);
-
-        const dateOnly = new Date(s.date).toISOString().split('T')[0];
-        const sessionStart = new Date(`${dateOnly}T${start}:00-10:00`);
-
-        console.log('⏱️ Checking session:', s.name, '| Start:', sessionStart, '| Now:', now);
-        return sessionStart > now;
+        const [startStr, endStr] = s.time.split('–');
+        const dateOnly = s.date.split('T')[0];
+        const start = new Date(`${dateOnly}T${startStr}:00-10:00`);
+        const end = new Date(`${dateOnly}T${endStr}:00-10:00`);
+        return (
+          (now >= start && now <= end)
+          || (start.toDateString() === now.toDateString() && now < start)
+          || (start > now)
+        );
       });
 
-      // Sort future sessions chronologically
       future.sort((a, b) => {
         const da = new Date(`${a.date}T${a.time.split('–')[0]}:00-10:00`);
         const db = new Date(`${b.date}T${b.time.split('–')[0]}:00-10:00`);
@@ -111,10 +100,40 @@ export default function CurrentSessions() {
       });
 
       setSessions(future);
+
+      const ids = future.map(s => s.id);
+      const { data: allParticipants, error: partErr } = await supabase
+        .from('participants')
+        .select('session_id, user_id')
+        .in('session_id', ids);
+
+      if (!partErr && allParticipants) {
+        const countMap: Record<string, number> = {};
+        for (const row of allParticipants) {
+          countMap[row.session_id] = (countMap[row.session_id] || 0) + 1;
+        }
+        setParticipantCounts(countMap);
+      }
     }
 
     fetchSessions();
   }, [userId]);
+
+  const handleShowParticipants = async (sessionId: string) => {
+    const { data: partData } = await supabase
+      .from('participants')
+      .select('user_id')
+      .eq('session_id', sessionId);
+
+    const ids = partData?.map(p => p.user_id) ?? [];
+    const { data: users } = await supabase
+      .from('app_users')
+      .select('email')
+      .in('id', ids);
+
+    setParticipantNames(users?.map(u => u.email) ?? []);
+    setShowParticipantsModal(true);
+  };
 
   const current = sessions[currentIndex];
   const handleNext = () => setCurrentIndex((i) => (i + 1) % sessions.length);
@@ -122,31 +141,8 @@ export default function CurrentSessions() {
   const handleEdit = (s: StudySession) => { setEditData(s); setShowModal(true); };
 
   const handleDelete = async (sessionId: string) => {
-    // Step 1: Delete all participant rows for this session
-    const { error: partErr } = await supabase
-      .from('participants')
-      .delete()
-      .eq('session_id', sessionId);
-
-    if (partErr) {
-      console.error('❌ Failed to delete from participants:', partErr);
-      alert('Failed to remove session participants.');
-      return;
-    }
-
-    // Step 2: Delete the session itself
-    const { error: sessErr } = await supabase
-      .from('StudySession')
-      .delete()
-      .eq('id', sessionId);
-
-    if (sessErr) {
-      console.error('❌ Failed to delete session:', sessErr);
-      alert('Failed to delete session.');
-      return;
-    }
-
-    // Step 3: Update UI
+    await supabase.from('participants').delete().eq('session_id', sessionId);
+    await supabase.from('StudySession').delete().eq('id', sessionId);
     const updated = sessions.filter(s => s.id !== sessionId);
     setSessions(updated);
     setCurrentIndex(0);
@@ -159,7 +155,6 @@ export default function CurrentSessions() {
   const handleSaveEdit = async () => {
     if (!editData) return;
     const { error } = await supabase.from('StudySession').update(editData).eq('id', editData.id);
-    // eslint-disable-next-line consistent-return
     if (error) return alert('Failed to update session.');
     setSessions(sessions.map(s => (s.id === editData.id ? editData : s)));
     setShowModal(false);
@@ -169,12 +164,13 @@ export default function CurrentSessions() {
     return (
       <div className="border border-dark p-4 rounded shadow text-center" style={{ backgroundColor: '#e5d8f6' }}>
         <h4 className="mb-2">My Sessions</h4>
-        <p>You haven’t created or joined any upcoming study sessions yet.</p>
+        <p>You haven’t created any upcoming study sessions yet.</p>
       </div>
     );
   }
 
   const [startTime, endTime] = current.time.split('–');
+  const participants = participantCounts[current.id] || 0;
 
   return (
     <>
@@ -185,25 +181,24 @@ export default function CurrentSessions() {
             <ChevronLeft size={16} />
           </button>
 
-          <div className="flex-grow-1 mx-2 border rounded p-3 bg-white">
+          <div className="flex-grow-1 mx-2 border rounded p-3 bg-white" style={{ maxHeight: '350px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
             <p className="mb-1">
               <strong>Course:</strong>
               {' '}
               {current.name}
             </p>
             <p className="mb-1">
-              <strong>Date:</strong>
-              {' '}
-              {new Date(current.date).toLocaleDateString()}
-            </p>
+  <strong>Date:</strong>
+  {' '}
+  {formatDateHST(current.date)}
+</p>
 
             <p className="mb-1">
-              <strong>Start Time:</strong>
+              <strong>Time:</strong>
               {' '}
               {formatTime(startTime)}
-            </p>
-            <p className="mb-1">
-              <strong>End Time:</strong>
+              {' '}
+              –
               {' '}
               {formatTime(endTime)}
             </p>
@@ -213,22 +208,38 @@ export default function CurrentSessions() {
               {current.location || 'TBA'}
             </p>
             <p className="mb-1">
-              <strong>Status:</strong>
+              <strong>Mode:</strong>
               {' '}
-              {getStatus(current)}
+              <span className={`badge bg-${current.mode === 'Online' ? 'info' : 'secondary'}`}>{current.mode}</span>
             </p>
             <p className="mb-1">
+              <strong>Status:</strong>
+              {' '}
+              <span className={`badge ${getStatus(current) === 'Happening now!' ? 'bg-success' : getStatus(current) === 'Later today!' ? 'bg-warning text-dark' : 'bg-primary'}`}>{getStatus(current)}</span>
+            </p>
+            <div className="mb-2 d-flex align-items-center gap-2">
+              <Users size={18} style={{ cursor: 'pointer' }} onClick={() => handleShowParticipants(current.id)}>
+                <title>View participants</title>
+              </Users>
+              <span>
+                {participants}
+                /
+                {MAX_PARTICIPANTS}
+                {' '}
+                joined
+                {' '}
+                {participants >= MAX_PARTICIPANTS && <Badge bg="danger">Session Full</Badge>}
+              </span>
+            </div>
+            <div className="mb-1" style={{ maxHeight: '100px', overflowY: 'auto', paddingRight: '4px' }}>
               <strong>Description:</strong>
               {' '}
-              {current.description || '—'}
-            </p>
-
-            {current.creator_id === userId && (
-              <div className="mt-2 d-flex gap-2">
-                <button className="btn btn-outline-danger btn-sm" onClick={() => handleDelete(current.id)}>Delete</button>
-                <button className="btn btn-outline-secondary btn-sm" onClick={() => handleEdit(current)}>Edit</button>
-              </div>
-            )}
+              <div style={{ whiteSpace: 'pre-wrap' }}>{current.description || '—'}</div>
+            </div>
+            <div className="mt-2 d-flex gap-2">
+              <button className="btn btn-outline-danger btn-sm" onClick={() => handleDelete(current.id)}>Delete</button>
+              <button className="btn btn-outline-secondary btn-sm" onClick={() => handleEdit(current)}>Edit</button>
+            </div>
           </div>
 
           <button onClick={handleNext} className="btn btn-outline-secondary btn-sm">
@@ -237,7 +248,6 @@ export default function CurrentSessions() {
         </div>
       </div>
 
-      {/* Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton><Modal.Title>Edit Study Session</Modal.Title></Modal.Header>
         <Modal.Body>
@@ -258,6 +268,26 @@ export default function CurrentSessions() {
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowModal(false)}>Cancel</Button>
           <Button variant="primary" onClick={handleSaveEdit}>Save Changes</Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showParticipantsModal} onHide={() => setShowParticipantsModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Joined Participants</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {participantNames.length === 0 ? (
+            <p>No participants yet.</p>
+          ) : (
+            <ul>
+              {participantNames.map(name => (
+                <li key={name}>{name}</li>
+              ))}
+            </ul>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowParticipantsModal(false)}>Close</Button>
         </Modal.Footer>
       </Modal>
     </>

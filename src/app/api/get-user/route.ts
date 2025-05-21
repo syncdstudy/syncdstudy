@@ -18,6 +18,11 @@ export async function POST(req: Request) {
       minor: true,
       interests: true,
       created_at: true,
+      bio: true,
+      points: true,
+      study_streak: true,
+      sessions_hosted: true,
+      sessions_joined: true
     },
   });
 

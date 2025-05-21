@@ -18,7 +18,7 @@ const LocationsPage = () => {
   return (
     <main className="container py-5">
       <div
-        className="text-center px-4 py-4 mb-5"
+        className="text-center px-4 py-4 mb-4"
         style={{
           backgroundColor: 'rgba(228, 215, 247, 0.8)',
           border: '3px solid rgb(235, 227, 227)',
@@ -30,7 +30,7 @@ const LocationsPage = () => {
           animation: 'popUp 1.2s ease-out',
         }}
       >
-        <h1 className="mb-3" style={{ fontWeight: '600' }}>Campus Study Locations</h1>
+        <h1 className="mb-2" style={{ fontWeight: '500', fontSize: '2rem' }}>Campus Study Locations</h1>
         <p style={{ fontStyle: 'italic', fontSize: '1rem' }}>
           For the best experience, allow this application to access your location to see where you are on the map.
           You can also click on any popular study spot to quickly find it, or filter by Indoor, Outdoor, or Food Hub
@@ -83,6 +83,7 @@ const LocationsPage = () => {
             maxWidth: '600px',
             height: '600px', // match map height
             overflowY: 'auto',
+            marginTop: '20px'
           }}
         >
           <h4 className="text-center mb-4">Popular Study Spots</h4>

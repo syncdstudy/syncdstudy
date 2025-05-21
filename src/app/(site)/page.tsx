@@ -9,17 +9,36 @@ import { Container, Button, Row, Col, Accordion } from 'react-bootstrap';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { FaCheckCircle, FaListAlt, FaUsers, FaStar, FaComments } from 'react-icons/fa';
+import supabase from '@/lib/supabaseClient';
 
 const Home = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState('');
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem('loggedIn') === 'true';
-    const email = localStorage.getItem('userEmail');
-    const name = email?.split('@')[0];
-    setIsLoggedIn(loggedIn);
-    setUsername(name || '');
+    async function fetchUserInfo() {
+      const loggedIn = localStorage.getItem('loggedIn') === 'true';
+      setIsLoggedIn(loggedIn);
+  
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error || !user) return;
+  
+      const { data, error: userError } = await supabase
+        .from('app_users')
+        .select('first_name')
+        .eq('id', user.id)
+        .single();
+  
+      if (!userError && data?.first_name) {
+        const name = data.first_name.trim();
+        const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
+        setUsername(capitalized);
+      } else {
+        setUsername('friend');
+      }
+    }
+  
+    fetchUserInfo();
   }, []);
 
   return (
