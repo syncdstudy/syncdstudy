@@ -362,8 +362,6 @@ function formatDateHST(isoString: string) {
   }
 }
 
-
-
 interface Invite {
   id: string;
   name: string;
@@ -478,50 +476,49 @@ export default function SessionInvite() {
     ]);
 
     // 1️⃣ Count how many sessions the user has joined
-const { count: joinedCount } = await supabase
-.from('participants')
-.select('*', { count: 'exact', head: true })
-.eq('user_id', userId);
+    const { count: joinedCount } = await supabase
+      .from('participants')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId);
 
-// 2️⃣ Get all join timestamps
-const { data: joinedSessions } = await supabase
-.from('participants')
-.select('created_at')
-.eq('user_id', userId);
+    // 2️⃣ Get all join timestamps
+    const { data: joinedSessions } = await supabase
+      .from('participants')
+      .select('created_at')
+      .eq('user_id', userId);
 
-// 3️⃣ Calculate study streak from those timestamps
-function calculateStreak(dates: string[]): number {
-const sorted = dates.map(d => new Date(d)).sort((a, b) => b.getTime() - a.getTime());
-let streak = 0;
-let current = new Date();
-current.setHours(0, 0, 0, 0);
-for (const date of sorted) {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  if (d.getTime() === current.getTime()) {
-    streak++;
-    current.setDate(current.getDate() - 1);
-  } else if (d.getTime() === current.getTime() - 86400000) {
-    streak++;
-    current.setDate(current.getDate() - 1);
-  } else {
-    break;
-  }
-}
-return streak;
-}
+    // 3️⃣ Calculate study streak from those timestamps
+    function calculateStreak(dates: string[]): number {
+      const sorted = dates.map(d => new Date(d)).sort((a, b) => b.getTime() - a.getTime());
+      let streak = 0;
+      const current = new Date();
+      current.setHours(0, 0, 0, 0);
+      for (const date of sorted) {
+        const d = new Date(date);
+        d.setHours(0, 0, 0, 0);
+        if (d.getTime() === current.getTime()) {
+          streak++;
+          current.setDate(current.getDate() - 1);
+        } else if (d.getTime() === current.getTime() - 86400000) {
+          streak++;
+          current.setDate(current.getDate() - 1);
+        } else {
+          break;
+        }
+      }
+      return streak;
+    }
 
-const streak = calculateStreak(joinedSessions?.map(s => s.created_at) || []);
+    const streak = calculateStreak(joinedSessions?.map(s => s.created_at) || []);
 
-// 4️⃣ Update app_users with new stats
-await supabase
-.from('app_users')
-.update({
-  sessions_joined: joinedCount || 0,
-  study_streak: streak,
-})
-.eq('id', userId);
-
+    // 4️⃣ Update app_users with new stats
+    await supabase
+      .from('app_users')
+      .update({
+        sessions_joined: joinedCount || 0,
+        study_streak: streak,
+      })
+      .eq('id', userId);
 
     // ✅ Add 3 points to user
     const { data: currentUser, error: userError } = await supabase
@@ -647,28 +644,29 @@ await supabase
                           <strong>{session.name}</strong>
                           <br />
                           <small className="text-muted">
-                          {session.date ? formatDateHST(session.date) : 'Invalid Date'}
+                            {session.date ? formatDateHST(session.date) : 'Invalid Date'}
 
-  {' '}•{' '}
-  {(() => {
-    const [startStr, endStr] = session.time.split('–');
+                            {' '}
+                            •
+                            {' '}
+                            {(() => {
+                              const [startStr, endStr] = session.time.split('–');
 
-    const formatTime = (time: string) => {
-      const [hour, minute] = time.split(':').map(Number);
-      const t = new Date();
-      t.setHours(hour, minute);
-      return t.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true,
-        timeZone: 'Pacific/Honolulu',
-      });
-    };
+                              const formatTime = (time: string) => {
+                                const [hour, minute] = time.split(':').map(Number);
+                                const t = new Date();
+                                t.setHours(hour, minute);
+                                return t.toLocaleTimeString('en-US', {
+                                  hour: 'numeric',
+                                  minute: '2-digit',
+                                  hour12: true,
+                                  timeZone: 'Pacific/Honolulu',
+                                });
+                              };
 
-    return `${formatTime(startStr)} – ${formatTime(endStr)}`;
-  })()}
-</small>
-
+                              return `${formatTime(startStr)} – ${formatTime(endStr)}`;
+                            })()}
+                          </small>
 
                         </p>
                         <div className="d-flex justify-content-start gap-2">
@@ -696,30 +694,32 @@ await supabase
                 {selectedInvite.name}
               </p>
               <p>
-  <strong>Date:</strong>{' '}
-  {selectedInvite.date ? formatDateHST(selectedInvite.date) : 'Invalid Date'}
-</p>
+                <strong>Date:</strong>
+                {' '}
+                {selectedInvite.date ? formatDateHST(selectedInvite.date) : 'Invalid Date'}
+              </p>
 
-<p>
-  <strong>Time:</strong>{' '}
-  {(() => {
-    const [startStr, endStr] = selectedInvite.time.split('–');
+              <p>
+                <strong>Time:</strong>
+                {' '}
+                {(() => {
+                  const [startStr, endStr] = selectedInvite.time.split('–');
 
-    const formatTime = (time: string) => {
-      const [hour, minute] = time.split(':').map(Number);
-      const t = new Date();
-      t.setHours(hour, minute);
-      return t.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true,
-        timeZone: 'Pacific/Honolulu',
-      });
-    };
+                  const formatTime = (time: string) => {
+                    const [hour, minute] = time.split(':').map(Number);
+                    const t = new Date();
+                    t.setHours(hour, minute);
+                    return t.toLocaleTimeString('en-US', {
+                      hour: 'numeric',
+                      minute: '2-digit',
+                      hour12: true,
+                      timeZone: 'Pacific/Honolulu',
+                    });
+                  };
 
-    return `${formatTime(startStr)} – ${formatTime(endStr)}`;
-  })()}
-</p>
+                  return `${formatTime(startStr)} – ${formatTime(endStr)}`;
+                })()}
+              </p>
 
               <p>
                 <strong>Location:</strong>

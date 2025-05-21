@@ -91,28 +91,28 @@ export default function ProfileClient() {
   useEffect(() => {
     async function fetchLastJoinedSession() {
       if (!currentUserId) return;
-  
+
       const { data: partData, error: partError } = await supabase
         .from('participants')
         .select('session_id')
         .eq('user_id', currentUserId)
         .order('created_at', { ascending: false })
         .limit(1);
-  
+
       if (partError) {
         console.error('❌ Error fetching participant record:', partError);
         return;
       }
-  
+
       if (partData && partData.length > 0) {
         const sessionId = partData[0].session_id;
-  
+
         const { data: sessionData, error: sessionError } = await supabase
           .from('StudySession')
           .select('name')
           .eq('id', sessionId)
           .single();
-  
+
         if (sessionError) {
           console.error('❌ Error fetching session name:', sessionError);
         } else if (sessionData?.name) {
@@ -120,10 +120,9 @@ export default function ProfileClient() {
         }
       }
     }
-  
+
     fetchLastJoinedSession();
   }, [currentUserId]); // ✅ run only when currentUserId is ready
-  
 
   useEffect(() => {
     async function testQuery() {
@@ -195,7 +194,7 @@ export default function ProfileClient() {
                   borderRadius: '1.25rem',
                   backgroundColor: '#ffffff',
                   padding: '2.4rem', // ← use any value you want (e.g. 1.75rem, 2.25rem, etc.)
-                  minHeight: '450px',         // ✅ Lock in a minimum height
+                  minHeight: '450px', // ✅ Lock in a minimum height
                   overflow: 'hidden',
                 }}
               >
@@ -209,61 +208,65 @@ export default function ProfileClient() {
                       className="rounded-circle mb-3"
                     />
                     <h5>
-  {userData.first_name} {userData.last_name}
-</h5>
-<p className="text-muted mb-1">{userData.email}</p> {/* 👈 trims space below */}
-{userData.created_at && (
-  <p className="text-muted mb-2" style={{ fontSize: '0.9rem' }}>
-    Member since{' '}
-    {new Date(userData.created_at).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    })}
-  </p>
-)}
-
+                      {userData.first_name}
+                      {' '}
+                      {userData.last_name}
+                    </h5>
+                    <p className="text-muted mb-1">{userData.email}</p>
+                    {' '}
+                    {/* 👈 trims space below */}
+                    {userData.created_at && (
+                    <p className="text-muted mb-2" style={{ fontSize: '0.9rem' }}>
+                      Member since
+                      {' '}
+                      {new Date(userData.created_at).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </p>
+                    )}
 
                     <Button variant="outline-primary" onClick={() => setShowModal(true)}>Edit Profile</Button>
                   </Col>
 
-                    <Col md={4}>
+                  <Col md={4}>
                     <div style={{ maxHeight: '380px', overflowY: 'auto', paddingRight: '0.5rem' }}>
                       <h6 className="fw-bold border-bottom pb-1">Basic Info</h6>
                       <p>
-                      <strong>Year:</strong>
-                      <span className="ms-2">{userData.year || '—'}</span>
+                        <strong>Year:</strong>
+                        <span className="ms-2">{userData.year || '—'}</span>
                       </p>
                       <p>
-                      <strong>Major:</strong>
-                      <span className="ms-2">{userData.major || '—'}</span>
+                        <strong>Major:</strong>
+                        <span className="ms-2">{userData.major || '—'}</span>
                       </p>
                       <p>
-                      <strong>Minor:</strong>
-                      <span className="ms-2">{userData.minor || '—'}</span>
+                        <strong>Minor:</strong>
+                        <span className="ms-2">{userData.minor || '—'}</span>
                       </p>
                       <p>
-                      <strong>Interests:</strong>
+                        <strong>Interests:</strong>
                       </p>
                       {userData.interests.length > 0 ? (
-                      <ul className="mb-3">
-                        {userData.interests.map((i: string, idx: number) => (
-                        <li key={idx}>{i}</li>
-                        ))}
-                      </ul>
+                        <ul className="mb-3">
+                          {userData.interests.map((i: string, idx: number) => (
+                            <li key={idx}>{i}</li>
+                          ))}
+                        </ul>
                       ) : (
-                      <p className="text-muted ms-2">None listed</p>
+                        <p className="text-muted ms-2">None listed</p>
                       )}
                       {userData.bio && (
-                      <>
-                        <p>
-                        <strong>Bio:</strong>
-                        </p>
-                        <p className="ms-2">{userData.bio}</p>
-                      </>
+                        <>
+                          <p>
+                            <strong>Bio:</strong>
+                          </p>
+                          <p className="ms-2">{userData.bio}</p>
+                        </>
                       )}
                     </div>
-                    </Col>
+                  </Col>
 
                   <Col md={4}>
                     <h6 className="fw-bold border-bottom pb-1">Achievements</h6>
@@ -274,30 +277,30 @@ export default function ProfileClient() {
                     </p>
                     <p><strong>Study Streak:</strong></p>
                     <ProgressBar
-  now={100}
-  max={100}
-  label={`${userData.study_streak || 0} day${userData.study_streak === 1 ? '' : 's'}`}
-  className="mb-2"
-  variant="info"
-/>
+                      now={100}
+                      max={100}
+                      label={`${userData.study_streak || 0} day${userData.study_streak === 1 ? '' : 's'}`}
+                      className="mb-2"
+                      variant="info"
+                    />
 
-<p><strong>Sessions Hosted:</strong></p>
-<ProgressBar
-  now={100}
-  max={100}
-  label={`${userData.sessions_hosted || 0} session${userData.sessions_hosted === 1 ? '' : 's'}`}
-  className="mb-2"
-  variant="success"
-/>
+                    <p><strong>Sessions Hosted:</strong></p>
+                    <ProgressBar
+                      now={100}
+                      max={100}
+                      label={`${userData.sessions_hosted || 0} session${userData.sessions_hosted === 1 ? '' : 's'}`}
+                      className="mb-2"
+                      variant="success"
+                    />
 
-<p><strong>Sessions Joined:</strong></p>
-<ProgressBar
-  now={100}
-  max={100}
-  label={`${userData.sessions_joined || 0} session${userData.sessions_joined === 1 ? '' : 's'}`}
-  className="mb-2"
-  variant="primary"
-/>
+                    <p><strong>Sessions Joined:</strong></p>
+                    <ProgressBar
+                      now={100}
+                      max={100}
+                      label={`${userData.sessions_joined || 0} session${userData.sessions_joined === 1 ? '' : 's'}`}
+                      className="mb-2"
+                      variant="primary"
+                    />
 
                   </Col>
                 </Row>
@@ -306,16 +309,26 @@ export default function ProfileClient() {
           </Col>
 
           <Col lg={4}>
-            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
               {/* 🆕 Info Box */}
-    <Card className="mb-4 p-4 text-center shadow-sm" style={{ borderRadius: '1rem', backgroundColor: '#f8f0ff' }}>
-      <h6 className="fw-bold mb-1">Welcome to Your Profile !</h6>
-      <p className="mb-0 text-muted" style={{ fontSize: '0.95rem' }}>
-        View your study progress, update your info, and track your leaderboard rank!
-      </p>
-    </Card>
-           
-            {/* 🏆 Leaderboard Card */} 
+              <Card
+                className="mb-4 p-4 text-center shadow-sm"
+                style={{
+                  borderRadius: '1rem',
+                  backgroundColor: '#f8f0ff',
+                }}
+              >
+                <h6 className="fw-bold mb-1">Welcome to Your Profile!</h6>
+                <p className="mb-0 text-muted" style={{ fontSize: '0.95rem' }}>
+                  View your study progress, update your info, and track your leaderboard rank!
+                </p>
+              </Card>
+
+              {/* 🏆 Leaderboard Card */}
               <Card className="p-4 shadow-sm" style={{ borderRadius: '1.25rem', backgroundColor: '#ffffff' }}>
                 <h5 className="text-center mb-3">🏆 Leaderboard</h5>
                 <div style={{ maxHeight: '452px', overflowY: 'auto' }}>
@@ -375,10 +388,10 @@ export default function ProfileClient() {
               >
                 <h6 className="fw-bold mb-3">📌 Milestone Tracker</h6>
                 <p>
-  <strong>Last Session Joined:</strong>
-  {' '}
-  {lastSessionJoined || '—'}
-</p>
+                  <strong>Last Session Joined:</strong>
+                  {' '}
+                  {lastSessionJoined || '—'}
+                </p>
                 <p>
                   <strong>Next Rank Goal:</strong>
                   {' '}

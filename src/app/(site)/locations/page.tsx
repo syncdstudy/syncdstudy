@@ -83,7 +83,7 @@ const LocationsPage = () => {
             maxWidth: '600px',
             height: '600px', // match map height
             overflowY: 'auto',
-            marginTop: '20px'
+            marginTop: '20px',
           }}
         >
           <h4 className="text-center mb-4">Popular Study Spots</h4>

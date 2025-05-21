@@ -19,16 +19,16 @@ const Home = () => {
     async function fetchUserInfo() {
       const loggedIn = localStorage.getItem('loggedIn') === 'true';
       setIsLoggedIn(loggedIn);
-  
+
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error || !user) return;
-  
+
       const { data, error: userError } = await supabase
         .from('app_users')
         .select('first_name')
         .eq('id', user.id)
         .single();
-  
+
       if (!userError && data?.first_name) {
         const name = data.first_name.trim();
         const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
@@ -37,7 +37,7 @@ const Home = () => {
         setUsername('friend');
       }
     }
-  
+
     fetchUserInfo();
   }, []);
 

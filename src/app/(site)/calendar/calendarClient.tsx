@@ -359,7 +359,15 @@ export default function CalendarClient() {
                         onClick={() => handleUpcomingClick(session)}
                       >
                         <strong style={{ color: '#6f42c1' }}>{session.title}</strong>
-                        <div><small>{format(session.start, 'PPP')} – {format(session.start, 'p')}</small></div>
+                        <div>
+                          <small>
+                            {format(session.start, 'PPP')}
+                            {' '}
+                            –
+                            {' '}
+                            {format(session.start, 'p')}
+                          </small>
+                        </div>
 
                         <div style={{
                           overflow: 'hidden',
@@ -425,7 +433,8 @@ export default function CalendarClient() {
         <Modal.Body>
           <h5>{selectedEvent?.title}</h5>
           <p>
-            <strong>Start Time:</strong>{' '}
+            <strong>Start Time:</strong>
+            {' '}
             {selectedEvent?.start.toLocaleString('en-US', {
               year: 'numeric',
               month: '2-digit',
@@ -437,7 +446,8 @@ export default function CalendarClient() {
             })}
           </p>
           <p>
-            <strong>End Time:</strong>{' '}
+            <strong>End Time:</strong>
+            {' '}
             {selectedEvent?.end.toLocaleString('en-US', {
               year: 'numeric',
               month: '2-digit',
@@ -449,7 +459,8 @@ export default function CalendarClient() {
             })}
           </p>
           <p>
-            <strong>Location:</strong>{' '}
+            <strong>Location:</strong>
+            {' '}
             {selectedEvent?.location?.trim() ? selectedEvent.location : 'N/A'}
           </p>
           <p>

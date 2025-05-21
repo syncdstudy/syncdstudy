@@ -43,18 +43,17 @@ export async function POST(req: Request) {
     .select()
     .single();
 
-    if (sessionData && creator_id) {
-      const { count } = await supabase
-        .from('StudySession')
-        .select('*', { count: 'exact', head: true })
-        .eq('creator_id', creator_id);
-    
-      await supabase
-        .from('app_users')
-        .update({ sessions_hosted: count || 0 })
-        .eq('id', creator_id);
-    }
-    
+  if (sessionData && creator_id) {
+    const { count } = await supabase
+      .from('StudySession')
+      .select('*', { count: 'exact', head: true })
+      .eq('creator_id', creator_id);
+
+    await supabase
+      .from('app_users')
+      .update({ sessions_hosted: count || 0 })
+      .eq('id', creator_id);
+  }
 
   if (insertSessionError || !sessionData) {
     console.error('❌ Insert error in StudySession:', insertSessionError);
@@ -66,7 +65,7 @@ export async function POST(req: Request) {
       .from('StudySession')
       .select('*', { count: 'exact', head: true })
       .eq('creator_id', creator_id);
-  
+
     await supabase
       .from('app_users')
       .update({ sessions_hosted: count || 0 })

@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       points: true,
       study_streak: true,
       sessions_hosted: true,
-      sessions_joined: true
+      sessions_joined: true,
     },
   });
 

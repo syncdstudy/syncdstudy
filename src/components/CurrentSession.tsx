@@ -188,10 +188,10 @@ export default function CurrentSessions() {
               {current.name}
             </p>
             <p className="mb-1">
-  <strong>Date:</strong>
-  {' '}
-  {formatDateHST(current.date)}
-</p>
+              <strong>Date:</strong>
+              {' '}
+              {formatDateHST(current.date)}
+            </p>
 
             <p className="mb-1">
               <strong>Time:</strong>
