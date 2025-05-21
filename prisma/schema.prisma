@@ -82,10 +82,15 @@ model AppUser {
   password        String?
   username        String?           @unique
   avatar_url      String?
+  bio             String?
   updated_at      DateTime          @default(now())
   StudySession    StudySession[]
   calendar_events calendar_events[]
   participants    participants[]
+
+  study_streak     Int              @default(0)
+  sessions_hosted  Int              @default(0)
+  sessions_joined  Int              @default(0)
 
   @@map("app_users")
 }

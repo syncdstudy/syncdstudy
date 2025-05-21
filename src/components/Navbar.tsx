@@ -47,34 +47,35 @@ const NavBar: React.FC = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className="justify-content-center">
           <Nav className="gap-4 text-center">
-            {isLoggedIn ? (
-              <>
-                <Nav.Link href="/calendar" active={pathname === '/calendar'}>
-                  <ins><em>Dashboard</em></ins>
-                </Nav.Link>
-                <Nav.Link href="/study-session" active={pathname === '/study-session'}>
-                  <ins><em>Study Session</em></ins>
-                </Nav.Link>
-                <Nav.Link href="/locations" active={pathname === '/locations'}>
-                  <ins><em>Study Spots</em></ins>
-                </Nav.Link>
-                <Nav.Link href="/profile" active={pathname === '/profile'}>
-                  <ins><em>My Profile</em></ins>
-                </Nav.Link>
-              </>
-            ) : (
-              <>
-                <Nav.Link href="/howitworks" active={pathname === '/howitworks'}>
-                  <ins><em>How it Works</em></ins>
-                </Nav.Link>
-                <Nav.Link href="/locations" active={pathname === '/locations'}>
-                  <ins><em>Locations on Campus</em></ins>
-                </Nav.Link>
-                <Nav.Link href="/about" active={pathname === '/about'}>
-                  <ins><em>About</em></ins>
-                </Nav.Link>
-              </>
-            )}
+          {isLoggedIn ? (
+  <>
+    <Nav.Link href="/calendar" active={pathname === '/calendar'}>
+      <span className="nav-link-text">Dashboard</span>
+    </Nav.Link>
+    <Nav.Link href="/study-session" active={pathname === '/study-session'}>
+      <span className="nav-link-text">Study Session</span>
+    </Nav.Link>
+    <Nav.Link href="/locations" active={pathname === '/locations'}>
+      <span className="nav-link-text">Study Spots</span>
+    </Nav.Link>
+    <Nav.Link href="/profile" active={pathname === '/profile'}>
+      <span className="nav-link-text">My Profile</span>
+    </Nav.Link>
+  </>
+) : (
+  <>
+    <Nav.Link href="/howitworks" active={pathname === '/howitworks'}>
+      <span className="nav-link-text">How it Works</span>
+    </Nav.Link>
+    <Nav.Link href="/locations" active={pathname === '/locations'}>
+      <span className="nav-link-text">Locations on Campus</span>
+    </Nav.Link>
+    <Nav.Link href="/about" active={pathname === '/about'}>
+      <span className="nav-link-text">About</span>
+    </Nav.Link>
+  </>
+)}
+
           </Nav>
         </Navbar.Collapse>
 

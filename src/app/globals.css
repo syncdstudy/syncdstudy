@@ -455,3 +455,33 @@ body {
   background-color: rgba(0, 0, 0, 0.1);
   border-radius: 10px;
 }
+
+.nav-link-text {
+  font-style: italic;
+  text-decoration: none;  /* ✅ Remove browser default underline */
+  color: black;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.nav-link-text::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background-color: #5f2485; /* Purple line */
+  transition: width 0.3s ease;
+}
+
+/* On hover, animate the underline in */
+.navbar-custom .nav-link:hover .nav-link-text::after {
+  width: 100%;
+}
+
+/* Highlight the current page */
+.navbar-custom .nav-link.active .nav-link-text {
+  font-weight: bold;
+  color: #5f2485;
+}

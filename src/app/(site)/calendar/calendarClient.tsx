@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable default-case */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable max-len */
@@ -5,7 +7,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Calendar, dateFnsLocalizer, Views, Event } from 'react-big-calendar';
+import { Calendar, dateFnsLocalizer, Views, Event as CalendarEvent } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import {
   format,
@@ -34,7 +36,13 @@ import { AnimatePresence, motion } from 'framer-motion';
 // eslint-disable-next-line import/extensions
 import supabase from '@/lib/supabaseClient';
 
-interface CustomEvent extends Event {
+const CustomEventComponent = ({ event }: { event: CustomEvent }) => (
+  <div style={{ fontSize: '1rem', fontWeight: '500', lineHeight: 1.2 }}>
+    {event.title}
+  </div>
+);
+
+interface CustomEvent extends CalendarEvent {
   id: string;
   title: string;
   start: Date;
@@ -75,17 +83,15 @@ export default function CalendarClient() {
   const [selectedEvent, setSelectedEvent] = useState<CustomEvent | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [clock, setClock] = useState(new Date());
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   // ─── TODO STATE WITH LOCAL STORAGE ─────────────────────────────────────
-  const [todos, setTodos] = useState<Todo[]>(() => {
-    if (typeof window !== 'undefined') {
-      const storedTodos = localStorage.getItem('todos');
-      return storedTodos ? JSON.parse(storedTodos) : [
-        { id: '1', text: 'Review notes', completed: false },
-        { id: '2', text: 'Watch lecture', completed: false },
-        { id: '3', text: 'Email TA', completed: false },
-      ];
-    }
-    return [];
+  const [todos, setTodos] = useState(() => {
+    const storedTodos = typeof window !== 'undefined' ? localStorage.getItem('todos') : null;
+    return storedTodos ? JSON.parse(storedTodos) : [
+      { id: '1', text: 'Review notes', completed: false },
+      { id: '2', text: 'Watch lecture', completed: false },
+      { id: '3', text: 'Email TA', completed: false },
+    ];
   });
 
   const [newTodo, setNewTodo] = useState('');
@@ -95,34 +101,48 @@ export default function CalendarClient() {
     async function loadEvents() {
       const userId = localStorage.getItem('userId');
       if (!userId) return;
+
       const { data, error } = await supabase
         .from('calendar_events')
-        .select('id, title, start, end, color, description, location, mode')
+        .select('*')
         .eq('user_id', userId);
 
-      if (!data || error) {
-        console.error('Error loading events:', error);
+      if (error || !data) {
+        console.error('Error loading calendar events:', error);
         return;
       }
 
-      const parsed = data.map((e: any) => ({
-        id: e.id,
-        title: e.title,
-        start: new Date(e.start),
-        end: new Date(e.end),
-        color: e.color || '#d0e8ff',
-        description: e.description ?? '',
-        location: e.location?.trim() || 'N/A',
-        mode: e.mode?.trim() || 'N/A',
-      }));
+      const parsed = data.map((e: any) => {
+        let defaultColor = '#d0e8ff'; // fallback
+
+        if (e.mode?.toLowerCase().includes('zoom') || e.mode?.toLowerCase().includes('online')) {
+          defaultColor = '#b3e5b9'; // green for online
+        } else if (e.mode?.toLowerCase().includes('in person') || e.mode?.toLowerCase().includes('in-person')) {
+          defaultColor = '#ffd6e7'; // pink for in-person
+        }
+
+        return {
+          id: e.id,
+          title: e.title,
+          start: new Date(e.start),
+          end: new Date(e.end),
+          color: e.color || defaultColor,
+          description: e.description ?? '',
+          location: e.location ?? 'N/A',
+          mode: e.mode ?? 'N/A',
+        };
+      });
+
       setEvents(parsed);
 
       const now = new Date();
       const upcoming = parsed
         .filter(ev => ev.start >= now)
         .sort((a, b) => a.start.getTime() - b.start.getTime());
+
       setUpcomingSessions(upcoming);
     }
+
     loadEvents();
   }, []);
 
@@ -189,20 +209,40 @@ export default function CalendarClient() {
 
   const handleDeleteEvent = async () => {
     if (!selectedEvent) return;
-    const { error } = await supabase
+
+    const userId = localStorage.getItem('userId');
+    if (!userId) return;
+
+    // Delete from calendar_events
+    const { error: calendarError } = await supabase
       .from('calendar_events')
       .delete()
       .eq('id', selectedEvent.id);
-    if (!error) {
-      setEvents(prev => prev.filter(e => e.id !== selectedEvent.id));
-      setShowModal(false);
-      setSelectedEvent(null);
+
+    // Also delete from participants
+    const { error: participantError } = await supabase
+      .from('participants')
+      .delete()
+      .eq('user_id', userId)
+      .eq('session_id', selectedEvent.id); // update this if your session_id is separate
+
+    if (calendarError || participantError) {
+      console.error('Failed to unjoin session:', calendarError || participantError);
+      return;
     }
+
+    setEvents(prev => prev.filter(e => e.id !== selectedEvent.id));
+    setShowModal(false);
+    setShowConfirmDelete(false);
+    setSelectedEvent(null);
+
+    localStorage.setItem('refreshInvites', `${Date.now()}`);
+    window.dispatchEvent(new Event('storage')); // 🔁 Manually trigger for same-tab
   };
 
   const addTodo = () => {
     if (newTodo.trim()) {
-      setTodos((prev: Todo[]) => [...prev, { id: Date.now().toString(), text: newTodo.trim(), completed: false }]);
+      setTodos((prev: Todo[]) => [{ id: Date.now().toString(), text: newTodo.trim(), completed: false }, ...prev]);
       setNewTodo('');
     }
   };
@@ -221,13 +261,18 @@ export default function CalendarClient() {
               <h3 className="text-center mb-2">📅 My Study Calendar</h3>
               <h5 className="text-center mb-3">{format(currentDate, 'MMMM yyyy')}</h5>
 
-              <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                <div className="d-flex flex-wrap gap-2">
-                  <ButtonGroup className="me-2">
+              <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+                {/* Navigation buttons (left) */}
+                <div className="d-flex gap-2">
+                  <ButtonGroup>
                     <Button variant="outline-secondary" onClick={() => setCurrentDate(new Date())}>Today</Button>
                     <Button variant="outline-secondary" onClick={() => moveDate('PREV')}>Back</Button>
                     <Button variant="outline-secondary" onClick={() => moveDate('NEXT')}>Next</Button>
                   </ButtonGroup>
+                </div>
+
+                {/* View buttons (right aligned) */}
+                <div className="d-flex gap-2">
                   <ButtonGroup>
                     <Button variant={currentView === Views.MONTH ? 'secondary' : 'outline-secondary'} onClick={() => setCurrentView(Views.MONTH)}>Month</Button>
                     <Button variant={currentView === Views.WEEK ? 'secondary' : 'outline-secondary'} onClick={() => setCurrentView(Views.WEEK)}>Week</Button>
@@ -260,79 +305,116 @@ export default function CalendarClient() {
                   },
                 })}
                 onSelectEvent={handleEventClick}
+                min={new Date(0, 0, 0, 8, 0)} // 8:00 AM
+                max={new Date(0, 0, 0, 22, 0)} // 10:00 PM
+                step={15}
+                timeslots={2}
+                titleAccessor={() => ''} // 🔒 hide default top title
+                tooltipAccessor={() => ''} // 🔒 hide hover tooltip
+                components={{ event: CustomEventComponent }}// ✅ Use your custom layout
               />
+
             </Card>
           </Col>
 
           {/* Sidebar Column */}
           <Col lg={4}>
-            {/* Clock */}
-            {hydrated && (
-              <Card className="mb-3 p-3 text-center" style={{ backgroundColor: '#f4f1ff', borderRadius: '1rem' }}>
-                <h5>🕒 Today</h5>
-                <h2 className="fw-bold mt-2">{clock.toLocaleTimeString()}</h2>
-                <h6>{clock.toDateString()}</h6>
-              </Card>
-            )}
+            {typeof window !== 'undefined' && hydrated && (
+            <>
+              {/* Clock */}
+              {hydrated && (
+              <Card className="mb-3 p-4" style={{ backgroundColor: '#f4f1ff', borderRadius: '1rem' }}>
+                <div className="d-flex justify-content-between align-items-center flex-wrap">
+                  {/* Clock (Left) */}
+                  <div className="text-center" style={{ flex: 1 }}>
+                    <h5 className="mb-1">🕒 Today</h5>
+                    <h2 className="fw-bold mb-0">{clock.toLocaleTimeString()}</h2>
+                    <h6 className="text-muted">{clock.toDateString()}</h6>
+                  </div>
 
-            {/* Upcoming Sessions */}
-            <Card className="mb-3 p-4" style={{ backgroundColor: '#e9ddfb', borderRadius: '1rem', maxHeight: '326px', overflowY: 'scroll' }}>
-              <h5 className="text-center">Upcoming Sessions</h5>
-              {upcomingSessions.length === 0 ? (
-                <p className="text-muted text-center">No upcoming sessions</p>
-              ) : (
-                <div className="d-flex flex-column gap-3">
-                  {upcomingSessions.map(session => (
-                    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
-                    <div
-                      key={session.id}
-                      className="p-3 rounded shadow-sm"
-                      style={{ backgroundColor: '#ffffff', border: '1px solid #ccc', cursor: 'pointer' }}
-                      onClick={() => handleUpcomingClick(session)}
-                    >
-                      <strong style={{ color: '#6f42c1' }}>{session.title}</strong>
-                      <div><small>{format(session.start, 'PPP p')}</small></div>
-                      <div><small className="text-muted">{session.description || 'No description'}</small></div>
-                    </div>
-                  ))}
+                  {/* Motivational Quote (Right) */}
+                  <div className="text-center" style={{ flex: 1 }}>
+                    <p className="mb-0" style={{ fontStyle: 'italic', fontSize: '0.95rem', color: '#6c757d' }}>
+                      You got this! Every hour is a new opportunity. 💪
+                    </p>
+                  </div>
                 </div>
-              )}
-            </Card>
+              </Card>
 
-            {/* To‑Do List */}
-            <Card className="p-0 d-flex flex-column" style={{ backgroundColor: '#e0d7f3', borderRadius: '1rem', height: '100%', maxHeight: '300px', overflow: 'hidden' }}>
-              <div className="p-3 border-bottom text-center"><h5 className="fw-bold">📝 To-Do List</h5></div>
-              <div style={{ overflowY: 'auto', padding: '1rem', flex: 1 }}>
-                <AnimatePresence mode="popLayout">
-                  {todos.map((todo: Todo) => (
-                    <motion.li
-                      key={todo.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ duration: 0.2 }}
-                      className="d-flex align-items-center justify-content-between px-3 py-2 mb-2"
-                      style={{ backgroundColor: todo.completed ? '#e2e2e2' : '#f6f0ff', borderRadius: '0.75rem', listStyle: 'none' }}
-                      whileHover={{ scale: 1.01 }}
-                    >
-                      <div className="d-flex align-items-center">
-                        <Form.Check type="checkbox" className="me-2" checked={todo.completed} onChange={() => toggleTodoComplete(todo.id)} />
-                        <span style={{ textDecoration: todo.completed ? 'line-through' : 'none', opacity: todo.completed ? 0.6 : 1, fontWeight: 500, fontSize: '1rem' }}>
-                          {todo.text}
-                        </span>
+              )}
+
+              {/* Upcoming Sessions */}
+              <Card className="mb-3 p-4" style={{ backgroundColor: '#e9ddfb', borderRadius: '1rem', maxHeight: '326px', overflowY: 'scroll' }}>
+                <h5 className="text-center">Upcoming Sessions</h5>
+                {upcomingSessions.length === 0 ? (
+                  <p className="text-muted text-center">No upcoming sessions</p>
+                ) : (
+                  <div className="d-flex flex-column gap-3">
+                    {upcomingSessions.map(session => (
+                    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+                      <div
+                        key={session.id}
+                        className="p-3 rounded shadow-sm"
+                        style={{ backgroundColor: '#ffffff', border: '1px solid #ccc', cursor: 'pointer' }}
+                        onClick={() => handleUpcomingClick(session)}
+                      >
+                        <strong style={{ color: '#6f42c1' }}>{session.title}</strong>
+                        <div><small>{format(session.start, 'PPP')} – {format(session.start, 'p')}</small></div>
+
+                        <div style={{
+                          overflow: 'hidden',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                        }}
+                        >
+                          <small className="text-muted">
+                            {session.description || 'No description'}
+                          </small>
+                        </div>
+
                       </div>
-                      <Button size="sm" variant="outline-danger" onClick={() => removeTodo(todo.id)} style={{ padding: '0 8px', borderRadius: '6px' }}>
-                        ✕
-                      </Button>
-                    </motion.li>
-                  ))}
-                </AnimatePresence>
-              </div>
-              <Form className="d-flex p-3 border-top" onSubmit={e => { e.preventDefault(); addTodo(); }}>
-                <Form.Control type="text" value={newTodo} placeholder="Add a new task..." onChange={e => setNewTodo(e.target.value)} className="me-2" />
-                <Button type="submit" variant="primary">Add</Button>
-              </Form>
-            </Card>
+                    ))}
+                  </div>
+                )}
+              </Card>
+
+              {/* To‑Do List */}
+              <Card className="p-0 d-flex flex-column" style={{ backgroundColor: '#e0d7f3', borderRadius: '1rem', height: '100%', maxHeight: '300px', overflow: 'hidden' }}>
+                <div className="p-3 border-bottom text-center"><h5 className="fw-bold">📝 To-Do List</h5></div>
+                <div style={{ overflowY: 'auto', padding: '1rem', flex: 1 }}>
+                  <AnimatePresence mode="popLayout">
+                    {todos.map((todo: Todo) => (
+                      <motion.li
+                        key={todo.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.2 }}
+                        className="d-flex align-items-center justify-content-between px-3 py-2 mb-2"
+                        style={{ backgroundColor: todo.completed ? '#e2e2e2' : '#f6f0ff', borderRadius: '0.75rem', listStyle: 'none' }}
+                        whileHover={{ scale: 1.01 }}
+                      >
+                        <div className="d-flex align-items-center">
+                          <Form.Check type="checkbox" className="me-2" checked={todo.completed} onChange={() => toggleTodoComplete(todo.id)} />
+                          <span style={{ textDecoration: todo.completed ? 'line-through' : 'none', opacity: todo.completed ? 0.6 : 1, fontWeight: 500, fontSize: '1rem' }}>
+                            {todo.text}
+                          </span>
+                        </div>
+                        <Button size="sm" variant="outline-danger" onClick={() => removeTodo(todo.id)} style={{ padding: '0 8px', borderRadius: '6px' }}>
+                          ✕
+                        </Button>
+                      </motion.li>
+                    ))}
+                  </AnimatePresence>
+                </div>
+                <Form className="d-flex p-3 border-top" onSubmit={e => { e.preventDefault(); addTodo(); }}>
+                  <Form.Control type="text" value={newTodo} placeholder="Add a new task..." onChange={e => setNewTodo(e.target.value)} className="me-2" />
+                  <Button type="submit" variant="primary">Add</Button>
+                </Form>
+              </Card>
+            </>
+            )}
           </Col>
         </Row>
       </Container>
@@ -343,18 +425,31 @@ export default function CalendarClient() {
         <Modal.Body>
           <h5>{selectedEvent?.title}</h5>
           <p>
-            <strong>Start Time:</strong>
-            {' '}
-            {selectedEvent?.start.toLocaleString()}
+            <strong>Start Time:</strong>{' '}
+            {selectedEvent?.start.toLocaleString('en-US', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true,
+              timeZone: 'Pacific/Honolulu',
+            })}
           </p>
           <p>
-            <strong>End Time:</strong>
-            {' '}
-            {selectedEvent?.end.toLocaleString()}
+            <strong>End Time:</strong>{' '}
+            {selectedEvent?.end.toLocaleString('en-US', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true,
+              timeZone: 'Pacific/Honolulu',
+            })}
           </p>
           <p>
-            <strong>Location:</strong>
-            {' '}
+            <strong>Location:</strong>{' '}
             {selectedEvent?.location?.trim() ? selectedEvent.location : 'N/A'}
           </p>
           <p>
@@ -390,10 +485,29 @@ export default function CalendarClient() {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="danger" onClick={handleDeleteEvent}>Delete Event</Button>
+          <Button variant="danger" onClick={() => setShowConfirmDelete(true)}>Delete Event</Button>
           <Button variant="secondary" onClick={handleClose}>Close</Button>
         </Modal.Footer>
       </Modal>
+
+      <Modal show={showConfirmDelete} onHide={() => setShowConfirmDelete(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Leave This Session?</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to leave
+          {' '}
+          <strong>{selectedEvent?.title}</strong>
+          ?
+          <br />
+          This will remove it from your calendar, and you’ll need to rejoin it from the Session Invites tab if you change your mind.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowConfirmDelete(false)}>Cancel</Button>
+          <Button variant="danger" onClick={handleDeleteEvent}>Yes, Leave</Button>
+        </Modal.Footer>
+      </Modal>
+
     </main>
   );
 }
